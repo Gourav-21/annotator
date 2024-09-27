@@ -1,4 +1,5 @@
 'use client'
+import { Project } from "@/app/page"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
@@ -7,18 +8,16 @@ import { useToast } from "@/hooks/use-toast"
 import { format, parseISO } from "date-fns"
 import { CalendarIcon, Edit2Icon, LogOut, PlusCircle, Trash2Icon } from "lucide-react"
 import { signOut, useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-export interface Project {
-  _id: string
-  name: string
-  created_at: string
-  description?: string
-}
+
 
 export default function ProjectDashboard() {
   const [projects, setProjects] = useState<Project[]>([])
+  const [project,setProject] = useState<Project>()
+  const pathName = usePathname();
+  const projectId = pathName.split("/")[2];
   const [newProjectName, setNewProjectName] = useState('')
   const router = useRouter();
   const { data: session } = useSession();
@@ -26,7 +25,7 @@ export default function ProjectDashboard() {
 
   useEffect(() => {
     if (session) {
-      fetch('/api/projects')
+      fetch('/api/projects?projectId=' + projectId)
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
@@ -119,7 +118,8 @@ export default function ProjectDashboard() {
       );
   }
 
-  console.log(projects)
+  console.log(project)
+
   return (
     <div className="min-h-screen ">
       <header className="bg-white ">
