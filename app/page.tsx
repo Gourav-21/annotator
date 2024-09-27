@@ -70,8 +70,8 @@ export default function ProjectDashboard() {
             description: error.message,
           });
         } else {
-          const newProject = await res.json()
-          setProjects([...projects, newProject])
+          const data = await res.json()
+          setProjects([...projects, data.project])
           setNewProjectName('')
         }
       })
