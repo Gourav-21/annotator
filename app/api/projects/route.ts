@@ -63,7 +63,7 @@ export async function DELETE(req: Request) {
 
   try {
     await connectToDatabase();
-    await Project.deleteOne({ _id });
+    await Project.findByIdAndDelete(_id);
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ success: false, error: 'Failed to delete project' }, { status: 400 });
