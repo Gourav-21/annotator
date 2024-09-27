@@ -11,8 +11,6 @@ import { signOut, useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-
-
 export default function ProjectDashboard() {
   const [projects, setProjects] = useState<Project[]>([])
   const [project,setProject] = useState<Project>()
@@ -29,7 +27,7 @@ export default function ProjectDashboard() {
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
-            setProjects(data.projects);
+            setProject(data.project);
           }
         })
         .catch((error) =>
