@@ -4,11 +4,10 @@ import { toast } from '@/hooks/use-toast'
 import EditorProvider from '@/providers/editor/editor-provider'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { getTemplate, upsertTemplate } from '../actions/template'
+import { getTemplate } from '../actions/template'
 import Editor from './_components/editor'
 import EditorNavigation from './_components/editor-navigation'
 import EditorSidebar from './_components/editor-sidebar'
-import mongoose from "mongoose";
 
 type Props = {
   params: {

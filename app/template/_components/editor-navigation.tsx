@@ -62,7 +62,7 @@ const EditorNavigation = ({
       )
 
       toast('Success', {
-        description: 'Saved Funnel Page title',
+        description: 'Saved Page title',
       })
       router.refresh()
     } else {

@@ -52,7 +52,8 @@ export default function ProjectDashboard() {
   if (session?.user?.role === 'annotator') router.push('/tasks');
 
   const handleTemplateClick = (project_id: string) => {
-    router.push(`/template?Id=${project_id}`);
+    // router.push(`/template?Id=${project_id}`);
+    console.log(project_id);
   };
 
   const handleCreateTemplate = async (e: React.FormEvent) => {
@@ -67,7 +68,7 @@ export default function ProjectDashboard() {
 
   const handleEditTemplate = (e: React.MouseEvent, _id: string) => {
     e.stopPropagation()
-    console.log(`Edit project with _id: ${_id}`)
+    router.push(`/template?Id=${_id}`);
   }
 
   const handleDeleteTemplate = (e: React.MouseEvent, _id: string) => {
@@ -99,8 +100,6 @@ export default function ProjectDashboard() {
         })
       );
   }
-
-  // console.log(project)
 
   return (
     <div className="min-h-screen ">

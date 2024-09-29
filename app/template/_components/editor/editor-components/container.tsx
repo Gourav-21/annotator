@@ -105,21 +105,6 @@ const Container = ({ element }: Props) => {
           },
         })
         break
-      // case 'paymentForm':
-      //   dispatch({
-      //     type: 'ADD_ELEMENT',
-      //     payload: {
-      //       containerId: id,
-      //       elementDetails: {
-      //         content: [],
-      //         id: v4(),
-      //         name: 'Contact Form',
-      //         styles: {},
-      //         type: 'paymentForm',
-      //       },
-      //     },
-      //   })
-      //   break
       case '2Col':
         dispatch({
           type: 'ADD_ELEMENT',
@@ -232,7 +217,7 @@ const Container = ({ element }: Props) => {
       {state.editor.selectedElement.id === element.id &&
         !state.editor.liveMode &&
         state.editor.selectedElement.type !== '__body' && (
-          <div className="absolute bg-primary px-2.5 py-1 text-xs font-bold  -top-[25px] -right-[1px] rounded-none rounded-t-lg ">
+          <div className="absolute bg-primary  px-2.5 py-1 text-xs font-bold  -top-[25px] -right-[1px] rounded-none rounded-t-lg  !text-white">
             <Trash
               size={16}
               onClick={handleDeleteElement}
