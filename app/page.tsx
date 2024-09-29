@@ -136,6 +136,7 @@ export default function ProjectDashboard() {
             <Input
               type="text"
               placeholder="New project name"
+              required
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
               className="flex-grow"

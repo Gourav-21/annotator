@@ -16,7 +16,9 @@ export const Project = models?.Project || model('Project', projectSchema);
 
 const templateSchema = new Schema({
   name: { type: String, required: true },
+  created_at: { type: Date, default: Date.now },
   // type: { type: String, enum: ['text', 'audio', 'video', 'image'], required: true },
+  content: { type: String, required: true },
   // question: { type: Object, required: true },
   // media_uri: { type: String, required: false },
   project: { type: Schema.Types.ObjectId, ref: 'Project', required: true },

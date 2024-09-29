@@ -1,6 +1,5 @@
 'use client'
 import { Project } from "@/app/page"
-import { template } from "@/app/template/page"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
@@ -11,12 +10,10 @@ import { CalendarIcon, Edit2Icon, LogOut, PlusCircle, Trash2Icon } from "lucide-
 import { signOut, useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import mongoose from "mongoose";
-import { upsertTemplate } from "@/app/actions/template"
 
 export default function ProjectDashboard() {
-  const [templates, setTemplates] = useState<Project[]>([])
-  const [project, setProject] = useState<Project>()
+  const [projects, setProjects] = useState<Project[]>([])
+  const [project,setProject] = useState<Project>()
   const pathName = usePathname();
   const projectId = pathName.split("/")[2];
   const [newTemplateName, setNewTemplateName] = useState('')
@@ -31,9 +28,6 @@ export default function ProjectDashboard() {
         .then((data) => {
           if (data.success) {
             setProject(data.project);
-            if (data.project.templates)
-              setTemplates(data.project.templates);
-            console.log(data.project);
           }
         })
         .catch((error) =>
@@ -52,17 +46,12 @@ export default function ProjectDashboard() {
   if (session?.user?.role === 'annotator') router.push('/tasks');
 
   const handleTemplateClick = (project_id: string) => {
-    router.push(`/template?Id=${project_id}`);
+    router.push(`/projects/${project_id}`);
   };
 
-  const handleCreateTemplate = async (e: React.FormEvent) => {
+  const handleCreateTemplate = (e: React.FormEvent) => {
     e.preventDefault()
-    const defaultTemplate = {
-      name: newTemplateName.trim(),
-      project: projectId
-    }
-    const template: template = JSON.parse(await upsertTemplate(projectId as string, defaultTemplate, undefined, true))
-    router.push(`/template?Id=${template._id}`)
+    router.push(`/template?pId=${projectId}&&t=${newTemplateName.trim()}`)
   }
 
   const handleEditTemplate = (e: React.MouseEvent, _id: string) => {
@@ -72,7 +61,7 @@ export default function ProjectDashboard() {
 
   const handleDeleteTemplate = (e: React.MouseEvent, _id: string) => {
     e.stopPropagation()
-    fetch(`/api/template`, {
+    fetch(`/api/projects`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -88,7 +77,7 @@ export default function ProjectDashboard() {
             description: error.message,
           });
         } else {
-          setTemplates(templates.filter(project => project._id !== _id))
+          setProjects(projects.filter(project => project._id !== _id))
         }
       })
       .catch((error) =>
@@ -100,7 +89,7 @@ export default function ProjectDashboard() {
       );
   }
 
-  // console.log(project)
+  console.log(project)
 
   return (
     <div className="min-h-screen ">
@@ -117,7 +106,6 @@ export default function ProjectDashboard() {
           <div className="flex gap-4">
             <Input
               type="text"
-              required
               placeholder="New Template name"
               value={newTemplateName}
               onChange={(e) => setNewTemplateName(e.target.value)}
@@ -128,7 +116,7 @@ export default function ProjectDashboard() {
             </Button>
           </div>
         </form>
-        {templates.length === 0 ? (
+        {projects.length === 0 ? (
           <div className="text-center py-10">
             <h2 className="text-xl font-semibold text-gray-900">No Template yet</h2>
             <p className="mt-2 text-gray-600">Create your first Template to get started!</p>
@@ -144,7 +132,7 @@ export default function ProjectDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {templates.map((project) => (
+                {projects.map((project) => (
                   <TableRow
                     key={project._id}
                     onClick={() => handleTemplateClick(project._id)}

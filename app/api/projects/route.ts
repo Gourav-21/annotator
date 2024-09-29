@@ -14,7 +14,6 @@ export async function GET(req: NextRequest) {
 
   const searchParams = req.nextUrl.searchParams
   const projectId = searchParams.get('projectId')
-
   if (projectId) {
     try {
       const project = await Project.findById(projectId).populate('templates');
@@ -23,7 +22,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Failed to fetch project' }, { status: 400 });
     }
   }
-
   try {
     const projects = await Project.find({ project_Manager: session.user.id });
     return NextResponse.json({ success: true, projects }, { status: 200 });
@@ -39,7 +37,6 @@ export async function POST(req: Request) {
   }
 
   const { name } = await req.json();
-
   try {
     await connectToDatabase();
     const newProject = await Project.create({

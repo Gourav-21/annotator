@@ -10,6 +10,7 @@ const taskSchema = new mongoose.Schema({
   answer_type: { type: String, enum: ['text_field', 'checkbox_single', 'checkbox_multiple'], required: true },
   answer: { type: Object, required: false },
   status: { type: String, enum: ['pending', 'accepted', 'rejected', 'reassigned'], default: 'pending' },
+  completed: { type: Boolean, default: false },
 });
 
 const Task = mongoose.models?.Task || mongoose.model('Task', taskSchema);

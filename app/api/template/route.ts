@@ -17,9 +17,10 @@ export async function GET(req: NextRequest) {
 
   if (templateId) {
     try {
-      const project = await Project.find({ _id: templateId });
-      return NextResponse.json({ success: true, project }, { status: 200 });
+      const template = await Template.find({ _id: templateId });
+      return NextResponse.json({ success: true, template }, { status: 200 });
     } catch (error) {
+      console.log(error)
       return NextResponse.json({ success: false, error: 'Failed to fetch template' }, { status: 400 });
     }
   }
@@ -62,7 +63,7 @@ export async function DELETE(req: Request) {
 
   try {
     await connectToDatabase();
-    await Template.deleteOne({ _id });
+    await Template.findByIdAndDelete(_id);
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ success: false, error: 'Failed to delete project' }, { status: 400 });
