@@ -11,10 +11,20 @@ import { CalendarIcon, Edit2Icon, LogOut, PlusCircle, Trash2Icon } from "lucide-
 import { signOut, useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import mongoose from "mongoose";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog"
+import { Plus, Minus, Upload } from "lucide-react"
 import { upsertTemplate } from "@/app/actions/template"
+import { createTasks } from "@/app/actions/task"
+
+interface Task {
+  id: number
+  values: { [key: string]: string }
+}
+
+interface Placeholder {
+  type: 'text' | 'video' | 'img'
+  index: number
+}
 
 export default function ProjectDashboard() {
   const [templates, setTemplates] = useState<Project[]>([])
@@ -22,6 +32,8 @@ export default function ProjectDashboard() {
   const pathName = usePathname();
   const projectId = pathName.split("/")[2];
   const [newTemplateName, setNewTemplateName] = useState('')
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [template, setTemplate] = useState("")
   const router = useRouter();
   const { data: session } = useSession();
   const { toast } = useToast()
@@ -53,13 +65,8 @@ export default function ProjectDashboard() {
   if (session?.user?.role === 'annotator') router.push('/tasks');
 
   const handleTemplateClick = (project: string) => {
-    // router.push(`/template?Id=${project_id}`);
-    console.log(project);
-
-    var a = project.indexOf('content')
-
-    console.log(a)
-
+    setTemplate(project)
+    setIsDialogOpen(true)
   };
 
   const handleCreateTemplate = async (e: React.FormEvent) => {
@@ -107,6 +114,30 @@ export default function ProjectDashboard() {
       );
   }
 
+  async function createManyTasks(filled: string[], project: Project) {
+    console.log(project)
+    const tasks= filled.map((content,index)=>{
+      return {
+        project: projectId,
+        name: project.name + " - " + (index+1),
+        content: content
+      }
+    })
+    try {
+      await createTasks(tasks)
+      toast({
+        title: "Tasks created successfully",
+        description: "Tasks created successfully",
+      })
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      })
+    }
+  }
+
   return (
     <div className="min-h-screen ">
       <header className="bg-white ">
@@ -131,6 +162,9 @@ export default function ProjectDashboard() {
             <Button type="submit">
               <PlusCircle className="mr-2 h-4 w-4" /> Create Template
             </Button>
+            <Button type="button" variant={"outline"} onClick={() => router.push(`/projects/task/${project?._id}`)}>
+              Tasks
+            </Button>
           </div>
         </form>
         {templates.length === 0 ? (
@@ -150,51 +184,39 @@ export default function ProjectDashboard() {
               </TableHeader>
               <TableBody>
                 {templates.map((project) => (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <TableRow
-                        key={project._id}
-                        onClick={() => handleTemplateClick(project.content)}
-                        className="cursor-pointer hover:bg-gray-50"
-                      >
-                        <TableCell className="font-medium">{project.name}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {format(parseISO(project.created_at), 'PPP')}
+                  <TableRow
+                    key={project._id}
+                    onClick={() => handleTemplateClick(project.content)}
+                    className="cursor-pointer hover:bg-gray-50"
+                  >
+                    <TaskDialog template={template} setIsDialogOpen={setIsDialogOpen} isDialogOpen={isDialogOpen} createManyTasks={createManyTasks} project={project} />
+                    <TableCell className="font-medium">{project.name}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center text-sm text-gray-500">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {format(parseISO(project.created_at), 'PPP')}
 
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => handleEditTemplate(e, project._id)}
-                          >
-                            <Edit2Icon className="h-4 w-4" />
-                            <span className="sr-only">Edit</span>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => handleDeleteTemplate(e, project._id)}
-                          >
-                            <Trash2Icon className="h-4 w-4" />
-                            <span className="sr-only">Delete</span>
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Are you absolutely sure?</DialogTitle>
-                        <DialogDescription>
-                          This action cannot be undone. This will permanently delete your account
-                          and remove your data from our servers.
-                        </DialogDescription>
-                      </DialogHeader>
-                    </DialogContent>
-                  </Dialog>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => handleEditTemplate(e, project._id)}
+                      >
+                        <Edit2Icon className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => handleDeleteTemplate(e, project._id)}
+                      >
+                        <Trash2Icon className="h-4 w-4" />
+                        <span className="sr-only">Delete</span>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 ))}
               </TableBody>
             </Table>
@@ -202,5 +224,101 @@ export default function ProjectDashboard() {
         )}
       </main>
     </div>
+  )
+}
+
+
+export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, createManyTasks, project }: { template: string, isDialogOpen: boolean, setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>, createManyTasks: (filled: string[], project: Project) =>  Promise<void>, project: Project}) {
+  const [placeholders, setPlaceholders] = useState<Placeholder[]>([])
+  const [tasks, setTasks] = useState<Task[]>([{ id: 1, values: {} }])
+
+  useEffect(() => {
+    const placeholderRegex = /{{(text|video|img)}}/g
+    const matches = Array.from(template.matchAll(placeholderRegex))
+    setPlaceholders(matches.map((match, index) => ({
+      type: match[1] as 'text' | 'video' | 'img',
+      index
+    })))
+  }, [template])
+
+  const handleAddTask = () => {
+    setTasks([...tasks, { id: tasks.length + 1, values: {} }])
+  }
+
+  const handleRemoveTask = (id: number) => {
+    setTasks(tasks.filter(task => task.id !== id))
+  }
+
+  const handleInputChange = (taskId: number, placeholder: Placeholder, value: string) => {
+    setTasks(tasks.map(task =>
+      task.id === taskId
+        ? { ...task, values: { ...task.values, [placeholder.index]: value } }
+        : task
+    ))
+  }
+
+  const renderFilledTemplate = (values: { [key: string]: string }) => {
+    let filledTemplate = template
+    placeholders.forEach((placeholder, index) => {
+      const regex = new RegExp(`{{${placeholder.type}}}`)
+      const value = values[index] || `{{${placeholder.type}}}`
+      filledTemplate = filledTemplate.replace(regex, value)
+    })
+    return filledTemplate
+  }
+
+
+  const generateFilledTemplates = async () => {
+    console.log(project.name)
+    const filled = tasks.map(task => renderFilledTemplate(task.values))
+    await createManyTasks(filled,project)
+    
+  }
+
+  return (
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Fill Template</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto">
+            {tasks.map((task) => (
+              <div key={task.id} className="mb-4 p-2 border rounded">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-lg font-semibold">Task {task.id}</h3>
+                  <DialogClose asChild>
+                    <Button variant="ghost" size="icon" onClick={() =>{ handleRemoveTask(task.id); setIsDialogOpen(false)}}>
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                  </DialogClose>
+                </div>
+                {placeholders.map((placeholder, index) => (
+                  <div key={index} className="mb-2">
+                    <label htmlFor={`${task.id}-${index}`} className="block text-sm font-medium text-gray-700">
+                      {placeholder.type} (#{index + 1})
+                    </label>
+                    <Input
+                      id={`${task.id}-${index}`}
+                      value={task.values[index] || ""}
+                      onChange={(e) => handleInputChange(task.id, placeholder, e.target.value)}
+                      placeholder={`Enter ${placeholder.type} content`}
+                    />
+                  </div>
+                ))}
+                {/* <div className="mt-2 p-2 bg-gray-100 rounded">
+                  <h4 className="font-semibold">Preview:</h4>
+                  <pre className="whitespace-pre-wrap">{renderFilledTemplate(task.values)}</pre>
+                </div> */}
+              </div>
+            ))}
+          </div>
+          <DialogFooter className="flex w-full">
+            <Button onClick={handleAddTask} className="mr-auto">
+              <Plus className="mr-2 h-4 w-4" /> Add More Task
+            </Button>
+            <Button onClick={() => generateFilledTemplates()}>Save Tasks</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
   )
 }
