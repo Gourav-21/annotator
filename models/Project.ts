@@ -22,6 +22,7 @@ const templateSchema = new Schema({
   // question: { type: Object, required: true },
   // media_uri: { type: String, required: false },
   project: { type: Schema.Types.ObjectId, ref: 'Project', required: true },
+  // Tasks: [{ type: Schema.Types.ObjectId, ref: 'Task', }],
   // answer_type: { type: String, enum: ['text_field', 'checkbox_single', 'checkbox_multiple'], required: true },
   // answer: { type: Object, required: false },
   // status: { type: String, enum: ['pending', 'accepted', 'rejected', 'reassigned'], default: 'pending' },

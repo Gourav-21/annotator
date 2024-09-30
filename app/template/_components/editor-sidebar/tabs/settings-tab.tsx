@@ -1,38 +1,11 @@
 'use client'
 import React, { ChangeEventHandler } from 'react'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from '@/components/ui/accordion'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  AlignCenter,
-  AlignHorizontalJustifyCenterIcon,
-  AlignHorizontalJustifyEndIcon,
-  AlignHorizontalJustifyStart,
-  AlignHorizontalSpaceAround,
-  AlignHorizontalSpaceBetween,
-  AlignJustify,
-  AlignLeft,
-  AlignRight,
-  AlignVerticalJustifyCenter,
-  AlignVerticalJustifyStart,
-  ChevronsLeftRightIcon,
-  LucideImageDown,
-} from 'lucide-react'
+import { AlignCenter, AlignHorizontalJustifyCenterIcon, AlignHorizontalJustifyEndIcon, AlignHorizontalJustifyStart, AlignHorizontalSpaceAround, AlignHorizontalSpaceBetween, AlignJustify, AlignLeft, AlignRight, AlignVerticalJustifyCenter, AlignVerticalJustifyStart, ChevronsLeftRightIcon, LucideImageDown, } from 'lucide-react'
 import { Tabs, TabsTrigger, TabsList } from '@/components/ui/tabs'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from '@/components/ui/select'
 import { useEditor } from '@/providers/editor/editor-provider'
 import { Slider } from '@/components/ui/slider'
 

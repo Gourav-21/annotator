@@ -1,25 +1,25 @@
 'use client'
-import ContactForm from '@/components/forms/contact-form'
+import { updateTask } from '@/app/actions/task'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
 import { EditorBtns } from '@/lib/constants'
-
-// import { ContactUserFormSchema } from '@/lib/types'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
 import { Trash } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import React from 'react'
-import { z } from 'zod'
 
 type Props = {
   element: EditorElement
 }
 
-const ContactFormComponent = (props: Props) => {
+const InputText = (props: Props) => {
   const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
   const router = useRouter()
+  const [text,setText]=React.useState(pageDetails.content?.innerText || '')
 
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
@@ -38,21 +38,6 @@ const ContactFormComponent = (props: Props) => {
 
   const styles = props.element.styles
 
-  // const goToNextPage = async () => {
-  //   if (!state.editor.liveMode) return
-  //   const funnelPages = await getFunnel(funnelId)
-  //   if (!funnelPages || !pageDetails) return
-  //   if (funnelPages.FunnelPages.length > pageDetails.order + 1) {
-  //     const nextPage = funnelPages.FunnelPages.find(
-  //       (page) => page.order === pageDetails.order + 1
-  //     )
-  //     if (!nextPage) return
-  //     router.replace(
-  //       `${process.env.NEXT_PUBLIC_SCHEME}${funnelPages.subDomainName}.${process.env.NEXT_PUBLIC_DOMAIN}/${nextPage.pathName}`
-  //     )
-  //   }
-  // }
-
   const handleDeleteElement = () => {
     dispatch({
       type: 'DELETE_ELEMENT',
@@ -61,30 +46,37 @@ const ContactFormComponent = (props: Props) => {
   }
 
   const onFormSubmit = async (
-    values: any
+    e: React.FormEvent<HTMLFormElement>,
   ) => {
+    e.preventDefault()
     if (!state.editor.liveMode) return
+    const content = JSON.stringify(state.editor.elements)
+    // console.log(content)
 
     try {
-    
+      await updateTask({
+        ...pageDetails,
+        content,
+      }, funnelId,subaccountId)
       toast({
         title: 'Success',
-        description: 'Successfully Saved your info',
+        description: 'Successfully submitted',
       })
     } catch (error) {
+      console.log(error)
       toast({
         variant: 'destructive',
         title: 'Failed',
-        description: 'Could not save your information',
+        description: 'submission failed',
       })
     }
   }
-
+  console.log(props.element)
   return (
     <div
       style={styles}
       draggable
-      onDragStart={(e) => handleDragStart(e, 'contactForm')}
+      onDragStart={(e) => handleDragStart(e, 'inputText')}
       onClick={handleOnClickBody}
       className={clsx(
         'p-[2px] w-full m-[5px] relative text-[16px] transition-all flex items-center justify-center',
@@ -103,11 +95,25 @@ const ContactFormComponent = (props: Props) => {
             {state.editor.selectedElement.name}
           </Badge>
         )}
-      {/* <ContactForm
-        subTitle="Contact Us"
-        title="Want a free quote? We can help you"
-        apiCall={onFormSubmit}
-      /> */}
+
+        <form onSubmit={onFormSubmit}  className="flex w-full items-center space-x-2" >
+          <Input type="text" placeholder="write here" required value={text} onChange={(e) => setText(e.target.value)} onBlur={(e) => {
+            const spanElement = e.target as HTMLSpanElement
+            const inputValue = e.target.value;
+            dispatch({
+              type: 'UPDATE_ELEMENT',
+              payload: {
+                elementDetails: {
+                  ...props.element,
+                  content: {
+                    innerText: inputValue,
+                  },
+                },
+              },
+            })}} />
+          <Button type="submit" disabled={pageDetails.submitted}>{pageDetails.submitted? "Submitted" : "Submit"}</Button>
+        </form>
+
       {state.editor.selectedElement.id === props.element.id &&
         !state.editor.liveMode && (
           <div className="absolute bg-primary px-2.5 py-1 text-xs font-bold  -top-[25px] -right-[1px] rounded-none rounded-t-lg !text-white">
@@ -122,4 +128,4 @@ const ContactFormComponent = (props: Props) => {
   )
 }
 
-export default ContactFormComponent
+export default InputText

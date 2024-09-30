@@ -1,5 +1,7 @@
 
 export type EditorBtns =
+  | 'dynamicVideo'
+  | 'dynamicText'
   | 'text'
   | 'container'
   | 'section'
@@ -12,6 +14,8 @@ export type EditorBtns =
   | 'image'
   | null
   | '3Col'
+  | 'inputText'
+  | 'dynamicImage'
 
 export const defaultStyles: React.CSSProperties = {
   backgroundPosition: 'center',

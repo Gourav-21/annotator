@@ -37,6 +37,26 @@ const Container = ({ element }: Props) => {
           },
         })
         break
+      case 'dynamicText':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                innerText: "{{text}}",
+              },
+              id: v4(),
+              name: 'dynamicText',
+              styles: {
+                color: 'black',
+                ...defaultStyles,
+              },
+              type: 'dynamicText',
+            },
+          },
+        })
+        break
       case 'link':
         dispatch({
           type: 'ADD_ELEMENT',
@@ -75,6 +95,40 @@ const Container = ({ element }: Props) => {
           },
         })
         break
+      case 'dynamicVideo':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                src: '{{video}}',
+              },
+              id: v4(),
+              name: 'Dynamic Video',
+              styles: {},
+              type: 'dynamicVideo',
+            },
+          },
+        })
+        break
+      case 'dynamicImage':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                src: '{{img}}',
+              },
+              id: v4(),
+              name: 'Dynamic image',
+              styles: {},
+              type: 'dynamicImage',
+            },
+          },
+        })
+        break
       case 'container':
         dispatch({
           type: 'ADD_ELEMENT',
@@ -101,6 +155,21 @@ const Container = ({ element }: Props) => {
               name: 'Contact Form',
               styles: {},
               type: 'contactForm',
+            },
+          },
+        })
+        break
+      case 'inputText':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: [],
+              id: v4(),
+              name: 'input Text',
+              styles: { ...defaultStyles, width: '100%' },
+              type: 'inputText',
             },
           },
         })

@@ -1,32 +1,25 @@
 'use client'
-import ContactForm from '@/components/forms/contact-form'
 import { Badge } from '@/components/ui/badge'
-import { toast } from '@/hooks/use-toast'
 import { EditorBtns } from '@/lib/constants'
-
-// import { ContactUserFormSchema } from '@/lib/types'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
 import { Trash } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-
 import React from 'react'
-import { z } from 'zod'
 
 type Props = {
   element: EditorElement
 }
 
-const ContactFormComponent = (props: Props) => {
-  const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
-  const router = useRouter()
+const DynamicImageComponent = (props: Props) => {
+  const { dispatch, state } = useEditor()
+  const styles = props.element.styles
 
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
     e.dataTransfer.setData('componentType', type)
   }
 
-  const handleOnClickBody = (e: React.MouseEvent) => {
+  const handleOnClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     dispatch({
       type: 'CHANGE_CLICKED_ELEMENT',
@@ -36,23 +29,6 @@ const ContactFormComponent = (props: Props) => {
     })
   }
 
-  const styles = props.element.styles
-
-  // const goToNextPage = async () => {
-  //   if (!state.editor.liveMode) return
-  //   const funnelPages = await getFunnel(funnelId)
-  //   if (!funnelPages || !pageDetails) return
-  //   if (funnelPages.FunnelPages.length > pageDetails.order + 1) {
-  //     const nextPage = funnelPages.FunnelPages.find(
-  //       (page) => page.order === pageDetails.order + 1
-  //     )
-  //     if (!nextPage) return
-  //     router.replace(
-  //       `${process.env.NEXT_PUBLIC_SCHEME}${funnelPages.subDomainName}.${process.env.NEXT_PUBLIC_DOMAIN}/${nextPage.pathName}`
-  //     )
-  //   }
-  // }
-
   const handleDeleteElement = () => {
     dispatch({
       type: 'DELETE_ELEMENT',
@@ -60,38 +36,17 @@ const ContactFormComponent = (props: Props) => {
     })
   }
 
-  const onFormSubmit = async (
-    values: any
-  ) => {
-    if (!state.editor.liveMode) return
-
-    try {
-    
-      toast({
-        title: 'Success',
-        description: 'Successfully Saved your info',
-      })
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed',
-        description: 'Could not save your information',
-      })
-    }
-  }
-
   return (
     <div
       style={styles}
       draggable
-      onDragStart={(e) => handleDragStart(e, 'contactForm')}
-      onClick={handleOnClickBody}
+      onDragStart={(e) => handleDragStart(e, 'dynamicImage')}
+      onClick={handleOnClick}
       className={clsx(
         'p-[2px] w-full m-[5px] relative text-[16px] transition-all flex items-center justify-center',
         {
           '!border-blue-500':
             state.editor.selectedElement.id === props.element.id,
-
           '!border-solid': state.editor.selectedElement.id === props.element.id,
           'border-dashed border-[1px] border-slate-300': !state.editor.liveMode,
         }
@@ -103,11 +58,21 @@ const ContactFormComponent = (props: Props) => {
             {state.editor.selectedElement.name}
           </Badge>
         )}
-      {/* <ContactForm
-        subTitle="Contact Us"
-        title="Want a free quote? We can help you"
-        apiCall={onFormSubmit}
-      /> */}
+
+      {!Array.isArray(props.element.content) && state.editor.liveMode && (
+
+        <img
+          width={props.element.styles.width || '560'}
+          height={props.element.styles.height || '315'}
+          src={props.element.content.src}
+        />
+      )}
+      {!Array.isArray(props.element.content) && !state.editor.liveMode && (
+        <div className={`flex justify-center items-center text-xl w-[${props.element.styles.width ? props.element.styles.width : '560'}px] h-[${props.element.styles.width || '315'}px]`}>
+          img will be here
+        </div>
+      )}
+
       {state.editor.selectedElement.id === props.element.id &&
         !state.editor.liveMode && (
           <div className="absolute bg-primary px-2.5 py-1 text-xs font-bold  -top-[25px] -right-[1px] rounded-none rounded-t-lg !text-white">
@@ -122,4 +87,4 @@ const ContactFormComponent = (props: Props) => {
   )
 }
 
-export default ContactFormComponent
+export default DynamicImageComponent

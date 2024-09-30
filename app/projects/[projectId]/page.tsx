@@ -11,6 +11,8 @@ import { CalendarIcon, Edit2Icon, LogOut, PlusCircle, Trash2Icon } from "lucide-
 import { signOut, useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import mongoose from "mongoose";
 import { upsertTemplate } from "@/app/actions/template"
 
@@ -33,7 +35,6 @@ export default function ProjectDashboard() {
             setProject(data.project);
             if (data.project.templates)
               setTemplates(data.project.templates);
-            console.log(data.project);
           }
         })
         .catch((error) =>
@@ -51,9 +52,14 @@ export default function ProjectDashboard() {
 
   if (session?.user?.role === 'annotator') router.push('/tasks');
 
-  const handleTemplateClick = (project_id: string) => {
+  const handleTemplateClick = (project: string) => {
     // router.push(`/template?Id=${project_id}`);
-    console.log(project_id);
+    console.log(project);
+
+    var a = project.indexOf('content')
+
+    console.log(a)
+
   };
 
   const handleCreateTemplate = async (e: React.FormEvent) => {
@@ -105,7 +111,7 @@ export default function ProjectDashboard() {
     <div className="min-h-screen ">
       <header className="bg-white ">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Templates</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Project {project?.name}</h1>
           <Button onClick={() => signOut()} variant="outline">
             <LogOut className="mr-2 h-4 w-4" /> Logout
           </Button>
@@ -144,38 +150,51 @@ export default function ProjectDashboard() {
               </TableHeader>
               <TableBody>
                 {templates.map((project) => (
-                  <TableRow
-                    key={project._id}
-                    onClick={() => handleTemplateClick(project._id)}
-                    className="cursor-pointer hover:bg-gray-50"
-                  >
-                    <TableCell className="font-medium">{project.name}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {format(parseISO(project.created_at), 'PPP')}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <TableRow
+                        key={project._id}
+                        onClick={() => handleTemplateClick(project.content)}
+                        className="cursor-pointer hover:bg-gray-50"
+                      >
+                        <TableCell className="font-medium">{project.name}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center text-sm text-gray-500">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {format(parseISO(project.created_at), 'PPP')}
 
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => handleEditTemplate(e, project._id)}
-                      >
-                        <Edit2Icon className="h-4 w-4" />
-                        <span className="sr-only">Edit</span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => handleDeleteTemplate(e, project._id)}
-                      >
-                        <Trash2Icon className="h-4 w-4" />
-                        <span className="sr-only">Delete</span>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => handleEditTemplate(e, project._id)}
+                          >
+                            <Edit2Icon className="h-4 w-4" />
+                            <span className="sr-only">Edit</span>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => handleDeleteTemplate(e, project._id)}
+                          >
+                            <Trash2Icon className="h-4 w-4" />
+                            <span className="sr-only">Delete</span>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Are you absolutely sure?</DialogTitle>
+                        <DialogDescription>
+                          This action cannot be undone. This will permanently delete your account
+                          and remove your data from our servers.
+                        </DialogDescription>
+                      </DialogHeader>
+                    </DialogContent>
+                  </Dialog>
                 ))}
               </TableBody>
             </Table>

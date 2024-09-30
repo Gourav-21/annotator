@@ -14,7 +14,7 @@ export interface Project {
   _id: string
   name: string
   created_at: string
-  description?: string
+  content: string
 }
 
 export default function ProjectDashboard() {
