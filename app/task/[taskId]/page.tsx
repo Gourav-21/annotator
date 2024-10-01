@@ -1,13 +1,11 @@
 'use client'
-import { getTemplate } from '@/app/actions/template'
-import Editor from '@/app/template/_components/editor'
-import EditorNavigation from '@/app/template/_components/editor-navigation'
-import EditorSidebar from '@/app/template/_components/editor-sidebar'
+import { getTask } from '@/app/actions/task'
 import LoadingPage from '@/components/global/loading-page'
 import { toast } from '@/hooks/use-toast'
 import EditorProvider from '@/providers/editor/editor-provider'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import Editor from './editor'
 
 type Props = {
   params: {
@@ -31,17 +29,10 @@ const Page = ({ params }: Props) => {
   const [loading, setLoading] = useState(true)
 
 
-
-  // if (projectId == null || name == null) {
-  //   toast({ variant: 'destructive', title: 'Error', description: 'Invalid project' })
-  //   router.back()
-  //   return null
-  // }
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const task: task = JSON.parse(await getTemplate(taskid))
+        const task: task = JSON.parse(await getTask(taskid))
         setTask(task)
         setLoading(false)
         console.log(task)
