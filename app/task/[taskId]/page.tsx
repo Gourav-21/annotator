@@ -65,7 +65,7 @@ const Page = ({ params }: Props) => {
       pageDetails={task}
     >
       <Editor pageId={taskid} liveMode={true} />
-      {session?.user?.role === 'project manager' && <Dock status={task.status} />}
+      {session?.user?.role === 'project manager' && <Dock id={taskid} status={task.status} />}
     </EditorProvider>
   )
 }

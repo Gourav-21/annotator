@@ -143,7 +143,7 @@ export default function ProjectDashboard() {
                 {tasks.map((task) => (
                   <TableRow
                     key={task._id}
-                    // onClick={() => handleTemplateClick(task)}
+                    onClick={() => router.push(`/task/${task._id}`)}
                     className="cursor-pointer hover:bg-gray-50"
                   >
                     <TableCell className="font-medium">{task.name}</TableCell>
@@ -174,7 +174,7 @@ export default function ProjectDashboard() {
                     </TableCell>
                     <TableCell className="font-medium">
                       <Badge variant={getStatusBadgeVariant(task.status)}>
-                        {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                      {task.status =="pending" ? "Pending" : `${task.status}`}
                       </Badge>
                     </TableCell>
                     <TableCell className="font-medium text-center">{task.submitted ? '✔️' : '❌'}</TableCell>
