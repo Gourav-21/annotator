@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useToast } from "@/hooks/use-toast"
+import { toast, useToast } from "@/hooks/use-toast"
 import { format, parseISO } from "date-fns"
 import { CalendarIcon, Edit2Icon, LogOut, PlusCircle, Trash2Icon } from "lucide-react"
 import { signOut, useSession } from 'next-auth/react'
@@ -27,13 +27,13 @@ interface Placeholder {
 }
 
 export default function ProjectDashboard() {
-  const [templates, setTemplates] = useState<Project[]>([])
+  const [templates, setTemplates] = useState<template[]>([])
   const [project, setProject] = useState<Project>()
   const pathName = usePathname();
   const projectId = pathName.split("/")[2];
   const [newTemplateName, setNewTemplateName] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [template, setTemplate] = useState("")
+  const [template, setTemplate] = useState<template>()
   const router = useRouter();
   const { data: session } = useSession();
   const { toast } = useToast()
@@ -64,8 +64,8 @@ export default function ProjectDashboard() {
 
   if (session?.user?.role === 'annotator') router.push('/tasks');
 
-  const handleTemplateClick = (project: string) => {
-    setTemplate(project)
+  const handleTemplateClick = (temp: template) => {
+    setTemplate(temp)
     setIsDialogOpen(true)
   };
 
@@ -114,30 +114,6 @@ export default function ProjectDashboard() {
       );
   }
 
-  async function createManyTasks(filled: string[], project: Project) {
-    console.log(project)
-    const tasks= filled.map((content,index)=>{
-      return {
-        project: projectId,
-        name: project.name + " - " + (index+1),
-        content: content
-      }
-    })
-    try {
-      await createTasks(tasks)
-      toast({
-        title: "Tasks created successfully",
-        description: "Tasks created successfully",
-      })
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: error.message,
-      })
-    }
-  }
-
   return (
     <div className="min-h-screen ">
       <header className="bg-white ">
@@ -183,18 +159,17 @@ export default function ProjectDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {templates.map((project) => (
+                {templates.map((template) => (
                   <TableRow
-                    key={project._id}
-                    onClick={() => handleTemplateClick(project.content)}
+                    key={template._id}
+                    onClick={() => handleTemplateClick(template)}
                     className="cursor-pointer hover:bg-gray-50"
                   >
-                    <TaskDialog template={template} setIsDialogOpen={setIsDialogOpen} isDialogOpen={isDialogOpen} createManyTasks={createManyTasks} project={project} />
-                    <TableCell className="font-medium">{project.name}</TableCell>
+                    <TableCell className="font-medium">{template.name}</TableCell>
                     <TableCell>
                       <div className="flex items-center text-sm text-gray-500">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {format(parseISO(project.created_at), 'PPP')}
+                        {format(parseISO(template.created_at), 'PPP')}
 
                       </div>
                     </TableCell>
@@ -202,7 +177,7 @@ export default function ProjectDashboard() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={(e) => handleEditTemplate(e, project._id)}
+                        onClick={(e) => handleEditTemplate(e, template._id)}
                       >
                         <Edit2Icon className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
@@ -210,7 +185,7 @@ export default function ProjectDashboard() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={(e) => handleDeleteTemplate(e, project._id)}
+                        onClick={(e) => handleDeleteTemplate(e, template._id)}
                       >
                         <Trash2Icon className="h-4 w-4" />
                         <span className="sr-only">Delete</span>
@@ -222,19 +197,20 @@ export default function ProjectDashboard() {
             </Table>
           </div>
         )}
+        {project && template && <TaskDialog template={template} setIsDialogOpen={setIsDialogOpen} isDialogOpen={isDialogOpen}  project={project} />}
       </main>
     </div>
   )
 }
 
 
-export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, createManyTasks, project }: { template: string, isDialogOpen: boolean, setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>, createManyTasks: (filled: string[], project: Project) =>  Promise<void>, project: Project}) {
+export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }: { template: template, isDialogOpen: boolean, setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>, project: Project}) {
   const [placeholders, setPlaceholders] = useState<Placeholder[]>([])
   const [tasks, setTasks] = useState<Task[]>([{ id: 1, values: {} }])
 
   useEffect(() => {
     const placeholderRegex = /{{(text|video|img)}}/g
-    const matches = Array.from(template.matchAll(placeholderRegex))
+    const matches = Array.from(template.content.matchAll(placeholderRegex))
     setPlaceholders(matches.map((match, index) => ({
       type: match[1] as 'text' | 'video' | 'img',
       index
@@ -258,7 +234,7 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, createMany
   }
 
   const renderFilledTemplate = (values: { [key: string]: string }) => {
-    let filledTemplate = template
+    let filledTemplate = template.content
     placeholders.forEach((placeholder, index) => {
       const regex = new RegExp(`{{${placeholder.type}}}`)
       const value = values[index] || `{{${placeholder.type}}}`
@@ -269,10 +245,27 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, createMany
 
 
   const generateFilledTemplates = async () => {
-    console.log(project.name)
-    const filled = tasks.map(task => renderFilledTemplate(task.values))
-    await createManyTasks(filled,project)
-    
+    const filled: string[] = tasks.map(task => renderFilledTemplate(task.values))
+    const newTasks= filled.map((content,index)=>{
+      return {
+        project: project._id,
+        name: project.name + " - " +template.name +" - " + (index+1),
+        content: content
+      }
+    })
+    try {
+      await createTasks(newTasks)
+      toast({
+        title: "Tasks created successfully",
+        description: "Tasks created successfully",
+      })
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      })
+    }
   }
 
   return (
