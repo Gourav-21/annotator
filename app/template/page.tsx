@@ -1,5 +1,5 @@
 'use client'
-import LoadingPage from '@/components/global/loading-page'
+import Loader from '@/components/ui/Loader/Loader'
 import { toast } from '@/hooks/use-toast'
 import EditorProvider from '@/providers/editor/editor-provider'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -52,7 +52,7 @@ const Page = ({ params }: Props) => {
   }, [])
 
   if (loading) {
-    return <LoadingPage />
+    return <Loader />
   }
 
   if (template == undefined) {

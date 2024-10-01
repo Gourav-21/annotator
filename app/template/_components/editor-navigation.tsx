@@ -2,8 +2,7 @@
 import { upsertTemplate } from '@/app/actions/template'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Tooltip,
   TooltipContent,
@@ -23,7 +22,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import React, { FocusEventHandler, useEffect } from 'react'
+import { FocusEventHandler, useEffect } from 'react'
 import { toast } from 'sonner'
 
 type Props = {

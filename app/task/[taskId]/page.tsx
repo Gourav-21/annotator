@@ -1,13 +1,13 @@
 'use client'
 import { getTask } from '@/app/actions/task'
-import LoadingPage from '@/components/global/loading-page'
+import Dock, { StatusType } from '@/components/review-dock'
+import Loader from '@/components/ui/Loader/Loader'
 import { toast } from '@/hooks/use-toast'
 import EditorProvider from '@/providers/editor/editor-provider'
+import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Editor from './editor'
-import Dock, { StatusType } from '@/components/review-dock'
-import { useSession } from 'next-auth/react'
 
 type Props = {
   params: {
@@ -39,7 +39,6 @@ const Page = ({ params }: Props) => {
         const task: task = JSON.parse(await getTask(taskid))
         setTask(task)
         setLoading(false)
-        console.log(task)
       } catch (error: any) {
         toast({ variant: 'destructive', title: 'Error', description: error.message })
         router.back()
@@ -49,7 +48,7 @@ const Page = ({ params }: Props) => {
   }, [])
 
   if (loading) {
-    return <LoadingPage />
+    return <Loader />
   }
 
   if (task == undefined) {
