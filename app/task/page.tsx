@@ -1,19 +1,18 @@
 'use client'
-import { deleteTask, getAllTasks, getTasksOfAnnotator } from "@/app/actions/task"
-import { upsertTemplate } from "@/app/actions/template"
-import { template } from "@/app/template/page"
+import { getTasksOfAnnotator } from "@/app/actions/task"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/hooks/use-toast"
+import { getStatusBadgeVariant } from "@/lib/constants"
 import { format, parseISO } from "date-fns"
-import { CalendarIcon, Edit2Icon, LogOut, PlusCircle, Trash2Icon } from "lucide-react"
+import { CalendarIcon, LogOut } from "lucide-react"
 import { signOut, useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-interface task{
+interface task {
   _id: string
   name: string
   project: string
@@ -32,8 +31,8 @@ export default function ProjectDashboard() {
   const { toast } = useToast()
 
   useEffect(() => {
-    if(session?.user.id === undefined) return
-    async function init(){
+    if (session?.user.id === undefined) return
+    async function init() {
       setTasks(JSON.parse(await getTasksOfAnnotator(session?.user.id as string)))
     }
     init();
@@ -54,7 +53,7 @@ export default function ProjectDashboard() {
         </div>
       </header>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-       
+
         {tasks.length === 0 ? (
           <div className="text-center py-10">
             <h2 className="text-xl font-semibold text-gray-900">No Tasks yet</h2>
@@ -87,7 +86,11 @@ export default function ProjectDashboard() {
 
                       </div>
                     </TableCell>
-                    <TableCell className="font-medium">{task.status.charAt(0).toUpperCase() + task.status.slice(1)}</TableCell>
+                    <TableCell className="font-medium">
+                      <Badge variant={getStatusBadgeVariant(task.status)}>
+                        {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                      </Badge>
+                    </TableCell>
                     <TableCell className="font-medium text-center">{task.submitted ? '✔️' : '❌'}</TableCell>
                     {/* <TableCell className="text-right">
                       <Button
