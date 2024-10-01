@@ -1,8 +1,8 @@
 // app/api/projects/route.ts
-import { NextResponse, type NextRequest } from 'next/server';
-import { Project, Template } from '@/models/Project';
-import { connectToDatabase } from '@/lib/db';
 import { auth } from '@/auth';
+import { connectToDatabase } from '@/lib/db';
+import { Template } from '@/models/Project';
+import { NextResponse, type NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
   // Get the current session to identify the project manager

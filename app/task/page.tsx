@@ -4,12 +4,11 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Loader from '@/components/ui/Loader/Loader'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useToast } from "@/hooks/use-toast"
 import { getStatusBadgeVariant } from "@/lib/constants"
 import { format, parseISO } from "date-fns"
 import { CalendarIcon, LogOut } from "lucide-react"
 import { signOut, useSession } from 'next-auth/react'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 interface task {
@@ -25,10 +24,8 @@ interface task {
 
 export default function ProjectDashboard() {
   const [tasks, setTasks] = useState<task[]>([])
-  const pathName = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
-  const { toast } = useToast()
 
   useEffect(() => {
     if (session?.user.id === undefined) return

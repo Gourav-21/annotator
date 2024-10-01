@@ -1,6 +1,5 @@
 'use client'
 import { getTask } from '@/app/actions/task'
-import { getTemplate } from '@/app/actions/template'
 import Recursive from '@/app/template/_components/editor/editor-components/recursive'
 import { Button } from '@/components/ui/button'
 import { useEditor } from '@/providers/editor/editor-provider'

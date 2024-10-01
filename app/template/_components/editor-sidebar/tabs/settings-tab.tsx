@@ -1,22 +1,19 @@
 'use client'
-import React, { ChangeEventHandler } from 'react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from '@/components/ui/accordion'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { AlignCenter, AlignHorizontalJustifyCenterIcon, AlignHorizontalJustifyEndIcon, AlignHorizontalJustifyStart, AlignHorizontalSpaceAround, AlignHorizontalSpaceBetween, AlignJustify, AlignLeft, AlignRight, AlignVerticalJustifyCenter, AlignVerticalJustifyStart, ChevronsLeftRightIcon, LucideImageDown, } from 'lucide-react'
-import { Tabs, TabsTrigger, TabsList } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from '@/components/ui/select'
-import { useEditor } from '@/providers/editor/editor-provider'
 import { Slider } from '@/components/ui/slider'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useEditor } from '@/providers/editor/editor-provider'
+import { AlignCenter, AlignHorizontalJustifyCenterIcon, AlignHorizontalJustifyEndIcon, AlignHorizontalJustifyStart, AlignHorizontalSpaceAround, AlignHorizontalSpaceBetween, AlignJustify, AlignLeft, AlignRight, AlignVerticalJustifyCenter, AlignVerticalJustifyStart, ChevronsLeftRightIcon, LucideImageDown, } from 'lucide-react'
 
-type Props = {}
-
-const SettingsTab = (props: Props) => {
+const SettingsTab = () => {
   const { state, dispatch } = useEditor()
 
   const handleOnChanges = (e: any) => {
     const styleSettings = e.target.id
-    let value = e.target.value
+    const value = e.target.value
     const styleObject = {
       [styleSettings]: value,
     }
@@ -37,7 +34,7 @@ const SettingsTab = (props: Props) => {
 
   const handleChangeCustomValues = (e: any) => {
     const settingProperty = e.target.id
-    let value = e.target.value
+    const value = e.target.value
     const styleObject = {
       [settingProperty]: value,
     }

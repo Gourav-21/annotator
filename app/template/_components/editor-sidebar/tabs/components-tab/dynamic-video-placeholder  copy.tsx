@@ -2,9 +2,8 @@ import { EditorBtns } from '@/lib/constants'
 import { Youtube } from 'lucide-react'
 import React from 'react'
 
-type Props = {}
 
-const DynamicVideoPlaceholder = (props: Props) => {
+const DynamicVideoPlaceholder = () => {
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
     e.dataTransfer.setData('componentType', type)

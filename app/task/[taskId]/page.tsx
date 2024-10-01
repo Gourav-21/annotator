@@ -24,7 +24,7 @@ export interface task  {
   status: StatusType
 }
 
-const Page = ({ params }: Props) => {
+const Page = () => {
   const router = useRouter()
   const pathName = usePathname();
   const taskid = pathName.split("/")[2];

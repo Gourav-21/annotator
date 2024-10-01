@@ -24,7 +24,7 @@ export type template = {
   created_at: string
 }
 
-const Page = ({ params }: Props) => {
+const Page = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const templateId = searchParams.get('Id')

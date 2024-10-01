@@ -54,7 +54,7 @@ const EditorNavigation = ({
       await upsertTemplate(
         projectId,
         {
-          id: pageDetails.id,
+          _id: pageDetails.id,
           name: event.target.value,
         },
         pageId
@@ -88,14 +88,14 @@ const EditorNavigation = ({
   const handleOnSave = async () => {
     const content = JSON.stringify(state.editor.elements)
     try {
-      const response = JSON.parse(await upsertTemplate(
+      await upsertTemplate(
         projectId,
         {
           ...pageDetails,
           content,
         },
         pageId
-      ))
+      )
 
       toast('Success', {
         description: 'Saved Editor',

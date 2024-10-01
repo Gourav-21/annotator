@@ -1,5 +1,4 @@
 import { EditorElement } from '@/providers/editor/editor-provider'
-import ContactFormComponent from './contact-form-component'
 import Container from './container'
 import DynamicImageComponent from './dynamic-image'
 import DynamicTextComponent from './dynamic-text'
@@ -21,8 +20,6 @@ const Recursive = ({ element }: Props) => {
       return <Container element={element} />
     case 'video':
       return <VideoComponent element={element} />
-    case 'contactForm':
-      return <ContactFormComponent element={element} />
     case '2Col':
       return <Container element={element} />
     case '__body':

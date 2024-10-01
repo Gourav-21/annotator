@@ -54,7 +54,7 @@ const DynamicTextComponent = (props: Props) => {
         )}
       <span
         contentEditable={!state.editor.liveMode}
-        onBlur={(e) => {
+        onBlur={() => {
           // const spanElement = e.target as HTMLSpanElement
           dispatch({
             type: 'UPDATE_ELEMENT',

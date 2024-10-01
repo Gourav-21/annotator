@@ -2,8 +2,9 @@
 
 import { connectToDatabase } from "@/lib/db";
 import Task from "@/models/Task";
+import { template } from "../template/page";
 
-export async function updateTask(template: any, _id: string, projectid: string) {
+export async function updateTask(template: template, _id: string, projectid: string) {
   await connectToDatabase();
 
   const res = await Task.findOneAndUpdate({ _id }, {
@@ -22,7 +23,7 @@ export async function createTasks(tasks: {
   content: string;
 }[]) {
   await connectToDatabase();
-  const res = await Task.insertMany(tasks);
+   await Task.insertMany(tasks);
   // return JSON.stringify(res)
 }
 

@@ -53,7 +53,7 @@ const InputText = (props: Props) => {
     const content = JSON.stringify(state.editor.elements)
 
     try {
-      const res = await updateTask({
+      await updateTask({
         ...pageDetails,
         content,
       }, funnelId,subaccountId)
@@ -99,7 +99,6 @@ const InputText = (props: Props) => {
 
         <form onSubmit={onFormSubmit}  className="flex w-full items-center space-x-2" >
           <Input type="text" placeholder="write here" required value={text} disabled={pageDetails.submitted} onChange={(e) => setText(e.target.value)} onBlur={(e) => {
-            const spanElement = e.target as HTMLSpanElement
             const inputValue = e.target.value;
             dispatch({
               type: 'UPDATE_ELEMENT',

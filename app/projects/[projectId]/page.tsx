@@ -1,20 +1,19 @@
 'use client'
+import { createTasks } from "@/app/actions/task"
+import { upsertTemplate } from "@/app/actions/template"
 import { Project } from "@/app/page"
 import { template } from "@/app/template/page"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast, useToast } from "@/hooks/use-toast"
 import { format, parseISO } from "date-fns"
-import { CalendarIcon, Edit2Icon, LogOut, PlusCircle, Trash2Icon } from "lucide-react"
+import { CalendarIcon, Edit2Icon, LogOut, Minus, Plus, PlusCircle, Trash2Icon } from "lucide-react"
 import { signOut, useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog"
-import { Plus, Minus, Upload } from "lucide-react"
-import { upsertTemplate } from "@/app/actions/template"
-import { createTasks } from "@/app/actions/task"
 
 interface Task {
   id: number

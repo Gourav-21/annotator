@@ -1,7 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from '@/components/ui/accordion'
 import { EditorBtns } from '@/lib/constants'
 import React from 'react'
-import ContactFormComponentPlaceholder from './contact-form-placeholder'
 import ContainerPlaceholder from './container-placeholder'
 import DynamicTextPlaceholder from './dynamic-text-placeholder'
 import InputTextPlaceholder from './input-text-placeholder'
@@ -67,12 +66,6 @@ const ComponentsTab = (props: Props) => {
       Component: <VideoPlaceholder />,
       label: 'Video',
       id: 'video',
-      group: 'elements',
-    },
-    {
-      Component: <ContactFormComponentPlaceholder />,
-      label: 'Contact',
-      id: 'contactForm',
       group: 'elements',
     },
     {

@@ -2,9 +2,8 @@ import { EditorBtns } from '@/lib/constants'
 import { Image } from 'lucide-react'
 import React from 'react'
 
-type Props = {}
 
-const DynamicImagePlaceholder = (props: Props) => {
+const DynamicImagePlaceholder = () => {
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
     e.dataTransfer.setData('componentType', type)
