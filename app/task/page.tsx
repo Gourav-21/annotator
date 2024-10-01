@@ -1,5 +1,5 @@
 'use client'
-import { deleteTask, getAllTasks } from "@/app/actions/task"
+import { deleteTask, getAllTasks, getTasksOfAnnotator } from "@/app/actions/task"
 import { upsertTemplate } from "@/app/actions/template"
 import { template } from "@/app/template/page"
 import { Button } from "@/components/ui/button"
@@ -27,55 +27,20 @@ interface task{
 export default function ProjectDashboard() {
   const [tasks, setTasks] = useState<task[]>([])
   const pathName = usePathname();
-  const projectId = pathName.split("/")[3];
-  const [newTemplateName, setNewTemplateName] = useState('')
   const router = useRouter();
   const { data: session } = useSession();
   const { toast } = useToast()
 
   useEffect(() => {
+    if(session?.user.id === undefined) return
     async function init(){
-      setTasks(JSON.parse(await getAllTasks(projectId)))
+      setTasks(JSON.parse(await getTasksOfAnnotator(session?.user.id as string)))
     }
     init();
-  }, []);
+  }, [session]);
 
   if (!session) {
     return <Loader />;
-  }
-
-
-  // const handleTemplateClick = (temp: template) => {
-  // };
-  console.log(tasks)
-
-  const handleCreateTemplate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const defaultTemplate = {
-      name: newTemplateName.trim(),
-      project: projectId
-    }
-    const template: template = JSON.parse(await upsertTemplate(projectId as string, defaultTemplate, undefined, true))
-    router.push(`/template?Id=${template._id}`)
-  }
-
-  const handleEditTemplate = (e: React.MouseEvent, _id: string) => {
-    e.stopPropagation()
-    router.push(`/template?Id=${_id}`);
-  }
-
-  const handleDeleteTemplate = async (e: React.MouseEvent, _id: string) => {
-    e.stopPropagation()
-    try {
-      await deleteTask(_id)
-      setTasks(tasks.filter(project => project._id !== _id))
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: error.message,
-      });
-    }
   }
 
   return (
@@ -89,24 +54,7 @@ export default function ProjectDashboard() {
         </div>
       </header>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {/* <form onSubmit={handleCreateTemplate} className="mb-8">
-          <div className="flex gap-4">
-            <Input
-              type="text"
-              required
-              placeholder="New Template name"
-              value={newTemplateName}
-              onChange={(e) => setNewTemplateName(e.target.value)}
-              className="flex-grow"
-            />
-            <Button type="submit">
-              <PlusCircle className="mr-2 h-4 w-4" /> Create Template
-            </Button>
-            <Button type="button" variant={"outline"} onClick={() => router.push(`/projects/${projectId}`)}>
-              Templates
-            </Button>
-          </div>
-        </form> */}
+       
         {tasks.length === 0 ? (
           <div className="text-center py-10">
             <h2 className="text-xl font-semibold text-gray-900">No Tasks yet</h2>
@@ -121,14 +69,14 @@ export default function ProjectDashboard() {
                   <TableHead>Created Date</TableHead>
                   <TableHead>status</TableHead>
                   <TableHead className="text-center">submitted</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  {/* <TableHead className="text-right">Actions</TableHead> */}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {tasks.map((task) => (
                   <TableRow
                     key={task._id}
-                    // onClick={() => handleTemplateClick(task)}
+                    onClick={() => router.push(`/task/${task._id}`)}
                     className="cursor-pointer hover:bg-gray-50"
                   >
                     <TableCell className="font-medium">{task.name}</TableCell>
@@ -141,7 +89,7 @@ export default function ProjectDashboard() {
                     </TableCell>
                     <TableCell className="font-medium">{task.status}</TableCell>
                     <TableCell className="font-medium text-center">{task.submitted ? '✔️' : '❌'}</TableCell>
-                    <TableCell className="text-right">
+                    {/* <TableCell className="text-right">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -158,7 +106,7 @@ export default function ProjectDashboard() {
                         <Trash2Icon className="h-4 w-4" />
                         <span className="sr-only">Delete</span>
                       </Button>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))}
               </TableBody>
