@@ -6,6 +6,8 @@ import EditorProvider from '@/providers/editor/editor-provider'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Editor from './editor'
+import Dock from '@/components/review-dock'
+import { useSession } from 'next-auth/react'
 
 type Props = {
   params: {
@@ -19,6 +21,7 @@ export type task = {
   name: string
   project: string
   content: string
+  status: string
 }
 
 const Page = ({ params }: Props) => {
@@ -27,6 +30,7 @@ const Page = ({ params }: Props) => {
   const taskid = pathName.split("/")[2];
   const [task, setTask] = useState<task>()
   const [loading, setLoading] = useState(true)
+  const { data: session } = useSession();
 
 
   useEffect(() => {
@@ -61,6 +65,7 @@ const Page = ({ params }: Props) => {
       pageDetails={task}
     >
       <Editor pageId={taskid} liveMode={true} />
+      {session?.user?.role === 'project manager' && <Dock status={task.status} />}
     </EditorProvider>
   )
 }
