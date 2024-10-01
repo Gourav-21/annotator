@@ -87,7 +87,7 @@ export default function ProjectDashboard() {
 
                       </div>
                     </TableCell>
-                    <TableCell className="font-medium">{task.status}</TableCell>
+                    <TableCell className="font-medium">{task.status.charAt(0).toUpperCase() + task.status.slice(1)}</TableCell>
                     <TableCell className="font-medium text-center">{task.submitted ? '✔️' : '❌'}</TableCell>
                     {/* <TableCell className="text-right">
                       <Button

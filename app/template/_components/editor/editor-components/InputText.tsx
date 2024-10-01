@@ -19,7 +19,9 @@ type Props = {
 const InputText = (props: Props) => {
   const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
   const router = useRouter()
-  const [text,setText]=React.useState(pageDetails.content?.innerText || '')
+  const [text,setText]=React.useState(pageDetails.content?.innerText)
+
+  console.log(pageDetails.content)
 
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
@@ -62,6 +64,7 @@ const InputText = (props: Props) => {
         title: 'Success',
         description: 'Successfully submitted',
       })
+      router.back()
     } catch (error) {
       console.log(error)
       toast({
@@ -71,7 +74,9 @@ const InputText = (props: Props) => {
       })
     }
   }
-  console.log(props.element)
+
+  console.log(props.element.content)
+
   return (
     <div
       style={styles}

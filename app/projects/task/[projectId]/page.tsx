@@ -174,7 +174,7 @@ export default function ProjectDashboard() {
                     </TableCell>
                     <TableCell className="font-medium">
                       <Badge variant={getStatusBadgeVariant(task.status)}>
-                      {task.status =="pending" ? "Pending" : `${task.status}`}
+                      {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
                       </Badge>
                     </TableCell>
                     <TableCell className="font-medium text-center">{task.submitted ? '✔️' : '❌'}</TableCell>

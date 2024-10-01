@@ -7,36 +7,39 @@ import { toast } from "sonner"
 import { setTaskStatus } from "@/app/actions/task"
 import { useRouter } from "next/navigation"
 
-export default function Dock({ id, status }: { id: string, status: string }) {
-  const [clickedButton, setClickedButton] = useState<string | null>(status)
+type StatusType = 'pending' | 'accepted' | 'rejected' | 'reassigned'
+
+export default function Dock({ id, status }: { id: string, status: StatusType }) {
+  const [currentStatus, setCurrentStatus] = useState<StatusType>(status)
   const router = useRouter()
 
-  const handleClick = async (action: string) => {
+  const handleClick = async (action: StatusType) => {
     try {
-      const status = await setTaskStatus(id, action)
-      setClickedButton(status)
-      toast.success("The task has been " + action + "ed")
+      const newStatus = await setTaskStatus(id, action)
+      setCurrentStatus(newStatus)
+      toast.success(`The task has been ${action}`)
       router.back()
     } catch (error) {
-      toast.error("Failed to " + action + " the task")
+      toast.error(`Failed to ${action} the task`)
     }
   }
 
-  const getButtonStyle = (action: string) => {
-    if (clickedButton === action) {
+  const getButtonStyle = (action: StatusType) => {
+    if (currentStatus === action && currentStatus !== 'pending') {
       return "bg-gray-100 text-gray-900 font-medium"
     }
     return "text-gray-600 hover:text-gray-900"
   }
 
   const getButtonContent = (action: string, icon: React.ReactNode) => {
-    if (clickedButton === action) {
-      return `${action}`
-    }
+    const displayText = currentStatus === action ? 
+      action.charAt(0).toUpperCase() + action.slice(1) + 'ed' :
+      action.charAt(0).toUpperCase() + action.slice(1)
+    
     return (
       <>
         {icon}
-        {action}
+        {displayText}
       </>
     )
   }
@@ -46,26 +49,26 @@ export default function Dock({ id, status }: { id: string, status: string }) {
       <div className="flex items-center space-x-2 px-4 py-2">
         <Button
           variant="ghost"
-          className={getButtonStyle("Accept")}
-          onClick={() => handleClick("accepted")}
+          className={getButtonStyle('accepted')}
+          onClick={() => handleClick('accepted')}
         >
-          {getButtonContent("Accept", <Check className="h-4 w-4 mr-2" />)}
+          {getButtonContent('accept', <Check className="h-4 w-4 mr-2" />)}
         </Button>
         <div className="w-px h-6 bg-gray-200" />
         <Button
           variant="ghost"
-          className={getButtonStyle("Reject")}
-          onClick={() => handleClick("rejected")}
+          className={getButtonStyle('rejected')}
+          onClick={() => handleClick('rejected')}
         >
-          {getButtonContent("Reject", <X className="h-4 w-4 mr-2" />)}
+          {getButtonContent('reject', <X className="h-4 w-4 mr-2" />)}
         </Button>
         <div className="w-px h-6 bg-gray-200" />
         <Button
           variant="ghost"
-          className={getButtonStyle("Reassign")}
-          onClick={() => handleClick("reassigned")}
+          className={getButtonStyle('reassigned')}
+          onClick={() => handleClick('reassigned')}
         >
-          {getButtonContent("Reassign", <UserPlus className="h-4 w-4 mr-2" />)}
+          {getButtonContent('reassign', <UserPlus className="h-4 w-4 mr-2" />)}
         </Button>
       </div>
     </div>
