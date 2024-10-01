@@ -21,6 +21,7 @@ export type template = {
   name: string
   project: string
   content: string
+  created_at: string
 }
 
 const Page = ({ params }: Props) => {

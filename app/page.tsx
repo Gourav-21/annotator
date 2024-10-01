@@ -14,7 +14,6 @@ export interface Project {
   _id: string
   name: string
   created_at: string
-  content: string
 }
 
 export default function ProjectDashboard() {
@@ -26,6 +25,7 @@ export default function ProjectDashboard() {
 
   useEffect(() => {
     if (session) {
+      if (session?.user?.role === 'annotator') router.push('/task');
       fetch('/api/projects')
         .then((res) => res.json())
         .then((data) => {
@@ -46,7 +46,6 @@ export default function ProjectDashboard() {
     return <Loader />;
   }
 
-  if (session?.user?.role === 'annotator') router.push('/tasks');
 
   const handleProjectClick = (project_id: string) => {
     router.push(`/projects/${project_id}`);
