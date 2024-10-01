@@ -36,6 +36,7 @@ export const defaultContent = JSON.stringify([
 ]);
 
 export const getStatusBadgeVariant = (status: string) => {
+  console.log(status)
   switch (status) {
     case 'pending':
       return 'outline'
@@ -46,6 +47,6 @@ export const getStatusBadgeVariant = (status: string) => {
     case 'reassigned':
       return 'secondary'
     default:
-      return 'outline'
+      return 'default'
   }
 }

@@ -3,14 +3,23 @@
 import { useState } from "react"
 import { Check, X, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
+import { setTaskStatus } from "@/app/actions/task"
+import { useRouter } from "next/navigation"
 
-export default function Dock({status}: {status: string}) {
+export default function Dock({ id, status }: { id: string, status: string }) {
   const [clickedButton, setClickedButton] = useState<string | null>(status)
+  const router = useRouter()
 
-  const handleClick = (action: string) => {
-    setClickedButton(action)
-    // Here you can add any additional logic you want to execute on button click
-    console.log(`${action} clicked`)
+  const handleClick = async (action: string) => {
+    try {
+      const status = await setTaskStatus(id, action)
+      setClickedButton(status)
+      toast.success("The task has been " + action + "ed")
+      router.back()
+    } catch (error) {
+      toast.error("Failed to " + action + " the task")
+    }
   }
 
   const getButtonStyle = (action: string) => {
@@ -22,7 +31,7 @@ export default function Dock({status}: {status: string}) {
 
   const getButtonContent = (action: string, icon: React.ReactNode) => {
     if (clickedButton === action) {
-      return `${action}ed`
+      return `${action}`
     }
     return (
       <>
@@ -35,26 +44,26 @@ export default function Dock({status}: {status: string}) {
   return (
     <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 border border-gray-200 rounded-full bg-white shadow-sm">
       <div className="flex items-center space-x-2 px-4 py-2">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className={getButtonStyle("Accept")}
-          onClick={() => handleClick("Accept")}
+          onClick={() => handleClick("accepted")}
         >
           {getButtonContent("Accept", <Check className="h-4 w-4 mr-2" />)}
         </Button>
         <div className="w-px h-6 bg-gray-200" />
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className={getButtonStyle("Reject")}
-          onClick={() => handleClick("Reject")}
+          onClick={() => handleClick("rejected")}
         >
           {getButtonContent("Reject", <X className="h-4 w-4 mr-2" />)}
         </Button>
         <div className="w-px h-6 bg-gray-200" />
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className={getButtonStyle("Reassign")}
-          onClick={() => handleClick("Reassign")}
+          onClick={() => handleClick("reassigned")}
         >
           {getButtonContent("Reassign", <UserPlus className="h-4 w-4 mr-2" />)}
         </Button>

@@ -60,3 +60,12 @@ export async function getTask(_id: string) {
   const res = await Task.findById(_id);
   return JSON.stringify(res)
 }
+
+export async function setTaskStatus(_id: string, status: string) {
+  await connectToDatabase();
+  const res = await Task.findOneAndUpdate({ _id }, {
+    status
+  });
+  console.log(res.status)
+  return res.status
+}
