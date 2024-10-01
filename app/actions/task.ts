@@ -16,7 +16,7 @@ export async function updateTask(template: any, _id: string, projectid: string) 
   return JSON.stringify(res)
 }
 
-export async function createTasks(tasks:{
+export async function createTasks(tasks: {
   project: string;
   name: string;
   content: string;
@@ -50,8 +50,7 @@ export async function getTasksOfAnnotator(annotatorId: string) {
   // if(annotatorId == undefined) return
   await connectToDatabase();
 
-  const res = await Task.find({ annotator: annotatorId  });
-  console.log(res)
+  const res = await Task.find({ annotator: annotatorId });
   return JSON.stringify(res)
 }
 
@@ -63,9 +62,15 @@ export async function getTask(_id: string) {
 
 export async function setTaskStatus(_id: string, status: string) {
   await connectToDatabase();
+  if (status == 'reassigned') {
+    const res = await Task.findOneAndUpdate({ _id }, {
+      submitted: false,
+      status
+    })
+    return res.status
+  }
   const res = await Task.findOneAndUpdate({ _id }, {
     status
   });
-  console.log(res.status)
   return res.status
 }
