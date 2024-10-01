@@ -45,3 +45,18 @@ export async function changeAnnotator(_id: string, annotator: string) {
   });
   return JSON.stringify(res)
 }
+
+export async function getTasksOfAnnotator(annotatorId: string) {
+  // if(annotatorId == undefined) return
+  await connectToDatabase();
+
+  const res = await Task.find({ annotator: annotatorId  });
+  console.log(res)
+  return JSON.stringify(res)
+}
+
+export async function getTask(_id: string) {
+  await connectToDatabase();
+  const res = await Task.findById(_id);
+  return JSON.stringify(res)
+}
