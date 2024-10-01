@@ -118,7 +118,7 @@ export default function ProjectDashboard() {
       );
   }
 
-  console.log(projects)
+  if(session?.user?.role ==='project manager')
   return (
     <div className="min-h-screen ">
       <header className="bg-white ">

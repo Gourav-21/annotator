@@ -38,7 +38,6 @@ export default function AuthPageComponent() {
       router.push('/auth/login');
     } else {
       const data= await res.json();
-      // console.log(data)
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
