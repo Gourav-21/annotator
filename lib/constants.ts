@@ -34,3 +34,18 @@ export const defaultContent = JSON.stringify([
     type: '__body',
   },
 ]);
+
+export const getStatusBadgeVariant = (status: string) => {
+  switch (status) {
+    case 'pending':
+      return 'outline'
+    case 'accepted':
+      return 'default'
+    case 'rejected':
+      return 'destructive'
+    case 'reassigned':
+      return 'secondary'
+    default:
+      return 'outline'
+  }
+}

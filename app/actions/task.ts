@@ -31,3 +31,17 @@ export async function getAllTasks(projectid: string) {
   const res = await Task.find({ project: projectid });
   return JSON.stringify(res)
 }
+
+export async function deleteTask(_id: string) {
+  await connectToDatabase();
+  const res = await Task.deleteOne({ _id });
+  return JSON.stringify(res)
+}
+
+export async function changeAnnotator(_id: string, annotator: string) {
+  await connectToDatabase();
+  const res = await Task.findOneAndUpdate({ _id }, {
+    annotator
+  });
+  return JSON.stringify(res)
+}
