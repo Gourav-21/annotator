@@ -6,7 +6,7 @@ import EditorProvider from '@/providers/editor/editor-provider'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Editor from './editor'
-import Dock from '@/components/review-dock'
+import Dock, { StatusType } from '@/components/review-dock'
 import { useSession } from 'next-auth/react'
 
 type Props = {
@@ -16,12 +16,12 @@ type Props = {
   }
 }
 
-export type task = {
+export interface task  {
   _id: string
   name: string
   project: string
   content: string
-  status: string
+  status: StatusType
 }
 
 const Page = ({ params }: Props) => {

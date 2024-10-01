@@ -7,7 +7,7 @@ import { toast } from "sonner"
 import { setTaskStatus } from "@/app/actions/task"
 import { useRouter } from "next/navigation"
 
-type StatusType = 'pending' | 'accepted' | 'rejected' | 'reassigned'
+export type StatusType = 'pending' | 'accepted' | 'rejected' | 'reassigned'
 
 export default function Dock({ id, status }: { id: string, status: StatusType }) {
   const [currentStatus, setCurrentStatus] = useState<StatusType>(status)
