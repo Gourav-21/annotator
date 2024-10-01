@@ -19,9 +19,7 @@ type Props = {
 const InputText = (props: Props) => {
   const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
   const router = useRouter()
-  const [text,setText]=React.useState(pageDetails.content?.innerText)
-
-  console.log(pageDetails.content)
+  const [text,setText]=React.useState(props.element.content?.innerText ? props.element.content?.innerText : '')
 
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
@@ -53,10 +51,9 @@ const InputText = (props: Props) => {
     e.preventDefault()
     if (!state.editor.liveMode) return
     const content = JSON.stringify(state.editor.elements)
-    // console.log(content)
 
     try {
-      await updateTask({
+      const res = await updateTask({
         ...pageDetails,
         content,
       }, funnelId,subaccountId)
@@ -75,7 +72,6 @@ const InputText = (props: Props) => {
     }
   }
 
-  console.log(props.element.content)
 
   return (
     <div
@@ -102,7 +98,7 @@ const InputText = (props: Props) => {
         )}
 
         <form onSubmit={onFormSubmit}  className="flex w-full items-center space-x-2" >
-          <Input type="text" placeholder="write here" required value={text} onChange={(e) => setText(e.target.value)} onBlur={(e) => {
+          <Input type="text" placeholder="write here" required value={text} disabled={pageDetails.submitted} onChange={(e) => setText(e.target.value)} onBlur={(e) => {
             const spanElement = e.target as HTMLSpanElement
             const inputValue = e.target.value;
             dispatch({
