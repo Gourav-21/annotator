@@ -1,5 +1,6 @@
 'use client'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { EditorBtns } from '@/lib/constants'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
@@ -11,6 +12,7 @@ type Props = {
 }
 
 const VideoComponent = (props: Props) => {
+  const [src, setSrc] = React.useState(props.element.content.src)
   const { dispatch, state } = useEditor()
   const styles = props.element.styles
 
@@ -54,19 +56,24 @@ const VideoComponent = (props: Props) => {
     >
       {state.editor.selectedElement.id === props.element.id &&
         !state.editor.liveMode && (
-          <Badge className="absolute -top-[23px] -left-[1px] rounded-none rounded-t-lg ">
-            {state.editor.selectedElement.name}
-          </Badge>
+          <>
+            <Badge className="absolute -top-[23px] -left-[1px] rounded-none rounded-t-lg ">
+              {state.editor.selectedElement.name}
+            </Badge>
+          </>
         )}
 
       {!Array.isArray(props.element.content) && (
-        <iframe
-          width={props.element.styles.width || '560'}
-          height={props.element.styles.height || '315'}
-          src={props.element.content.src}
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        />
+        <div>
+         { !state.editor.liveMode && <Input type='text' placeholder='youtube embed link' value={src} onChange={(e) => (setSrc(e.target.value), props.element.content.src = e.target.value)} />}
+          <iframe
+            width={props.element.styles.width || '560'}
+            height={props.element.styles.height || '315'}
+            src={props.element.content.src}
+            title="video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          />
+        </div>
       )}
 
       {state.editor.selectedElement.id === props.element.id &&

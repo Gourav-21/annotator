@@ -1,6 +1,7 @@
 'use client'
 import { Badge } from '@/components/ui/badge'
 import { EditorBtns } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
 import { Trash } from 'lucide-react'
@@ -69,15 +70,14 @@ const DynamicVideoComponent = (props: Props) => {
         />
       )}
       {!Array.isArray(props.element.content) && !state.editor.liveMode && (
-        // <iframe
-        //   width={props.element.styles.width || '560'}
-        //   height={props.element.styles.height || '315'}
-        //   src={props.element.content.src}
-        //   title="YouTube video player"
-        //   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        // />
-        <div className={`flex justify-center items-center text-xl w-[${props.element.styles.width ? props.element.styles.width : '560'}px] h-[${props.element.styles.width || '315'}px]`}>
-          video will be here
+        <div className={cn(`w-fit h-fit bg-muted  rounded-lg p-2`)}>
+         {!state.editor.liveMode &&  "video will be here"}
+        <iframe
+          width={props.element.styles.width || '560'}
+          height={props.element.styles.height || '315'}
+          title="video player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        />
         </div>
       )}
 
