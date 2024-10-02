@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
-import { Minus, Plus } from "lucide-react"
-import { useEffect, useState } from 'react'
+import { Minus, Plus, Upload } from "lucide-react"
+import { useEffect, useRef, useState } from 'react'
 
 interface Task {
     id: number
@@ -22,6 +22,7 @@ interface Task {
 export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }: { template: template, isDialogOpen: boolean, setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>, project: Project}) {
     const [placeholders, setPlaceholders] = useState<Placeholder[]>([])
     const [tasks, setTasks] = useState<Task[]>([{ id: 1, values: {} }])
+    const fileInputRef = useRef<HTMLInputElement>(null)
   
     useEffect(() => {
       const placeholderRegex = /{{(text|video|img)}}/g
@@ -57,6 +58,38 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
       })
       return filledTemplate
     }
+
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0]
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const content = e.target?.result as string
+          const lines = content.split('\n')
+          const headers = lines[0].split(',')
+          
+          if (headers.length !== placeholders.length) {
+            toast({
+              title: "CSV Error",
+              description: "The number of columns in the CSV does not match the number of placeholders in the template.",
+              variant: "destructive",
+            })
+            return
+          }
+
+          const newTasks = lines.slice(1).map((line, index) => {
+            const values = line.split(',')
+            return {
+              id: index + 1,
+              values: Object.fromEntries(placeholders.map((_, i) => [i, values[i]]))
+            }
+          })
+  
+          setTasks(newTasks)
+        }
+        reader.readAsText(file)
+      }
+    }
   
   
     const generateFilledTemplates = async () => {
@@ -86,7 +119,7 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
   
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[425px] md:max-w-fit">
             <DialogHeader>
               <DialogTitle>Fill Template</DialogTitle>
             </DialogHeader>
@@ -95,11 +128,9 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
                 <div key={task.id} className="mb-4 p-2 border rounded">
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-lg font-semibold">Task {task.id}</h3>
-                    <DialogClose asChild>
-                      <Button variant="ghost" size="icon" onClick={() =>{ handleRemoveTask(task.id); setIsDialogOpen(false)}}>
+                      <Button variant="ghost" size="icon" onClick={() =>{ handleRemoveTask(task.id)}}>
                         <Minus className="h-4 w-4" />
                       </Button>
-                    </DialogClose>
                   </div>
                   {placeholders.map((placeholder, index) => (
                     <div key={index} className="mb-2">
@@ -125,6 +156,18 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
               <Button onClick={handleAddTask} className="mr-auto">
                 <Plus className="mr-2 h-4 w-4" /> Add More Task
               </Button>
+              <div className="flex ">
+                <Button onClick={() => fileInputRef.current?.click()}>
+                  <Upload className="mr-2 h-4 w-4" /> Upload CSV
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept=".csv"
+                  onChange={handleFileUpload}
+                />
+             </div>
               <Button onClick={() => generateFilledTemplates()}>Save Tasks</Button>
             </DialogFooter>
           </DialogContent>
