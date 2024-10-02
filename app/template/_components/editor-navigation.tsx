@@ -24,6 +24,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FocusEventHandler, useEffect } from 'react'
 import { toast } from 'sonner'
+import { template } from '../page'
 
 type Props = {
   pageId: string
@@ -54,9 +55,9 @@ const EditorNavigation = ({
       await upsertTemplate(
         projectId,
         {
-          _id: pageDetails.id,
+          _id: pageDetails._id,
           name: event.target.value,
-        },
+        } as template,
         pageId
       )
 

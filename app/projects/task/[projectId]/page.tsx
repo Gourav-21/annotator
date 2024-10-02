@@ -72,7 +72,7 @@ export default function Component() {
       name: newTemplateName.trim(),
       project: projectId
     }
-    const template: template = JSON.parse(await upsertTemplate(projectId as string, defaultTemplate, undefined, true))
+    const template: template = JSON.parse(await upsertTemplate(projectId as string, defaultTemplate as template, undefined, true))
     router.push(`/template?Id=${template._id}`)
   }
 
