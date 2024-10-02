@@ -11,9 +11,8 @@ import VideoPlaceholder from './video-placeholder'
 import DynamicVideoPlaceholder from './dynamic-video-placeholder  copy'
 import DynamicImagePlaceholder from './dynamic-image-placeholder '
 
-type Props = {}
 
-const ComponentsTab = (props: Props) => {
+const ComponentsTab = () => {
   const elements: {
     Component: React.ReactNode
     label: string

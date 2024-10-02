@@ -1,13 +1,14 @@
 // app/api/projects/route.ts
-import { auth } from '@/auth';
+import { authOptions } from '@/auth';
 import { connectToDatabase } from '@/lib/db';
 import { Template } from '@/models/Project';
+import { getServerSession } from 'next-auth';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
   // Get the current session to identify the project manager
   await connectToDatabase();
-  const session = await auth()
+ const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
@@ -34,7 +35,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: Request) {
-  const session = await auth()
+ const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
@@ -54,7 +55,7 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const session = await auth()
+ const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }

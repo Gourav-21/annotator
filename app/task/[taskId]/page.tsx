@@ -45,7 +45,7 @@ const Page = () => {
       }
     }
     fetchData()
-  }, [])
+  }, [taskid])
 
   if (loading) {
     return <Loader />

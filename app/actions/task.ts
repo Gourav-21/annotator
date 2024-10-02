@@ -23,7 +23,7 @@ export async function createTasks(tasks: {
   content: string;
 }[]) {
   await connectToDatabase();
-   await Task.insertMany(tasks);
+  await Task.insertMany(tasks);
   // return JSON.stringify(res)
 }
 

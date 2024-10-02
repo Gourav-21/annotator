@@ -19,8 +19,14 @@ type Props = {
 const InputText = (props: Props) => {
   const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
   const router = useRouter()
-  const [text,setText]=React.useState(props.element.content?.innerText ? props.element.content?.innerText : '')
+  const initialText = React.useMemo(() => {
+    if (Array.isArray(props.element.content)) {
+      return ''
+    }
+    return props.element.content?.innerText || ''
+  }, [props.element.content])
 
+  const [text, setText] = React.useState(initialText)
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
     e.dataTransfer.setData('componentType', type)

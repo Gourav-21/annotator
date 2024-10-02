@@ -13,7 +13,20 @@ export default function AuthPageComponent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    signIn("credentials", {email, password, redirectTo: "/" });
+    const res = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
+      callbackUrl: '/',
+    });
+    console.log(res)
+
+    if (res?.ok) {
+      router.push('/');
+      console.log('Login successful');
+    } else {
+      console.log('Invalid login credentials');
+    }
   }
 
   return (

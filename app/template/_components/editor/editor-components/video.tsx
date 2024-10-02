@@ -1,4 +1,5 @@
 'use client'
+
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { EditorBtns } from '@/lib/constants'
@@ -12,9 +13,17 @@ type Props = {
 }
 
 const VideoComponent = (props: Props) => {
-  const [src, setSrc] = React.useState(props.element.content.src)
   const { dispatch, state } = useEditor()
   const styles = props.element.styles
+
+  const initialSrc = React.useMemo(() => {
+    if (Array.isArray(props.element.content)) {
+      return ''
+    }
+    return props.element.content?.src || ''
+  }, [props.element.content])
+
+  const [src, setSrc] = React.useState(initialSrc)
 
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
@@ -38,6 +47,25 @@ const VideoComponent = (props: Props) => {
     })
   }
 
+  const handleSrcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newSrc = e.target.value
+    setSrc(newSrc)
+    if (!Array.isArray(props.element.content)) {
+      dispatch({
+        type: 'UPDATE_ELEMENT',
+        payload: {
+          elementDetails: {
+            ...props.element,
+            content: {
+              ...props.element.content,
+              src: newSrc,
+            },
+          },
+        },
+      })
+    }
+  }
+
   return (
     <div
       style={styles}
@@ -47,45 +75,49 @@ const VideoComponent = (props: Props) => {
       className={clsx(
         'p-[2px] w-full m-[5px] relative text-[16px] transition-all flex items-center justify-center',
         {
-          '!border-blue-500':
-            state.editor.selectedElement.id === props.element.id,
+          '!border-blue-500': state.editor.selectedElement.id === props.element.id,
           '!border-solid': state.editor.selectedElement.id === props.element.id,
           'border-dashed border-[1px] border-slate-300': !state.editor.liveMode,
         }
       )}
     >
-      {state.editor.selectedElement.id === props.element.id &&
-        !state.editor.liveMode && (
-          <>
-            <Badge className="absolute -top-[23px] -left-[1px] rounded-none rounded-t-lg ">
-              {state.editor.selectedElement.name}
-            </Badge>
-          </>
-        )}
+      {state.editor.selectedElement.id === props.element.id && !state.editor.liveMode && (
+        <Badge className="absolute -top-[23px] -left-[1px] rounded-none rounded-t-lg">
+          {state.editor.selectedElement.name}
+        </Badge>
+      )}
 
       {!Array.isArray(props.element.content) && (
-        <div>
-         { !state.editor.liveMode && <Input type='text' placeholder='youtube embed link' value={src} onChange={(e) => (setSrc(e.target.value), props.element.content.src = e.target.value)} />}
+        <div className="w-full">
+          {!state.editor.liveMode && (
+            <Input
+              type="text"
+              placeholder="YouTube embed link"
+              value={src}
+              onChange={handleSrcChange}
+              className="mb-2"
+            />
+          )}
           <iframe
-            width={props.element.styles.width || '560'}
-            height={props.element.styles.height || '315'}
-            src={props.element.content.src}
+            width={props.element.styles.width as string || '560'}
+            height={props.element.styles.height as string || '315'}
+            src={src}
             title="video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            className="w-full"
           />
         </div>
       )}
 
-      {state.editor.selectedElement.id === props.element.id &&
-        !state.editor.liveMode && (
-          <div className="absolute bg-primary px-2.5 py-1 text-xs font-bold  -top-[25px] -right-[1px] rounded-none rounded-t-lg !text-white">
-            <Trash
-              className="cursor-pointer"
-              size={16}
-              onClick={handleDeleteElement}
-            />
-          </div>
-        )}
+      {state.editor.selectedElement.id === props.element.id && !state.editor.liveMode && (
+        <div className="absolute bg-primary px-2.5 py-1 text-xs font-bold -top-[25px] -right-[1px] rounded-none rounded-t-lg !text-white">
+          <Trash
+            className="cursor-pointer"
+            size={16}
+            onClick={handleDeleteElement}
+          />
+        </div>
+      )}
     </div>
   )
 }

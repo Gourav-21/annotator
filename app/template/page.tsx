@@ -9,13 +9,6 @@ import Editor from './_components/editor'
 import EditorNavigation from './_components/editor-navigation'
 import EditorSidebar from './_components/editor-sidebar'
 
-type Props = {
-  params: {
-    projectId: string
-    pageId: string
-  }
-}
-
 export type template = {
   _id: string
   name: string
@@ -31,13 +24,12 @@ const Page = () => {
   const [template, setTemplate] = useState<template>()
   const [loading, setLoading] = useState(true)
 
-  if (templateId == null) {
-    toast({ variant: 'destructive', title: 'Error', description: 'Invalid project' })
-    router.back()
-    return null
-  }
-
   useEffect(() => {
+    if (templateId == null) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Invalid project' })
+      router.back()
+      return
+    }
     const fetchData = async () => {
       try {
         const template: template = JSON.parse(await getTemplate(templateId))
@@ -49,7 +41,7 @@ const Page = () => {
       }
     }
     fetchData()
-  }, [])
+  }, [templateId,router])
 
   if (loading) {
     return <Loader />

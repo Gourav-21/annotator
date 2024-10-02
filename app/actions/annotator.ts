@@ -5,7 +5,7 @@ import { User } from "@/models/User";
 
 export async function getAllAnnotators() {
     await connectToDatabase();
-    const data=await User.find({role:'annotator'})
+    const data = await User.find({ role: 'annotator' })
     return JSON.stringify(data)
 }
 

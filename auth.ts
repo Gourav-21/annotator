@@ -1,8 +1,8 @@
-import NextAuth from "next-auth"
-import Credentials from "next-auth/providers/credentials"
-import saltAndHashPassword from "./utils/password"
-import { User } from "./models/User"
-import { connectToDatabase } from "./lib/db"
+import { AuthOptions } from "next-auth";
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { connectToDatabase } from "./lib/db";
+import { User } from "./models/User";
+import saltAndHashPassword from "./utils/password";
 // Your own logic for dealing with plaintext password strings; be careful!
 
 interface JWTToken {
@@ -10,21 +10,28 @@ interface JWTToken {
   role?: string;
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+type credentials = {
+  email: string;
+  password: string;
+}
+
+export const authOptions: AuthOptions = {
+  session: {
+    strategy: 'jwt',
+  },
   providers: [
-    Credentials({
-      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-      // e.g. domain, username, password, 2FA token, etc.
+    CredentialsProvider({
+      name: 'Credentials',
       credentials: {
         email: { label: 'email', type: 'text' },
         password: { label: 'password', type: 'text' },
       },
+      async authorize(credentials) {
+        await connectToDatabase();
 
-      authorize: async (credentials) => {
-          await connectToDatabase();
-          let user = null
+        let user = null
           // logic to salt and hash password
-          const pwHash = saltAndHashPassword(credentials.password as string)
+          const pwHash = saltAndHashPassword(credentials?.password as string);
 
           // logic to verify if the user exists
           user = await User.findOne({ email: credentials?.email, password: pwHash });
@@ -35,17 +42,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return null
           }
 
-          // return user object with their profile data
-          return {
-            id: user._id.toString(),
-            name: user.name,
-            email: user.email,
-            role: user.role,
-          };
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
       },
-
     }),
-
   ],
   callbacks: {
     async jwt({ token, user }) {
@@ -63,9 +67,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
-  // pages: {
-  //   signIn: '/auth/login',
-  //   error: '/auth/error',
-  //   newUser: '/auth/signup',
-  // },
-})
+  pages: {
+    signIn: '/auth/login',
+    // error: '/auth/error',
+    newUser: '/auth/signup',
+  },
+};

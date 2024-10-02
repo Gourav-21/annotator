@@ -19,7 +19,7 @@ const Editor = ({ pageId, liveMode }: Props) => {
         payload: { value: true },
       })
     }
-  }, [liveMode])
+  }, [liveMode,dispatch])
 
   //CHALLENGE: make this more performant
   useEffect(() => {
@@ -36,7 +36,7 @@ const Editor = ({ pageId, liveMode }: Props) => {
       })
     }
     fetchData()
-  }, [pageId])
+  }, [pageId,dispatch])
 
   const handleClick = () => {
     dispatch({

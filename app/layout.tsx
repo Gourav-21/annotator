@@ -1,22 +1,9 @@
+import { Toaster as Sooner } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/providers/Providers";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
-import { SessionProvider } from "next-auth/react";
-import { Toaster as Sooner } from "@/components/ui/sonner"
-
-// export default function RootLayout({ children }) {
-//   return (
-//     <html lang="en">
-//       <head />
-//       <body>
-//         <main>{children}</main>
-//         <Toaster />
-//       </body>
-//     </html>
-//   )
-// }
-
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -44,9 +31,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionProvider>
+        <AuthProvider>
           {children}
-        </SessionProvider>
+        </AuthProvider>
         <Sooner />
         <Toaster />
       </body>

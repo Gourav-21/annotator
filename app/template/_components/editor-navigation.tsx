@@ -45,7 +45,7 @@ const EditorNavigation = ({
       type: 'SET_PAGE_ID',
       payload: { pageId: pageDetails.id },
     })
-  }, [pageDetails])
+  }, [pageDetails,dispatch])
 
   const handleOnBlurTitleChange: FocusEventHandler<HTMLInputElement> = async (
     event
