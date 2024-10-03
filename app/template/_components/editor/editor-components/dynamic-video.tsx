@@ -6,6 +6,7 @@ import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
 import { Trash } from 'lucide-react'
 import React from 'react'
+import ReactPlayer from 'react-player'
 
 type Props = {
   element: EditorElement
@@ -14,6 +15,15 @@ type Props = {
 const DynamicVideoComponent = (props: Props) => {
   const { dispatch, state } = useEditor()
   const styles = props.element.styles
+
+  const initialSrc = React.useMemo(() => {
+    if (Array.isArray(props.element.content)) {
+      return ''
+    }
+    return props.element.content?.src || ''
+  }, [props.element.content])
+
+  const [src, setSrc] = React.useState(initialSrc)
 
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
@@ -36,6 +46,7 @@ const DynamicVideoComponent = (props: Props) => {
       payload: { elementDetails: props.element },
     })
   }
+
 
   return (
     <div
@@ -61,23 +72,22 @@ const DynamicVideoComponent = (props: Props) => {
         )}
 
       {!Array.isArray(props.element.content) && state.editor.liveMode && (
-        <iframe
-          width={props.element.styles.width || '560'}
-          height={props.element.styles.height || '315'}
-          src={props.element.content.src}
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        <ReactPlayer
+          url={src}
+          width={styles?.width || '560px'}  // Pass width prop directly
+          height={styles?.height || '315px'}  // Pass height prop directly
+          className=""
         />
       )}
       {!Array.isArray(props.element.content) && !state.editor.liveMode && (
-        <div className={cn(`w-fit h-fit bg-muted  rounded-lg p-2`)}>
-         {!state.editor.liveMode &&  "video will be here"}
-        <iframe
-          width={props.element.styles.width || '560'}
-          height={props.element.styles.height || '315'}
-          title="video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        />
+        <div style={styles} className={cn(`w-fit h-fit bg-muted  rounded-lg p-2`)}>
+          {!state.editor.liveMode && "video will be here"}
+          <ReactPlayer
+            url={src}
+            width={styles?.width || '560px'}  // Pass width prop directly
+            height={styles?.height || '315px'}  // Pass height prop directly
+            className=""
+          />
         </div>
       )}
 

@@ -6,7 +6,8 @@ import { EditorBtns } from '@/lib/constants'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
 import { Trash } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
+import ReactPlayer from 'react-player'
 
 type Props = {
   element: EditorElement
@@ -88,23 +89,20 @@ const VideoComponent = (props: Props) => {
       )}
 
       {!Array.isArray(props.element.content) && (
-        <div className="w-full">
+        <div className="w-fit">
           {!state.editor.liveMode && (
             <Input
               type="text"
-              placeholder="YouTube embed link"
+              placeholder="link"
               value={src}
               onChange={handleSrcChange}
               className="mb-2"
             />
           )}
-          <iframe
-            width={props.element.styles.width as string || '560'}
-            height={props.element.styles.height as string || '315'}
-            src={src}
-            title="video player"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            className="w-full"
+          <ReactPlayer
+            url={src}
+            width={styles?.width || '560px'} 
+            height={styles?.height || '315px'} 
           />
         </div>
       )}

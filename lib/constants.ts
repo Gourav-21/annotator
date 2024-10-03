@@ -16,6 +16,8 @@ export type EditorBtns =
   | '3Col'
   | 'inputText'
   | 'dynamicImage'
+  | 'audio'
+  | 'dynamicAudio'
 
 export const defaultStyles: React.CSSProperties = {
   backgroundPosition: 'center',
