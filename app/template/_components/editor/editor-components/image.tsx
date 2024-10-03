@@ -1,7 +1,7 @@
 'use client'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { EditorBtns } from '@/lib/constants'
-import { cn } from '@/lib/utils'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
 import { Trash } from 'lucide-react'
@@ -11,7 +11,7 @@ type Props = {
   element: EditorElement
 }
 
-const DynamicImageComponent = (props: Props) => {
+const ImageComponent = (props: Props) => {
   const { dispatch, state } = useEditor()
   const styles = props.element.styles
 
@@ -46,11 +46,30 @@ const DynamicImageComponent = (props: Props) => {
     })
   }
 
+  const handleSrcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newSrc = e.target.value
+    setSrc(newSrc)
+    if (!Array.isArray(props.element.content)) {
+      dispatch({
+        type: 'UPDATE_ELEMENT',
+        payload: {
+          elementDetails: {
+            ...props.element,
+            content: {
+              ...props.element.content,
+              src: newSrc,
+            },
+          },
+        },
+      })
+    }
+  }
+
   return (
     <div
       style={styles}
       draggable
-      onDragStart={(e) => handleDragStart(e, 'dynamicImage')}
+      onDragStart={(e) => handleDragStart(e, 'image')}
       onClick={handleOnClick}
       className={clsx(
         'p-[2px] w-full m-[5px] relative text-[16px] transition-all flex items-center justify-center',
@@ -69,23 +88,22 @@ const DynamicImageComponent = (props: Props) => {
           </Badge>
         )}
 
-      {!Array.isArray(props.element.content) && state.editor.liveMode && (
-        <img
-          src={src}
-          width={styles?.width || '560px'}  
-          height={styles?.height || '315px'} 
-          className=""
-        />
-      )}
-      {!Array.isArray(props.element.content) && !state.editor.liveMode && (
-        <div style={styles} className={cn(`w-fit h-fit bg-muted  rounded-lg p-2`)}>
-          {!state.editor.liveMode && "Image will be here"}
+       {!Array.isArray(props.element.content) && (
+        <div className="w-fit">
+          {!state.editor.liveMode && (
+            <Input
+              type="text"
+              placeholder="link"
+              value={src}
+              onChange={handleSrcChange}
+              className="mb-2"
+            />
+          )}
           <img
-            src={src}
-            width={styles?.width || '560px'}  
-            height={styles?.height || '315px'} 
-            className=""
-          />
+          width={styles?.width || '560px'}
+          height={styles?.height || '315px'}
+          src={src}
+        />
         </div>
       )}
 
@@ -103,4 +121,4 @@ const DynamicImageComponent = (props: Props) => {
   )
 }
 
-export default DynamicImageComponent
+export default ImageComponent
