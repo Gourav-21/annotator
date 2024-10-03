@@ -13,6 +13,7 @@ import DynamicImagePlaceholder from './dynamic-image-placeholder '
 import ImagePlaceholder from './image-placeholder'
 import AudioPlaceholder from './audio-placeholder'
 import DynamicAudioPlaceholder from './dynamic-audio-placeholder'
+import CheckboxPlaceholder from './checkbox-placeholder'
 
 
 const ComponentsTab = () => {
@@ -38,6 +39,12 @@ const ComponentsTab = () => {
       Component: <InputTextPlaceholder />,
       label: 'Text',
       id: 'inputText',
+      group: 'Inputs',
+    },
+    {
+      Component: <CheckboxPlaceholder />,
+      label: 'checkbox',
+      id: 'checkbox',
       group: 'Inputs',
     },
     {

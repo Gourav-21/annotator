@@ -180,6 +180,23 @@ const Container = ({ element }: Props) => {
           },
         })
         break
+      case 'checkbox':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                src: '',
+              },
+              id: v4(),
+              name: 'checkbox',
+              styles: { },
+              type: 'checkbox',
+            },
+          },
+        })
+        break
       case 'container':
         dispatch({
           type: 'ADD_ELEMENT',

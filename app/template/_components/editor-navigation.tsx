@@ -112,7 +112,7 @@ const EditorNavigation = ({
     <TooltipProvider>
       <nav
         className={clsx(
-          'border-b-[1px] flex items-center justify-between p-6 gap-2 transition-all',
+          'border-b-[1px] flex items-center justify-between p-4 gap-2 transition-all',
           { '!h-0 !p-0 !overflow-hidden': state.editor.previewMode }
         )}
       >
