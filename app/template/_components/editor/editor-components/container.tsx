@@ -195,21 +195,6 @@ const Container = ({ element }: Props) => {
           },
         })
         break
-      case 'contactForm':
-        dispatch({
-          type: 'ADD_ELEMENT',
-          payload: {
-            containerId: id,
-            elementDetails: {
-              content: [],
-              id: v4(),
-              name: 'Contact Form',
-              styles: {},
-              type: 'contactForm',
-            },
-          },
-        })
-        break
       case 'inputText':
         dispatch({
           type: 'ADD_ELEMENT',
