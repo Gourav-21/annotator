@@ -7,6 +7,9 @@ import InputText from './InputText'
 import LinkComponent from './link-component'
 import TextComponent from './text'
 import VideoComponent from './video'
+import ImageComponent from './image'
+import AudioComponent from './audio'
+import DynamicAudioComponent from './dynamic-audio'
 
 type Props = {
   element: EditorElement
@@ -30,6 +33,12 @@ const Recursive = ({ element }: Props) => {
       return <DynamicVideoComponent element={element} />
     case 'dynamicImage':
       return <DynamicImageComponent element={element} />
+    case 'image':
+      return <ImageComponent element={element} />
+    case 'dynamicAudio':
+      return <DynamicAudioComponent element={element} />
+    case 'audio':
+      return <AudioComponent element={element} />
     case 'inputText':
       return <InputText element={element} />
     case 'link':

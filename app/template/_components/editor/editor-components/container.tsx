@@ -129,6 +129,57 @@ const Container = ({ element }: Props) => {
           },
         })
         break
+      case 'image':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                href: '{{img}}',
+              },
+              id: v4(),
+              name: 'Image',
+              styles: {},
+              type: 'image',
+            },
+          },
+        })
+        break
+      case 'audio':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                src: '',
+              },
+              id: v4(),
+              name: 'audio',
+              styles: {},
+              type: 'audio',
+            },
+          },
+        })
+        break
+      case 'dynamicAudio':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                src: '{{audio}}',
+              },
+              id: v4(),
+              name: 'audio',
+              styles: {},
+              type: 'dynamicAudio',
+            },
+          },
+        })
+        break
       case 'container':
         dispatch({
           type: 'ADD_ELEMENT',

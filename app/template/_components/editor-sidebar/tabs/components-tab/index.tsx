@@ -8,8 +8,11 @@ import LinkPlaceholder from './link-placeholder'
 import TextPlaceholder from './text-placeholder'
 import TwoColumnsPlaceholder from './two-columns-placeholder'
 import VideoPlaceholder from './video-placeholder'
-import DynamicVideoPlaceholder from './dynamic-video-placeholder  copy'
+import DynamicVideoPlaceholder from './dynamic-video-placeholder '
 import DynamicImagePlaceholder from './dynamic-image-placeholder '
+import ImagePlaceholder from './image-placeholder'
+import AudioPlaceholder from './audio-placeholder'
+import DynamicAudioPlaceholder from './dynamic-audio-placeholder'
 
 
 const ComponentsTab = () => {
@@ -48,6 +51,24 @@ const ComponentsTab = () => {
       label: 'Image',
       id: 'dynamicImage',
       group: 'Dynamic Elements',
+    },
+    {
+      Component: <AudioPlaceholder />,
+      label: 'Audio',
+      id: 'audio',
+      group: 'elements',
+    },
+    {
+      Component: <DynamicAudioPlaceholder />,
+      label: 'Audio',
+      id: 'dynamicAudio',
+      group: 'Dynamic Elements',
+    },
+    {
+      Component: <ImagePlaceholder />,
+      label: 'Image',
+      id: 'image',
+      group: 'elements',
     },
     {
       Component: <ContainerPlaceholder />,
