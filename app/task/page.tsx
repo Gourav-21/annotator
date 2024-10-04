@@ -63,8 +63,8 @@ export default function ProjectDashboard() {
                 <TableRow>
                   <TableHead>Tasks Name</TableHead>
                   <TableHead>Created Date</TableHead>
-                  <TableHead>status</TableHead>
-                  <TableHead className="text-center">submitted</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-center">Submitted</TableHead>
                   {/* <TableHead className="text-right">Actions</TableHead> */}
                 </TableRow>
               </TableHeader>
