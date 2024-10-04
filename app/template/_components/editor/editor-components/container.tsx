@@ -197,6 +197,53 @@ const Container = ({ element }: Props) => {
           },
         })
         break
+      case 'dynamicCheckbox':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                checkboxes:["{{checkbox}}"],
+              },
+              id: v4(),
+              name: 'dynamicCheckbox',
+              styles: { },
+              type: 'dynamicCheckbox',
+            },
+          },
+        })
+        break
+      case 'recordAudio':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {},
+              id: v4(),
+              name: 'recordAudio',
+              styles: { },
+              type: 'recordAudio',
+            },
+          },
+        })
+        break
+      case 'recordVideo':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: { },
+              id: v4(),
+              name: 'recordVideo',
+              styles: { },
+              type: 'recordVideo',
+            },
+          },
+        })
+        break
       case 'container':
         dispatch({
           type: 'ADD_ELEMENT',
