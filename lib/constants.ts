@@ -17,6 +17,9 @@ export type EditorBtns =
   | 'audio'
   | 'dynamicAudio'
   | 'checkbox'
+  | 'dynamicCheckbox'
+  | 'recordAudio'
+  | 'recordVideo'
 
 export const defaultStyles: React.CSSProperties = {
   backgroundPosition: 'center',

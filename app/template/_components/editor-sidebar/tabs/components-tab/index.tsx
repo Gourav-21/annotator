@@ -1,19 +1,21 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from '@/components/ui/accordion'
 import { EditorBtns } from '@/lib/constants'
 import React from 'react'
+import AudioPlaceholder from './audio-placeholder'
+import CheckboxPlaceholder from './checkbox-placeholder'
 import ContainerPlaceholder from './container-placeholder'
+import DynamicAudioPlaceholder from './dynamic-audio-placeholder'
+import DynamicImagePlaceholder from './dynamic-image-placeholder '
 import DynamicTextPlaceholder from './dynamic-text-placeholder'
+import DynamicVideoPlaceholder from './dynamic-video-placeholder '
+import ImagePlaceholder from './image-placeholder'
 import InputTextPlaceholder from './input-text-placeholder'
 import LinkPlaceholder from './link-placeholder'
+import RecordAudioPlaceholder from './record-audio-placeholder'
+import RecordVideoPlaceholder from './record-video-placeholder'
 import TextPlaceholder from './text-placeholder'
 import TwoColumnsPlaceholder from './two-columns-placeholder'
 import VideoPlaceholder from './video-placeholder'
-import DynamicVideoPlaceholder from './dynamic-video-placeholder '
-import DynamicImagePlaceholder from './dynamic-image-placeholder '
-import ImagePlaceholder from './image-placeholder'
-import AudioPlaceholder from './audio-placeholder'
-import DynamicAudioPlaceholder from './dynamic-audio-placeholder'
-import CheckboxPlaceholder from './checkbox-placeholder'
 
 
 const ComponentsTab = () => {
@@ -46,6 +48,24 @@ const ComponentsTab = () => {
       label: 'checkbox',
       id: 'checkbox',
       group: 'Inputs',
+    },
+    // {
+    //   Component: <DynamicCheckboxPlaceholder />,
+    //   label: 'Dynamic Checkbox',
+    //   id: 'dynamicCheckbox',
+    //   group: 'Inputs',
+    // },
+    {
+      Component: <RecordAudioPlaceholder />,
+      label: 'Record Audio',
+      id: 'recordAudio',
+      group: 'elements',
+    },
+    {
+      Component: <RecordVideoPlaceholder />,
+      label: 'Record Video',
+      id: 'recordVideo',
+      group: 'elements',
     },
     {
       Component: <DynamicVideoPlaceholder />,
@@ -142,7 +162,7 @@ const ComponentsTab = () => {
                 className="flex-col items-center justify-center flex"
               >
                 {element.Component}
-                <span className="text-muted-foreground">{element.label}</span>
+                <span className="text-muted-foreground text-center max-w-10">{element.label}</span>
               </div>
             ))}
         </AccordionContent>

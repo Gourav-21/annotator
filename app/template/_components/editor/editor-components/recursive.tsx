@@ -11,6 +11,9 @@ import ImageComponent from './image'
 import AudioComponent from './audio'
 import DynamicAudioComponent from './dynamic-audio'
 import Checkbox from './checkbox'
+import DynamicCheckbox from './dynamic-checkbox'
+import RecordAudioComponent from './recordAudio'
+import RecordVideoComponent from './recordVideo'
 
 type Props = {
   element: EditorElement
@@ -46,6 +49,12 @@ const Recursive = ({ element }: Props) => {
       return <LinkComponent element={element} />
     case 'checkbox':
       return <Checkbox element={element} />
+    case 'dynamicCheckbox':
+      return <DynamicCheckbox element={element} />
+    case 'recordAudio':
+      return <RecordAudioComponent element={element} />
+    case 'recordVideo':
+      return <RecordVideoComponent element={element} />
     default:
       return null
   }

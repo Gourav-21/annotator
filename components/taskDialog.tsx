@@ -15,7 +15,7 @@ interface Task {
   }
   
   interface Placeholder {
-    type: 'text' | 'video' | 'img' | 'audio'
+    type: 'text' | 'video' | 'img' | 'audio' | 'checkbox'
     index: number
   }
 
@@ -25,10 +25,10 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
     const fileInputRef = useRef<HTMLInputElement>(null)
   
     useEffect(() => {
-      const placeholderRegex = /{{(text|video|img|audio)}}/g
+      const placeholderRegex = /{{(text|video|img|audio|checkbox)}}/g
       const matches = Array.from(template.content.matchAll(placeholderRegex))
       setPlaceholders(matches.map((match, index) => ({
-        type: match[1] as 'text' | 'video' | 'img' | 'audio',
+        type: match[1] as 'text' | 'video' | 'img' | 'audio' | 'checkbox',
         index
       })))
     }, [template])
