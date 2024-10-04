@@ -24,17 +24,30 @@ const Editor = ({ pageId, liveMode }: Props) => {
   //CHALLENGE: make this more performant
   useEffect(() => {
     const fetchData = async () => {
-      const response = JSON.parse(await getTask(pageId))
-      if (!response) return
+  try {
+    const response = JSON.parse(await getTask(pageId));
+    if (!response) return;
 
-      dispatch({
-        type: 'LOAD_DATA',
-        payload: {
-          elements: response.content ? JSON.parse(response?.content) : '',
-          withLive: !!liveMode,
-        },
-      })
-    }
+    // Sanitize the content string (if needed)
+    let content = response.content;
+    // Example: Remove control characters using a regular expression
+    content = content.replace(/[\u0000-\u001F\u007F-\u009F]/g, ''); 
+
+    const parsedContent = JSON.parse(content);
+    console.log(parsedContent);
+
+    dispatch({
+      type: 'LOAD_DATA',
+      payload: {
+        elements: parsedContent,
+        withLive: !!liveMode,
+      },
+    });
+  } catch (error) {
+    console.error('Error parsing JSON:', error);
+    // Handle the error appropriately (e.g., display a message to the user)
+  }
+};
     fetchData()
   }, [pageId,dispatch])
 
