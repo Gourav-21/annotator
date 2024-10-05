@@ -65,7 +65,6 @@ export default function ProjectDashboard() {
                   <TableHead>Created Date</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-center">Submitted</TableHead>
-                  {/* <TableHead className="text-right">Actions</TableHead> */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -89,24 +88,6 @@ export default function ProjectDashboard() {
                       </Badge>
                     </TableCell>
                     <TableCell className="font-medium text-center">{task.submitted ? '✔️' : '❌'}</TableCell>
-                    {/* <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => handleEditTemplate(e, task._id)}
-                      >
-                        <Edit2Icon className="h-4 w-4" />
-                        <span className="sr-only">Edit</span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => handleDeleteTemplate(e, task._id)}
-                      >
-                        <Trash2Icon className="h-4 w-4" />
-                        <span className="sr-only">Delete</span>
-                      </Button>
-                    </TableCell> */}
                   </TableRow>
                 ))}
               </TableBody>
