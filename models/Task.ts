@@ -5,6 +5,7 @@ const taskSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now },
   content: { type: String, required: true },
   project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true },
+  project_Manager: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   annotator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
   status: { type: String, enum: ['pending', 'accepted', 'rejected', 'reassigned'], default: 'pending' },
   submitted: { type: Boolean, default: false },

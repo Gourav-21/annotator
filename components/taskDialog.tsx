@@ -108,6 +108,7 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
           title: "Tasks created successfully",
           description: "Tasks created successfully",
         })
+        setIsDialogOpen(false)
       } catch (error: any) {
         toast({
           variant: "destructive",

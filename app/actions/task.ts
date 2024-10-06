@@ -1,7 +1,9 @@
 'use server'
 
+import { authOptions } from "@/auth";
 import { connectToDatabase } from "@/lib/db";
 import Task from "@/models/Task";
+import { getServerSession } from "next-auth";
 import { template } from "../template/page";
 
 export async function updateTask(template: template, _id: string, projectid: string,time:number) {
@@ -24,8 +26,14 @@ export async function createTasks(tasks: {
   content: string;
 }[]) {
   await connectToDatabase();
-  await Task.insertMany(tasks);
-  // return JSON.stringify(res)
+  const session = await getServerSession(authOptions);
+  const task= tasks.map(task => {
+    return {
+      ...task,
+      project_Manager: session?.user.id
+    }
+  })
+  await Task.insertMany(task);
 }
 
 export async function getAllTasks(projectid: string) {
