@@ -59,7 +59,6 @@ const InputText = (props: Props) => {
     e.preventDefault()
     if (!state.editor.liveMode) return
     const content = JSON.stringify(state.editor.elements)
-    console.log(time)
     try {
       await updateTask({
         ...pageDetails,

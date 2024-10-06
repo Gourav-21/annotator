@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { PlayIcon, PauseIcon } from 'lucide-react'
 import useTimer from '@/hooks/use-timer'
+import { formatTime } from '@/lib/utils'
 
 export default function Timer() {
   const [isRunning, setIsRunning] = useState(false)
@@ -30,12 +31,6 @@ export default function Timer() {
 
   const toggleTimer = () => {
     setIsRunning(!isRunning)
-  }
-
-  const formatTime = (timeInSeconds: number) => {
-    const minutes = Math.floor(timeInSeconds / 60)
-    const seconds = timeInSeconds % 60
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   }
 
   return (

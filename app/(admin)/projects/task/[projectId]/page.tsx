@@ -18,6 +18,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { formatTime } from "@/lib/utils"
 
 interface Task {
   _id: string
@@ -28,6 +29,7 @@ interface Task {
   status: string
   submitted: boolean
   annotator?: string
+  timeTaken: number
 }
 
 interface Annotator {
@@ -202,6 +204,7 @@ function TaskTable({ tasks, annotators, handleAssignUser, handleDeleteTemplate, 
             <TableHead>Created Date</TableHead>
             <TableHead>Assignee</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead className="text-center">Time Taken</TableHead>
             <TableHead className="text-center">Submitted</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -242,6 +245,9 @@ function TaskTable({ tasks, annotators, handleAssignUser, handleDeleteTemplate, 
                 <Badge variant={getStatusBadgeVariant(task.status)}>
                   {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
                 </Badge>
+              </TableCell>
+              <TableCell className="font-medium text-center">
+               {formatTime(task.timeTaken)}
               </TableCell>
               <TableCell className="font-medium text-center">
                 <span role="img" aria-label={task.submitted ? "Submitted" : "Not submitted"}>
