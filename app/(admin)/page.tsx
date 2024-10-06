@@ -123,13 +123,10 @@ export default function ProjectDashboard() {
     <div className="min-h-screen ">
       <header className="bg-white ">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Project Dashboard</h1>
-          <Button onClick={() => signOut()} variant="outline">
-            <LogOut className="mr-2 h-4 w-4" /> Logout
-          </Button>
+          <h1 className="text-3xl font-bold text-gray-900">Project</h1>
         </div>
       </header>
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto  sm:px-6 lg:px-8">
         <form onSubmit={handleCreateProject} className="mb-8">
           <div className="flex gap-4">
             <Input
