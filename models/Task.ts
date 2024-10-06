@@ -8,6 +8,7 @@ const taskSchema = new mongoose.Schema({
   annotator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
   status: { type: String, enum: ['pending', 'accepted', 'rejected', 'reassigned'], default: 'pending' },
   submitted: { type: Boolean, default: false },
+  timeTaken: { type: Number, default: 0 },
 });
 
 const Task = mongoose.models?.Task || mongoose.model('Task', taskSchema);
