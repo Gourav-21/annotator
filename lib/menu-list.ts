@@ -5,7 +5,9 @@ import {
   Bookmark,
   SquarePen,
   LayoutGrid,
-  LucideIcon
+  LucideIcon,
+  ClipboardList,
+  Folder
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -81,19 +83,19 @@ export function getMenuList(pathname: string): Group[] {
           href: "/",
           label: "Projects",
           active: pathname == '/',
-          icon: SquarePen,
+          icon: Folder
         },
         {
           href: `/projects/${projectId}`,
           label: "Templates",
           active: pathname.includes("/projects") && !pathname.includes("/task"),
-          icon: Bookmark
+          icon: SquarePen
         },
         {
           href: `/projects/task/${projectId}`,
           label: "Tasks",
           active: pathname.includes("/task"),
-          icon: Tag
+          icon: ClipboardList
         }
       ]
     },
