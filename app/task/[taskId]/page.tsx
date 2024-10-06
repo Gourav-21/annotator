@@ -8,13 +8,7 @@ import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Editor from './editor'
-
-type Props = {
-  params: {
-    projectId: string
-    pageId: string
-  }
-}
+import Timer from '@/components/floating-timer'
 
 export interface task  {
   _id: string
@@ -65,6 +59,7 @@ const Page = () => {
     >
       <Editor pageId={taskid} liveMode={true} />
       {session?.user?.role === 'project manager' && <Dock id={taskid} status={task.status} />}
+      {session?.user?.role === 'annotator' && <Timer />}
     </EditorProvider>
   )
 }

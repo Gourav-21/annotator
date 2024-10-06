@@ -3,6 +3,7 @@ import { updateTask } from '@/app/actions/task'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import useTimer from '@/hooks/use-timer'
 import { toast } from '@/hooks/use-toast'
 import { EditorBtns } from '@/lib/constants'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
@@ -19,6 +20,7 @@ type Props = {
 const InputText = (props: Props) => {
   const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
   const router = useRouter()
+  const { time } = useTimer()
   const initialText = React.useMemo(() => {
     if (Array.isArray(props.element.content)) {
       return ''
@@ -57,12 +59,12 @@ const InputText = (props: Props) => {
     e.preventDefault()
     if (!state.editor.liveMode) return
     const content = JSON.stringify(state.editor.elements)
-
+    console.log(time)
     try {
       await updateTask({
         ...pageDetails,
         content,
-      }, funnelId,subaccountId)
+      }, funnelId,subaccountId, time)
       toast({
         title: 'Success',
         description: 'Successfully submitted',
@@ -103,22 +105,23 @@ const InputText = (props: Props) => {
           </Badge>
         )}
 
-        <form onSubmit={onFormSubmit}  className="flex w-full items-center space-x-2" >
-          <Input type="text" placeholder="write here" required value={text} disabled={pageDetails.submitted} onChange={(e) => setText(e.target.value)} onBlur={(e) => {
-            const inputValue = e.target.value;
-            dispatch({
-              type: 'UPDATE_ELEMENT',
-              payload: {
-                elementDetails: {
-                  ...props.element,
-                  content: {
-                    innerText: inputValue,
-                  },
+      <form onSubmit={onFormSubmit} className="flex w-full items-center space-x-2" >
+        <Input type="text" placeholder="write here" required value={text} disabled={pageDetails.submitted} onChange={(e) => setText(e.target.value)} onBlur={(e) => {
+          const inputValue = e.target.value;
+          dispatch({
+            type: 'UPDATE_ELEMENT',
+            payload: {
+              elementDetails: {
+                ...props.element,
+                content: {
+                  innerText: inputValue,
                 },
               },
-            })}} />
-          <Button type="submit" disabled={pageDetails.submitted}>{pageDetails.submitted? "Submitted" : "Submit"}</Button>
-        </form>
+            },
+          })
+        }} />
+        <Button type="submit" disabled={pageDetails.submitted}>{pageDetails.submitted ? "Submitted" : "Submit"}</Button>
+      </form>
 
       {state.editor.selectedElement.id === props.element.id &&
         !state.editor.liveMode && (

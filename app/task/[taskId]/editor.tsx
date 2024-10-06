@@ -34,7 +34,6 @@ const Editor = ({ pageId, liveMode }: Props) => {
     content = content.replace(/[\u0000-\u001F\u007F-\u009F]/g, ''); 
 
     const parsedContent = JSON.parse(content);
-    console.log(parsedContent);
 
     dispatch({
       type: 'LOAD_DATA',

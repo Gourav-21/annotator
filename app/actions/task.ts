@@ -4,14 +4,15 @@ import { connectToDatabase } from "@/lib/db";
 import Task from "@/models/Task";
 import { template } from "../template/page";
 
-export async function updateTask(template: template, _id: string, projectid: string) {
+export async function updateTask(template: template, _id: string, projectid: string,time:number) {
   await connectToDatabase();
 
   const res = await Task.findOneAndUpdate({ _id }, {
     ...template,
     content: template.content,
     submitted: true,
-    project: projectid
+    project: projectid,
+    timeTaken:time
   });
 
   return JSON.stringify(res)
