@@ -39,7 +39,7 @@ const Page = () => {
       }
     }
     fetchData()
-  }, [taskid])
+  }, [taskid,router])
 
   if (loading) {
     return <Loader />

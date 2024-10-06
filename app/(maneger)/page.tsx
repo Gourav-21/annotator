@@ -173,14 +173,14 @@ export default function ProjectDashboard() {
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
+                      {/* <Button
                         variant="ghost"
                         size="sm"
                         onClick={(e) => handleEditProject(e, project._id)}
                       >
                         <Edit2Icon className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
-                      </Button>
+                      </Button> */}
                       <Button
                         variant="ghost"
                         size="sm"
