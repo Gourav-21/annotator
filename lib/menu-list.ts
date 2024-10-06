@@ -31,8 +31,29 @@ type Group = {
 };
 
 export function getMenuList(pathname: string): Group[] {
-  const pathName = usePathname();
-  const projectId = pathName.split("/")[pathName.split("/").length - 1]
+  const projectId = pathname.split("/")[pathname.split("/").length - 1]
+
+  if(projectId == 'task'){
+    return [
+      {
+        groupLabel: "Contents",
+        menus: [
+          {
+            href: "/",
+            label: "Projects",
+            active: pathname == '/',
+            icon: Folder
+          },
+          {
+            href: "/task",
+            label: "Tasks",
+            active: pathname == '/task',
+            icon: ClipboardList
+          }
+        ]
+      }
+    ];
+  }
 
   if(projectId == "" || projectId == 'dashboard') {
     return [

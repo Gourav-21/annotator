@@ -51,12 +51,9 @@ export default function ProjectDashboard() {
       <header className="bg-white ">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
-          <Button onClick={() => signOut()} variant="outline">
-            <LogOut className="mr-2 h-4 w-4" /> Logout
-          </Button>
         </div>
       </header>
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto  sm:px-6 lg:px-8">
 
         {tasks.length === 0 ? (
           <div className="text-center py-10">
