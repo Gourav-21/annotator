@@ -55,6 +55,7 @@ const EditorNavigation = ({
       await upsertTemplate(
         projectId,
         {
+          ...pageDetails,
           _id: pageDetails._id,
           name: event.target.value,
         } as template,

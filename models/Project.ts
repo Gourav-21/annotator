@@ -6,10 +6,29 @@ const projectSchema = new Schema({
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
-  templates: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Template',
-  }],
+  templates: [{ type: Schema.Types.ObjectId, ref: 'Template', }],
+});
+
+projectSchema.pre('findOneAndDelete', async function (next) {
+  const projectId = this.getFilter()._id
+  if (!projectId) {
+    return next(new Error('Project ID not found in filter.'));
+  }
+
+  try {
+    // Delete all associated templates
+    await models.Template.deleteMany({ project: projectId });
+    console.log('Templates deleted');
+    
+    // Optionally delete associated tasks if you have a Task model
+    await models.Task.deleteMany({ project: projectId });
+    console.log('Tasks deleted');
+    
+    next();
+  } catch (error) {
+    next(error); // Pass the error to the next middleware
+  }
+
 });
 
 export const Project = models?.Project || model('Project', projectSchema);

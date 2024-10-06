@@ -61,7 +61,7 @@ const Page = () => {
         pageDetails={template}
       >
         <EditorNavigation
-          pageId={template._id}
+          pageId={templateId as string}
           pageDetails={template}
           projectId={template.project}
         />
