@@ -17,11 +17,8 @@ export interface Project {
 }
 
 export default function ProjectDashboard() {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [newProjectName, setNewProjectName] = useState('')
   const router = useRouter();
   const { data: session } = useSession();
-  const { toast } = useToast()
 
   useEffect(() => {
     if (session) {
