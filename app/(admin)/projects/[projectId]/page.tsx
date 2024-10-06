@@ -1,6 +1,6 @@
 'use client'
 import { upsertTemplate } from "@/app/actions/template"
-import { Project } from "@/app/page"
+import { Project } from "@/app/(admin)/page"
 import { template } from "@/app/template/page"
 import { TaskDialog } from "@/components/taskDialog"
 import { Button } from "@/components/ui/button"

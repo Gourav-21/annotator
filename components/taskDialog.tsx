@@ -1,6 +1,6 @@
 'use client'
 import { createTasks } from "@/app/actions/task"
-import { Project } from "@/app/page"
+import { Project } from "@/app/(admin)/page"
 import { template } from "@/app/template/page"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
