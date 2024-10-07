@@ -7,11 +7,12 @@ import { EditorElement, useEditor } from '@/providers/editor/editor-provider';
 import { useUploadThing } from '@/utils/uploadthing';
 import clsx from 'clsx';
 import { Send, Trash } from 'lucide-react';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import { useReactMediaRecorder } from "react-media-recorder";
 import ReactPlayer from 'react-player';
+import { toast } from 'sonner';
 
 type Props = {
   element: EditorElement
@@ -21,6 +22,7 @@ const RecordVideoComponent = (props: Props) => {
   const { dispatch, state } = useEditor()
   const { status, startRecording, stopRecording, mediaBlobUrl, previewStream } = useReactMediaRecorder({ video: true });
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [loading,setLoading]= useState(false)
 
 
   useEffect(() => {
@@ -65,6 +67,8 @@ const RecordVideoComponent = (props: Props) => {
   const { startUpload, routeConfig } = useUploadThing("videoUploader", {
     onClientUploadComplete: (data) => {
       setSrc(data[0].url)
+      setLoading(false)
+      toast('Recording uploaded successfully')
       if (!Array.isArray(props.element.content)) {
         dispatch({
           type: 'UPDATE_ELEMENT',
@@ -82,6 +86,7 @@ const RecordVideoComponent = (props: Props) => {
     },
     onUploadError: () => {
       alert("error occurred while uploading");
+      setLoading(false)
     },
     onUploadBegin: () => {
       console.log("upload has begun");
@@ -90,6 +95,7 @@ const RecordVideoComponent = (props: Props) => {
 
   async function submitRecording() {
     if (mediaBlobUrl) {
+      setLoading(true)
       // console.log('Submitting recording:', mediaBlobUrl)
       const videoBlob = await fetch(mediaBlobUrl).then((r) => r.blob());
       const videoFile = new File([videoBlob], 'video.mp4', { type: 'video/mp4' });
@@ -145,8 +151,8 @@ const RecordVideoComponent = (props: Props) => {
                   {status === 'recording' ? "Stop Recording" : "Start Recording"}
                 </Button>
                 {status === 'stopped' && mediaBlobUrl && (
-                  <Button onClick={submitRecording} className="">
-                    <Send className="mr-2 h-4 w-4" /> Submit
+                  <Button onClick={submitRecording} disabled={loading} className="">
+                    <Send className="mr-2 h-4 w-4" /> {loading ? 'Submiting...' : 'Submit'}
                   </Button>)}
               </div>
             </CardContent>

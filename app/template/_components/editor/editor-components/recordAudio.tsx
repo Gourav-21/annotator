@@ -11,6 +11,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import { useReactMediaRecorder } from "react-media-recorder";
+import { toast } from 'sonner';
 
 type Props = {
   element: EditorElement
@@ -22,6 +23,7 @@ const RecordAudioComponent = (props: Props) => {
   const styles = props.element.styles
   const [duration, setDuration] = useState(0)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const [loading,setLoading] = useState(false)
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -88,6 +90,8 @@ const RecordAudioComponent = (props: Props) => {
   const { startUpload, routeConfig } = useUploadThing("audioUploader", {
     onClientUploadComplete: (data) => {
       setSrc(data[0].url)
+      setLoading(false)
+      toast('Recording uploaded successfully')
       if (!Array.isArray(props.element.content)) {
         dispatch({
           type: 'UPDATE_ELEMENT',
@@ -106,6 +110,7 @@ const RecordAudioComponent = (props: Props) => {
     },
     onUploadError: () => {
       alert("error occurred while uploading");
+      setLoading(false)
     },
     onUploadBegin: () => {
       console.log("upload has begun");
@@ -114,6 +119,7 @@ const RecordAudioComponent = (props: Props) => {
 
   async function submitRecording() {
     if (mediaBlobUrl) {
+      setLoading(true)
       // console.log('Submitting recording:', mediaBlobUrl)
       const audioBlob = await fetch(mediaBlobUrl).then((r) => r.blob());
       const audioFile = new File([audioBlob], 'voice.wav', { type: 'audio/wav' });
@@ -167,8 +173,8 @@ const RecordAudioComponent = (props: Props) => {
                   <Button onClick={reRecord} variant="outline" className="border-primary text-primary hover:bg-primary/10">
                     <RotateCcw className="mr-2 h-4 w-4" /> Re-record
                   </Button>
-                  <Button onClick={submitRecording} className="">
-                    <Send className="mr-2 h-4 w-4" /> Submit
+                  <Button onClick={submitRecording} disabled={loading} className="">
+                    <Send className="mr-2 h-4 w-4" /> {loading ? 'Submiting...' : 'Submit'}
                   </Button>
                   <AudioPlayer
                     autoPlay
