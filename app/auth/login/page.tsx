@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { toast } from "@/hooks/use-toast"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -25,6 +26,11 @@ export default function AuthPageComponent() {
       router.push('/');
       console.log('Login successful');
     } else {
+      toast({
+        title: "Invalid login credentials",
+        description: "Please check your email and password and try again.",
+        variant: "destructive",
+      })
       console.log('Invalid login credentials');
     }
   }
