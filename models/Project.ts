@@ -1,4 +1,5 @@
 import { Schema, model, models } from 'mongoose';
+import Task from './Task';
 
 const projectSchema = new Schema({
   name: { type: String, required: true },
@@ -18,11 +19,11 @@ projectSchema.pre('findOneAndDelete', async function (next) {
 
   try {
     // Delete all associated templates
-    await models.Template.deleteMany({ project: projectId });
+    await Template.deleteMany({ project: projectId });
     console.log('Templates deleted');
     
     // Optionally delete associated tasks if you have a Task model
-    await models.Task.deleteMany({ project: projectId });
+    await Task.deleteMany({ project: projectId });
     console.log('Tasks deleted');
     
     next();
