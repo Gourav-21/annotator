@@ -3,9 +3,9 @@ import { Schema, model, models } from 'mongoose';
 const projectSchema = new Schema({
   name: { type: String, required: true },
   project_Manager: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  // status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now },
+  // updated_at: { type: Date, default: Date.now },
   templates: [{ type: Schema.Types.ObjectId, ref: 'Template', }],
 });
 
@@ -14,6 +14,7 @@ projectSchema.pre('findOneAndDelete', async function (next) {
   if (!projectId) {
     return next(new Error('Project ID not found in filter.'));
   }
+  console.log('Project ID:', projectId);
 
   try {
     // Delete all associated templates
@@ -26,6 +27,7 @@ projectSchema.pre('findOneAndDelete', async function (next) {
     
     next();
   } catch (error) {
+    console.error('Error deleting project:', error);
     next(error); // Pass the error to the next middleware
   }
 
