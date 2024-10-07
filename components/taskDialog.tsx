@@ -122,7 +122,7 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="sm:max-w-[425px] md:max-w-fit">
             <DialogHeader>
-              <DialogTitle>Fill Template</DialogTitle>
+              <DialogTitle>Ingest Data</DialogTitle>
             </DialogHeader>
             <div className="max-h-[60vh] overflow-y-auto">
               {tasks.map((task) => (
