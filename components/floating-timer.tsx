@@ -8,7 +8,7 @@ import useTimer from '@/hooks/use-timer'
 import { formatTime } from '@/lib/utils'
 
 export default function Timer() {
-  const [isRunning, setIsRunning] = useState(false)
+  const [isRunning, setIsRunning] = useState(true)
   const { inc } = useTimer()
   const [time, setTime] = useState(0)
 
