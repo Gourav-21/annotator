@@ -6,6 +6,7 @@ import { Project, Template } from "@/models/Project";
 import Task from "@/models/Task";
 import { User } from "@/models/User";
 import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
 
 export async function getTasksStatusOfManager() {
   try {
@@ -14,6 +15,7 @@ export async function getTasksStatusOfManager() {
     const res = await Task.find({ project_Manager: session?.user.id })
       .select('status') 
       .lean();
+      revalidatePath('/dashboard')
     return { data: JSON.stringify(res) }
   } catch (error) {
     console.error(error)
@@ -45,6 +47,29 @@ export async function getTasksAverageTimeOfManager() {
   } catch (error) {
     console.error(error)
     return { error: 'Error occurred while fetching tasks of manager' }
+  }
+}
+
+export async function getTasksAverageTimeOfManager2() {
+  try {
+    await connectToDatabase();
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user || !session.user.id) {
+      return { error: 'User is not authenticated' };
+    }
+
+    const result = await Task.aggregate([
+      { $match: { project_Manager: session?.user.id } }, // Filter tasks by project manager
+      { $group: { _id: null, averageTime: { $avg: "$timeTaken" } } } // Calculate average time
+    ]);
+
+    const averageTime = result.length > 0 ? result[0].averageTime : 0; // Check if result is empty
+
+    return { averageTime };
+  } catch (error) {
+    console.error(error);
+    return { error: 'Error occurred while fetching tasks of manager' };
   }
 }
 
