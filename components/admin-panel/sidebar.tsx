@@ -11,8 +11,8 @@ import Image from "next/image";
 
 export function Sidebar() {
   const sidebar = useStore(useSidebarToggle, (state) => state);
-  
-  if(!sidebar) return null;
+
+  if (!sidebar) return null;
 
   return (
     <aside
@@ -43,7 +43,16 @@ export function Sidebar() {
             >
               Annotator
             </h1> */}
-          <Image src={"/image.png"} alt="logo" width={120} height={120} />
+            <div className="w-[200px] h-[100px] overflow-hidden">
+              <Image
+                src={"/image.png"}
+                alt="Logo"
+                width={1000}
+                height={500}
+                className="object-cover object-center -translate-y-10"
+              />
+            </div>
+            {/* <Image src={"/image.png"} alt="logo" width={120} height={120} /> */}
           </Link>
         </Button>
         <Menu isOpen={sidebar?.isOpen} />
