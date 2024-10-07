@@ -37,13 +37,13 @@ export default function ProjectDashboard() {
           </div>
         </header>
         <main className="w-full mx-auto space-y-5  sm:px-6 lg:px-8">
-          <DashboardOverviewCardComponent />
           <div className="flex gap-5">
 
             <ChartComponent />
             <AverageTaskTimeCardComponent />
             <TaskSubmissionChartComponent />
           </div>
+          <DashboardOverviewCardComponent />
         </main>
       </div>
     )
