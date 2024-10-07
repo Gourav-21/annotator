@@ -14,6 +14,8 @@ export interface Project {
   created_at: string
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function ProjectDashboard() {
   const router = useRouter();
   const { data: session } = useSession();
