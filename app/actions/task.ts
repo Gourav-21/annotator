@@ -1,5 +1,5 @@
 'use server'
-
+import mongoose from 'mongoose'
 import { authOptions } from "@/auth";
 import { connectToDatabase } from "@/lib/db";
 import Task from "@/models/Task";
@@ -56,9 +56,19 @@ export async function changeAnnotator(_id: string, annotator: string) {
   return JSON.stringify(res)
 }
 
-export async function getTasksOfAnnotator(annotatorId: string) {
-  // if(annotatorId == undefined) return
+export async function getTasksByProject(id: string) {
   await connectToDatabase();
+  const session = await getServerSession(authOptions);
+  const annotatorId = session?.user.id;
+
+  const res = await Task.find({ annotator: annotatorId, project: id });
+  return JSON.stringify(res)
+}
+
+export async function getTasksOfAnnotator() {
+  await connectToDatabase();
+  const session = await getServerSession(authOptions);
+  const annotatorId = session?.user.id;
 
   const res = await Task.find({ annotator: annotatorId });
   return JSON.stringify(res)
@@ -83,4 +93,26 @@ export async function setTaskStatus(_id: string, status: string) {
     status
   });
   return res.status
+}
+
+export async function getDistinctProjectsByAnnotator() {
+  await connectToDatabase();
+  const session = await getServerSession(authOptions);
+  const annotatorId = session?.user.id;
+
+  try {
+      const uniqueProjects = await Task.aggregate([
+        { $match: { annotator: new mongoose.Types.ObjectId(annotatorId) } },
+        { $group: { _id: "$project" } },
+        { $lookup: { from: 'projects', localField: '_id', foreignField: '_id', as: 'projectDetails' } },
+        { $unwind: "$projectDetails" },
+        { $project: { _id: 0, project: "$projectDetails" } }
+      ]);
+      const pro= uniqueProjects.map(project => project.project)
+
+      return JSON.stringify(pro)
+  } catch (error) {
+    console.error('Error fetching distinct projects by annotator:', error);
+    throw error;
+  }
 }

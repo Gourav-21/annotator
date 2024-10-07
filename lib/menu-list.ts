@@ -1,15 +1,10 @@
 import {
-  Tag,
-  Users,
-  Settings,
-  Bookmark,
-  SquarePen,
+  ClipboardList,
+  Folder,
   LayoutGrid,
   LucideIcon,
-  ClipboardList,
-  Folder
+  SquarePen
 } from "lucide-react";
-import { usePathname } from "next/navigation";
 
 type Submenu = {
   href: string;
@@ -32,22 +27,24 @@ type Group = {
 
 export function getMenuList(pathname: string): Group[] {
   const projectId = pathname.split("/")[pathname.split("/").length - 1]
+  const fpath= pathname.split("/")[1]
 
-  if(projectId == 'task'){
+  if(fpath == 'tasks'){
     return [
       {
         groupLabel: "Contents",
         menus: [
           {
-            href: "/",
+            href: "/tasks",
             label: "Projects",
-            active: pathname == '/',
+            active: pathname.includes("/tasks") && !pathname.includes("/tasks/all"),
+            // active: pathname == '/tasks',
             icon: Folder
           },
           {
-            href: "/task",
-            label: "Tasks",
-            active: pathname == '/task',
+            href: `/tasks/all`,
+            label: "All Tasks",
+            active: pathname == '/tasks/all',
             icon: ClipboardList
           }
         ]
