@@ -1,16 +1,15 @@
 'use client'
 import { getTasksOfAnnotator } from "@/app/actions/task"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import Loader from '@/components/ui/Loader/Loader'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getStatusBadgeVariant } from "@/lib/constants"
 import { format, parseISO } from "date-fns"
-import { CalendarIcon, LogOut } from "lucide-react"
-import { signOut, useSession } from 'next-auth/react'
+import { CalendarIcon } from "lucide-react"
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface task {
   _id: string
@@ -31,7 +30,7 @@ export default function ProjectDashboard() {
   useEffect(() => {
     if (session?.user.id === undefined) return
     async function init() {
-      setTasks(JSON.parse(await getTasksOfAnnotator(session?.user.id as string)))
+      setTasks(JSON.parse(await getTasksOfAnnotator()))
     }
     init();
   }, [session]);

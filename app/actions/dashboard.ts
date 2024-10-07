@@ -6,7 +6,6 @@ import { Project, Template } from "@/models/Project";
 import Task from "@/models/Task";
 import { User } from "@/models/User";
 import { getServerSession } from "next-auth";
-import { revalidatePath } from "next/cache";
 
 export async function getTasksStatusOfManager() {
   try {
@@ -15,7 +14,6 @@ export async function getTasksStatusOfManager() {
     const res = await Task.find({ project_Manager: session?.user.id })
       .select('status') 
       .lean();
-      revalidatePath('/dashboard')
     return { data: JSON.stringify(res) }
   } catch (error) {
     console.error(error)
