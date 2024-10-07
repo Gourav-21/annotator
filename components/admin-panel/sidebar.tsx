@@ -45,11 +45,11 @@ export function Sidebar() {
             </h1> */}
             <div className="w-[170px] h-[100px] overflow-hidden">
               <Image
-                src={"/image.png"}
+                src={"/logo.webp"}
                 alt="Logo"
                 width={700}
                 height={700}
-                className="object-cover object-center -translate-y-6"
+                className="object-cover object-center translate-y-7"
               />
             </div>
             {/* <Image src={"/image.png"} alt="logo" width={120} height={120} /> */}
