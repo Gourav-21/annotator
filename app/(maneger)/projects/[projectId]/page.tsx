@@ -1,6 +1,6 @@
 'use client'
-import { upsertTemplate } from "@/app/actions/template"
 import { Project } from "@/app/(maneger)/page"
+import { upsertTemplate } from "@/app/actions/template"
 import { template } from "@/app/template/page"
 import { TaskDialog } from "@/components/taskDialog"
 import { Button } from "@/components/ui/button"
@@ -9,8 +9,8 @@ import Loader from '@/components/ui/Loader/Loader'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/hooks/use-toast"
 import { format, parseISO } from "date-fns"
-import { CalendarIcon, Edit2Icon, LogOut, PlusCircle, Trash2Icon } from "lucide-react"
-import { signOut, useSession } from 'next-auth/react'
+import { CalendarIcon, Edit2Icon, PlusCircle, Trash2Icon } from "lucide-react"
+import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
