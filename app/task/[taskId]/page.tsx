@@ -16,6 +16,7 @@ export interface task  {
   project: string
   content: string
   status: StatusType
+  submitted: boolean
 }
 
 const Page = () => {
@@ -59,7 +60,7 @@ const Page = () => {
     >
       <Editor pageId={taskid} liveMode={true} />
       {session?.user?.role === 'project manager' && <Dock id={taskid} status={task.status} />}
-      {session?.user?.role === 'annotator' && <Timer />}
+      {session?.user?.role === 'annotator'&& !task.submitted && <Timer />}
     </EditorProvider>
   )
 }
