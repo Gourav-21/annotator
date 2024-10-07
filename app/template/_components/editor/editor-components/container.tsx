@@ -244,6 +244,36 @@ const Container = ({ element }: Props) => {
           },
         })
         break
+      case 'inputRecordVideo':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: { src : '' },
+              id: v4(),
+              name: 'inputRecordVideo',
+              styles: { },
+              type: 'inputRecordVideo',
+            },
+          },
+        })
+        break
+      case 'inputRecordAudio':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: { src : '' },
+              id: v4(),
+              name: 'inputRecordAudio',
+              styles: { },
+              type: 'inputRecordAudio',
+            },
+          },
+        })
+        break
       case 'container':
         dispatch({
           type: 'ADD_ELEMENT',

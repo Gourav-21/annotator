@@ -9,6 +9,8 @@ import DynamicImagePlaceholder from './dynamic-image-placeholder '
 import DynamicTextPlaceholder from './dynamic-text-placeholder'
 import DynamicVideoPlaceholder from './dynamic-video-placeholder '
 import ImagePlaceholder from './image-placeholder'
+import InputRecordAudioPlaceholder from './input-record-audio-placeholder'
+import InputRecordVideoPlaceholder from './input-record-video-placeholder'
 import InputTextPlaceholder from './input-text-placeholder'
 import LinkPlaceholder from './link-placeholder'
 import RecordAudioPlaceholder from './record-audio-placeholder'
@@ -41,6 +43,18 @@ const ComponentsTab = () => {
       Component: <InputTextPlaceholder />,
       label: 'Text',
       id: 'inputText',
+      group: 'Inputs',
+    },
+    {
+      Component: <InputRecordAudioPlaceholder />,
+      label: 'Record Audio',
+      id: 'inputRecordAudio',
+      group: 'Inputs',
+    },
+    {
+      Component: <InputRecordVideoPlaceholder />,
+      label: 'Record Video',
+      id: 'inputRecordVideo',
       group: 'Inputs',
     },
     {
