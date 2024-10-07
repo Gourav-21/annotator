@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
 import { Minus, Plus, Upload } from "lucide-react"
 import { useEffect, useRef, useState } from 'react'
+import Papa from 'papaparse'
 
 interface Task {
     id: number
@@ -62,32 +63,36 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0]
       if (file) {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          const content = e.target?.result as string
-          const lines = content.split('\n')
-          const headers = lines[0].split(',')
-          
-          if (headers.length !== placeholders.length) {
+        Papa.parse(file, {
+          complete: (results) => {
+            const headers = results.data[0] as string[]
+            
+            if (headers.length !== placeholders.length) {
+              toast({
+                title: "CSV Error",
+                description: "The number of columns in the CSV does not match the number of placeholders in the template.",
+                variant: "destructive",
+              })
+              return
+            }
+  
+            const newTasks = (results.data as string[][]).slice(1).map((row, index) => {
+              return {
+                id: index + 1,
+                values: Object.fromEntries(placeholders.map((_, i) => [i, row[i] || '']))
+              }
+            })
+            console.log(newTasks)
+            setTasks(newTasks)
+          },
+          error: (error) => {
             toast({
-              title: "CSV Error",
-              description: "The number of columns in the CSV does not match the number of placeholders in the template.",
+              title: "CSV Parsing Error",
+              description: error.message,
               variant: "destructive",
             })
-            return
           }
-
-          const newTasks = lines.slice(1).map((line, index) => {
-            const values = line.split(',')
-            return {
-              id: index + 1,
-              values: Object.fromEntries(placeholders.map((_, i) => [i, values[i]]))
-            }
-          })
-  
-          setTasks(newTasks)
-        }
-        reader.readAsText(file)
+        })
       }
     }
   
