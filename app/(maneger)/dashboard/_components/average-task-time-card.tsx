@@ -34,16 +34,16 @@ export default function AverageTaskTimeCardComponent() {
     setTotalTasks(fetchedData.length)
   }, [fetchedData])
 
-  const formatTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    const mins = Math.floor(remainingMinutes);
-    const secs = Math.round((remainingMinutes - mins) * 60); // Calculate seconds from decimal part of minutes
+  const formatTime = (seconds: number) => {
+    const totalMinutes = Math.floor(seconds / 60);
+    const secs = Math.round(seconds % 60); // Round the seconds
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
   
     if (hours > 0) {
-      return secs > 0 ? `${hours}h ${mins}m ${secs}s` : `${hours}h ${remainingMinutes.toFixed(1)}m`;
+      return secs > 0 ? `${hours}h ${mins}m ${secs}s` : `${hours}h ${mins}m`;
     } else {
-      return secs > 0 ? `${mins}m ${secs}s` : `${remainingMinutes.toFixed(1)}m`;
+      return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`;
     }
   };
   
