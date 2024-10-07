@@ -9,6 +9,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Editor from './editor'
 import Timer from '@/components/floating-timer'
+import useStatus from '@/hooks/use-status'
 
 export interface task  {
   _id: string
@@ -26,6 +27,7 @@ const Page = () => {
   const [task, setTask] = useState<task>()
   const [loading, setLoading] = useState(true)
   const { data: session } = useSession();
+  const { setStatus,setSubmitted } = useStatus();
 
 
   useEffect(() => {
@@ -34,6 +36,8 @@ const Page = () => {
         const task: task = JSON.parse(await getTask(taskid))
         setTask(task)
         setLoading(false)
+        setStatus(task.status)
+        setSubmitted(task.submitted)
       } catch (error: any) {
         toast({ variant: 'destructive', title: 'Error', description: error.message })
         router.back()

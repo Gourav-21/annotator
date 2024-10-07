@@ -3,12 +3,14 @@ import { updateTask } from '@/app/actions/task';
 import { Badge } from '@/components/ui/badge';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import useStatus from '@/hooks/use-status';
 import useTimer from '@/hooks/use-timer';
 import { EditorBtns } from '@/lib/constants';
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider';
 import { useUploadThing } from '@/utils/uploadthing';
 import clsx from 'clsx';
 import { Send, Trash } from 'lucide-react';
+import { set } from 'mongoose';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
@@ -28,7 +30,8 @@ const InputRecordVideoComponent = (props: Props) => {
   const [loading, setLoading] = useState(false)
   const session = useSession()
   const router = useRouter()
-  const { time } = useTimer()
+  const { time, running, setRunning } = useTimer()
+  const { status: STATUS, submitted } = useStatus()
 
   useEffect(() => {
     if (videoRef.current && previewStream) {
@@ -39,7 +42,7 @@ const InputRecordVideoComponent = (props: Props) => {
   const styles = props.element.styles
 
   const initialSrc = React.useMemo(() => {
-    if (Array.isArray(props.element.content)) {
+    if (Array.isArray(props.element.content) || (STATUS === 'reassigned' && submitted == false)) {
       return ''
     }
     return props.element.content?.src || ''
@@ -122,6 +125,7 @@ const InputRecordVideoComponent = (props: Props) => {
     },
     onUploadBegin: () => {
       console.log("upload has begun");
+      setRunning(false)
     },
   });
 

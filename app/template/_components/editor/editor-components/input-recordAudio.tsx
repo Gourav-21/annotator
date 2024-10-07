@@ -1,9 +1,9 @@
 'use client'
 import { updateTask } from '@/app/actions/task';
-import Loading from '@/components/global/loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
+import useStatus from '@/hooks/use-status';
 import useTimer from '@/hooks/use-timer';
 import { EditorBtns } from '@/lib/constants';
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider';
@@ -16,7 +16,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import { useReactMediaRecorder } from "react-media-recorder";
-import { toast } from "sonner"
+import { toast } from "sonner";
 
 type Props = {
   element: EditorElement
@@ -30,8 +30,8 @@ const InputRecordAudioComponent = (props: Props) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const { time } = useTimer()
-  
+  const { time, running, setRunning } = useTimer()
+  const { status: STATUS, submitted } = useStatus()
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -40,7 +40,7 @@ const InputRecordAudioComponent = (props: Props) => {
   }
 
   const initialSrc = React.useMemo(() => {
-    if (Array.isArray(props.element.content)) {
+    if (Array.isArray(props.element.content) || (STATUS === 'reassigned' && submitted == false)) {
       return ''
     }
     return props.element.content?.src || ''
@@ -108,11 +108,11 @@ const InputRecordAudioComponent = (props: Props) => {
       }
       setLoading(false)
     }
-    
-    if(loading && props.element.content.src  !== "" ) { 
+
+    if (loading && props.element.content.src !== "") {
       onClientUploadComplete()
     }
-    
+
   }, [src])
 
   const reRecord = () => {
@@ -162,6 +162,7 @@ const InputRecordAudioComponent = (props: Props) => {
       setLoading(false)
     },
     onUploadBegin: () => {
+      setRunning(false)
       console.log("upload has begun");
     },
   });

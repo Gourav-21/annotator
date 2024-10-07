@@ -9,13 +9,13 @@ import { formatTime } from '@/lib/utils'
 
 export default function Timer() {
   const [isRunning, setIsRunning] = useState(true)
-  const { inc } = useTimer()
+  const { inc, running, setRunning } = useTimer()
   const [time, setTime] = useState(0)
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
 
-    if (isRunning) {
+    if (running) {
       interval = setInterval(() => {
         setTime((prevTime) => prevTime + 1)
         inc(1)
@@ -27,10 +27,10 @@ export default function Timer() {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [isRunning])
+  }, [running])
 
   const toggleTimer = () => {
-    setIsRunning(!isRunning)
+    setRunning(!running)
   }
 
   return (
@@ -46,7 +46,7 @@ export default function Timer() {
             size="icon"
             className="bg-white hover:bg-gray-100 text-black border-gray-200 rounded-full"
           >
-            {isRunning ? <PauseIcon className="h-4 w-4" /> : <PlayIcon className="h-4 w-4" />}
+            {running ? <PauseIcon className="h-4 w-4" /> : <PlayIcon className="h-4 w-4" />}
           </Button>
         </div>
       </Card>
