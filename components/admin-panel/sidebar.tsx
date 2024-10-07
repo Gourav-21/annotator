@@ -45,7 +45,7 @@ export function Sidebar() {
             </h1> */}
             <div className="w-[170px] h-[100px] overflow-hidden">
               <Image
-                src={"/logo.webp"}
+                src={"/image.png"}
                 alt="Logo"
                 width={700}
                 height={700}
