@@ -8,7 +8,6 @@ import { useUploadThing } from '@/utils/uploadthing';
 import clsx from 'clsx';
 import { Send, Trash } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import { useReactMediaRecorder } from "react-media-recorder";
 import ReactPlayer from 'react-player';
