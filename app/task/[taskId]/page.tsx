@@ -60,7 +60,7 @@ const Page = () => {
     >
       <Editor pageId={taskid} liveMode={true} />
       {session?.user?.role === 'project manager' && <Dock id={taskid} status={task.status} />}
-      {session?.user?.role === 'annotator'&& !task.submitted && <Timer />}
+      {session?.user?.role === 'annotator'&& !task.submitted &&  ( task.status =='pending'|| task.status =='reassigned') && <Timer />}
     </EditorProvider>
   )
 }
