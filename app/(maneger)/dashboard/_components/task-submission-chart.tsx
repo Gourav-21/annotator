@@ -60,9 +60,9 @@ export default function TaskSubmissionChartComponent() {
       <CardContent>
         <ChartContainer
           config={chartConfig}
-          className="h-fit"
+          className="mx-auto aspect-square h-72 w-72"
         >
-          {/* <ResponsiveContainer width="100%" height="100%"> */}
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={data}
@@ -80,7 +80,7 @@ export default function TaskSubmissionChartComponent() {
               <ChartTooltip content={<ChartTooltipContent />} />
               <Legend />
             </PieChart>
-          {/* </ResponsiveContainer> */}
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex justify-between">
