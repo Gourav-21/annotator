@@ -15,16 +15,13 @@ projectSchema.pre('findOneAndDelete', async function (next) {
   if (!projectId) {
     return next(new Error('Project ID not found in filter.'));
   }
-  console.log('Project ID:', projectId);
 
   try {
     // Delete all associated templates
     await Template.deleteMany({ project: projectId });
-    console.log('Templates deleted');
     
     // Optionally delete associated tasks if you have a Task model
     await Task.deleteMany({ project: projectId });
-    console.log('Tasks deleted');
     
     next();
   } catch (error) {
