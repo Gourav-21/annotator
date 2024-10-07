@@ -43,13 +43,13 @@ export function Sidebar() {
             >
               Annotator
             </h1> */}
-            <div className="w-[200px] h-[100px] overflow-hidden">
+            <div className="w-[170px] h-[100px] overflow-hidden">
               <Image
                 src={"/image.png"}
                 alt="Logo"
-                width={1000}
-                height={500}
-                className="object-cover object-center -translate-y-10"
+                width={700}
+                height={700}
+                className="object-cover object-center -translate-y-6"
               />
             </div>
             {/* <Image src={"/image.png"} alt="logo" width={120} height={120} /> */}
