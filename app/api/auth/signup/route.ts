@@ -11,7 +11,7 @@ export async function POST(req: Request) {
         await connectToDatabase();
         console.log('connected to database');
 
-        const { name, email, password, role } = await req.json();
+        const { name, email, password, role, phone, domain, lang, location } = await req.json();
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -25,6 +25,10 @@ export async function POST(req: Request) {
             email,
             password: hashedPassword,
             role,
+            phone,
+            domain,
+            lang,
+            location
         });
 
         await newUser.save();

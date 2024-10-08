@@ -1,19 +1,42 @@
 'use client'
+
+import { domains, languages, locations } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import Combobox from "@/components/ui/combobox"
+
+interface Option {
+  value: string;
+  label: string;
+}
 
 export default function AuthPageComponent() {
   const router = useRouter();
   const { toast } = useToast()
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState('');
-  const [name, setName] = useState('');
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    role: "",
+    name: "",
+    phone: "",
+    domain: "",
+    lang: "",
+    location: "",
+  });
+
+  console.log(formData)
+  const domainOptions: Option[] = domains.map(domain => ({ value: domain.toLowerCase(), label: domain }));
+  const languageOptions: Option[] = languages.map(lang => ({ value: lang.toLowerCase(), label: lang }));
+  const locationOptions: Option[] = locations.map(location => ({ value: location.toLowerCase(), label: location }));
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,12 +45,7 @@ export default function AuthPageComponent() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        email,
-        password,
-        name,
-        role
-      }),
+      body: JSON.stringify(formData),
     });
 
     if (res.ok) {
@@ -37,7 +55,7 @@ export default function AuthPageComponent() {
       })
       router.push('/auth/login');
     } else {
-      const data= await res.json();
+      const data = await res.json();
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
@@ -47,45 +65,78 @@ export default function AuthPageComponent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="bg-white p-8 max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center p-4 ">
+      <div className="bg-white p-8  max-w-4xl w-full">
         <h2 className="text-4xl font-bold text-center mb-6">
           Sign Up
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" required />
+            <Input id="name" type="text" value={formData.name} onChange={handleChange} placeholder="Enter your name" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" required />
+            <Input id="email" type="email" value={formData.email} onChange={handleChange} placeholder="Enter your email" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={password} minLength={6} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" required />
+            <Input id="password" type="password" value={formData.password} minLength={6} onChange={handleChange} placeholder="Enter your password" required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="Role">Role</Label>
-            <Select value={role} onValueChange={setRole} required >
+            <Label htmlFor="phone">Phone number</Label>
+            <Input id="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="Enter your phone number" required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="domain">Domain</Label>
+            <Combobox
+              options={domainOptions}
+              value={formData.domain}
+              onChange={(value) => setFormData({ ...formData, domain: value })}
+              placeholder="Select domain"
+              allowCustom={true}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="lang">Language</Label>
+            <Combobox
+              options={languageOptions}
+              value={formData.lang}
+              onChange={(value) => setFormData({ ...formData, lang: value })}
+              placeholder="Select language"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="location">Location</Label>
+            <Combobox
+              options={locationOptions}
+              value={formData.location}
+              onChange={(value) => setFormData({ ...formData, location: value })}
+              placeholder="Select location"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="role">Role</Label>
+            <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })} required>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="project manager">Project Manager</SelectItem>
-                <SelectItem value="annotator">Annotater</SelectItem>
+                <SelectItem value="annotator">Annotator</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <Button type="submit" className="w-full">
-            Sign Up
-          </Button>
+          <div className="md:col-span-2">
+            <Button type="submit" className="w-full">
+              Sign Up
+            </Button>
+          </div>
         </form>
         <div className="mt-4 text-center">
           <button
-            className="text-sm text-gray-600 hover:underline" onClick={
-              () => router.push("/auth/signin")
-            }
+            className="text-sm text-gray-600 hover:underline"
+            onClick={() => router.push("/auth/login")}
           >
             Already have an account? Login
           </button>
