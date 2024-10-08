@@ -1,5 +1,4 @@
 'use client'
-import { updateTask } from '@/app/actions/task';
 import { Badge } from '@/components/ui/badge';
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
@@ -41,12 +40,28 @@ const InputRecordAudioComponent = (props: Props) => {
 
   const initialSrc = React.useMemo(() => {
     if (Array.isArray(props.element.content) || (STATUS === 'reassigned' && submitted == false)) {
+      if (props.element.content?.src != '' && loading == false) {
+        dispatch({
+          type: 'UPDATE_ELEMENT',
+          payload: {
+            elementDetails: {
+              ...props.element,
+              content: {
+                ...props.element.content,
+                src: '',
+              },
+            },
+          },
+        })
+      }
       return ''
     }
     return props.element.content?.src || ''
   }, [props.element.content])
 
   const session = useSession()
+
+  console.log(props.element.content)
 
   const [src, setSrc] = React.useState(initialSrc)
 
@@ -90,31 +105,6 @@ const InputRecordAudioComponent = (props: Props) => {
     }
   }, [status])
 
-
-  useEffect(() => {
-    async function onClientUploadComplete() {
-      const content = JSON.stringify(state.editor.elements)
-      try {
-        await updateTask({
-          ...pageDetails,
-          content,
-        }, funnelId, subaccountId, time)
-
-        toast.success("Successfully submitted")
-        router.back()
-      } catch (error) {
-        console.log(error)
-        toast.error("Submission failed")
-      }
-      setLoading(false)
-    }
-
-    if (loading && props.element.content.src !== "") {
-      onClientUploadComplete()
-    }
-
-  }, [src])
-
   const reRecord = () => {
     setDuration(0)
     startRecording()
@@ -138,28 +128,14 @@ const InputRecordAudioComponent = (props: Props) => {
         })
       }
 
-
-      // const content = JSON.stringify(state.editor.elements)
-      // console.log(content)
-      // try {
-      //   await updateTask({
-      //     ...pageDetails,
-      //     content,
-      //   }, funnelId, subaccountId, time)
-      //   toast.success("Successfully submitted")
-      //   router.back()
-      // } catch (error) {
-      //   console.log(error)
-      //   toast.error("Submission failed")
-      // }
-      // setLoading(false)
       setDuration(0)
       setSrc(data[0].url)
-
+      setRunning(true)
     },
     onUploadError: () => {
       alert("error occurred while uploading");
       setLoading(false)
+      setRunning(true)
     },
     onUploadBegin: () => {
       setRunning(false)

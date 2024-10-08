@@ -1,15 +1,10 @@
 'use client'
-import { updateTask } from '@/app/actions/task'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import useTimer from '@/hooks/use-timer'
-import { toast } from '@/hooks/use-toast'
 import { EditorBtns } from '@/lib/constants'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
 import { Trash } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 
 import React from 'react'
 
@@ -19,8 +14,6 @@ type Props = {
 
 const InputText = (props: Props) => {
   const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
-  const router = useRouter()
-  const { time } = useTimer()
   const initialText = React.useMemo(() => {
     if (Array.isArray(props.element.content)) {
       return ''
@@ -53,33 +46,6 @@ const InputText = (props: Props) => {
     })
   }
 
-  const onFormSubmit = async (
-    e: React.FormEvent<HTMLFormElement>,
-  ) => {
-    e.preventDefault()
-    if (!state.editor.liveMode) return
-    const content = JSON.stringify(state.editor.elements)
-    try {
-      await updateTask({
-        ...pageDetails,
-        content,
-      }, funnelId,subaccountId, time)
-      toast({
-        title: 'Success',
-        description: 'Successfully submitted',
-      })
-      router.back()
-    } catch (error) {
-      console.log(error)
-      toast({
-        variant: 'destructive',
-        title: 'Failed',
-        description: 'submission failed',
-      })
-    }
-  }
-
-
   return (
     <div
       style={styles}
@@ -104,7 +70,7 @@ const InputText = (props: Props) => {
           </Badge>
         )}
 
-      <form onSubmit={onFormSubmit} className="flex w-full items-center space-x-2" >
+      <form className="flex w-full items-center space-x-2" >
         <Input type="text" placeholder="write here" required value={text} disabled={pageDetails.submitted} onChange={(e) => setText(e.target.value)} onBlur={(e) => {
           const inputValue = e.target.value;
           dispatch({
@@ -119,7 +85,7 @@ const InputText = (props: Props) => {
             },
           })
         }} />
-        <Button type="submit" disabled={pageDetails.submitted}>{pageDetails.submitted ? "Submitted" : "Submit"}</Button>
+        {/* <Button type="submit" disabled={pageDetails.submitted}>{pageDetails.submitted ? "Submitted" : "Submit"}</Button> */}
       </form>
 
       {state.editor.selectedElement.id === props.element.id &&
