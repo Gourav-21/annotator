@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Editor from './editor'
-import Timer from '@/components/floating-timer'
+import Timer from '@/components/floating-timer-submit'
 import useStatus from '@/hooks/use-status'
 
 export interface task  {
