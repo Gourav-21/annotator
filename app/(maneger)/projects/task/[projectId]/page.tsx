@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatTime } from "@/lib/utils"
+import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 
 interface Task {
   _id: string
@@ -133,6 +134,7 @@ export default function Component() {
       <header className="bg-white">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Tasks</h1>
+          <SheetMenu />
         </div>
       </header>
       <main className="max-w-7xl mx-auto sm:px-6 lg:px-8">

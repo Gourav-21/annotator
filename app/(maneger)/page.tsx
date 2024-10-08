@@ -1,4 +1,5 @@
 'use client'
+import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
@@ -124,6 +125,7 @@ export default function ProjectDashboard() {
       <header className="bg-white ">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Project</h1>
+        <SheetMenu />
         </div>
       </header>
       <main className="max-w-7xl mx-auto  sm:px-6 lg:px-8">

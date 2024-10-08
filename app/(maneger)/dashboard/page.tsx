@@ -7,6 +7,7 @@ import AverageTaskTimeCardComponent from "./_components/average-task-time-card"
 import ChartComponent from "./_components/chart"
 import DashboardOverviewCardComponent from "./_components/dashboard-overview-card"
 import TaskSubmissionChartComponent from "./_components/task-submission-chart"
+import { SheetMenu } from '@/components/admin-panel/sheet-menu'
 
 export interface Project {
   _id: string
@@ -36,6 +37,7 @@ export default function ProjectDashboard() {
         <header className="bg-white ">
           <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
+            <SheetMenu />
           </div>
         </header>
         <main className="w-full mx-auto space-y-5  sm:px-6 lg:px-8">
