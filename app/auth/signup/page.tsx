@@ -1,22 +1,22 @@
 'use client'
 
-import { domains, languages, locations } from "@/lib/constants"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
 import Combobox from "@/components/ui/combobox"
+import { domains, languages, locations } from "@/lib/constants"
 
 interface Option {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 export default function AuthPageComponent() {
-  const router = useRouter();
+  const router = useRouter()
   const { toast } = useToast()
   const [formData, setFormData] = useState({
     email: "",
@@ -27,50 +27,49 @@ export default function AuthPageComponent() {
     domain: "",
     lang: "",
     location: "",
-  });
+  })
 
-  console.log(formData)
-  const domainOptions: Option[] = domains.map(domain => ({ value: domain.toLowerCase(), label: domain }));
-  const languageOptions: Option[] = languages.map(lang => ({ value: lang.toLowerCase(), label: lang }));
-  const locationOptions: Option[] = locations.map(location => ({ value: location.toLowerCase(), label: location }));
+  const domainOptions: Option[] = domains.map(domain => ({ value: domain.toLowerCase(), label: domain }))
+  const languageOptions: Option[] = languages.map(lang => ({ value: lang.toLowerCase(), label: lang }))
+  const locationOptions: Option[] = locations.map(location => ({ value: location.toLowerCase(), label: location }))
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
+    setFormData({ ...formData, [e.target.id]: e.target.value })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(formData),
-    });
+    })
 
     if (res.ok) {
       toast({
         title: "Account created.",
         description: "Now login with your credentials.",
       })
-      router.push('/auth/login');
+      router.push('/auth/login')
     } else {
-      const data = await res.json();
+      const data = await res.json()
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
         description: data.error,
       })
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 ">
-      <div className={`bg-white p-8 ${formData.role === "annotator" ? `max-w-xl` : `max-w-md`}   w-full`}>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className={`bg-white p-8 ${formData.role === "annotator" ? "max-w-xl" : "max-w-md"} w-full`}>
         <h2 className="text-4xl font-bold text-center mb-6">
           Sign Up
         </h2>
-        <form onSubmit={handleSubmit} className={` grid ${formData.role === "annotator" ? `grid-cols-2` : `grid-cols-1`}  gap-6`}>
+        <form onSubmit={handleSubmit} className={`grid ${formData.role === "annotator" ? "grid-cols-2" : "grid-cols-1"} gap-6`}>
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input id="name" type="text" value={formData.name} onChange={handleChange} placeholder="Enter your name" required />
@@ -95,12 +94,12 @@ export default function AuthPageComponent() {
               </SelectContent>
             </Select>
           </div>
-           {formData.role === "annotator" && (
+          {formData.role === "annotator" && (
             <>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone number</Label>
-            <Input id="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="Enter your phone number" required />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone number</Label>
+                <Input id="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="Enter your phone number" required />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="domain">Domain</Label>
                 <Combobox
@@ -130,10 +129,8 @@ export default function AuthPageComponent() {
                 />
               </div>
             </>
-          )} 
-
-         
-          <div className="md:col-span-2">
+          )}
+          <div className={formData.role === "annotator" ? "col-span-2" : ""}>
             <Button type="submit" className="w-full">
               Sign Up
             </Button>
