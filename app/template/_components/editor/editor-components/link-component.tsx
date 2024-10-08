@@ -65,7 +65,7 @@ const LinkComponent = (props: Props) => {
         )}
       {!Array.isArray(props.element.content) &&
         (state.editor.previewMode || state.editor.liveMode) && (
-          <Link href={props.element.content.href || '#'}>
+          <Link target="_blank" href={props.element.content.href || '#'}>
             {props.element.content.innerText}
           </Link>
         )}
@@ -81,6 +81,7 @@ const LinkComponent = (props: Props) => {
                   ...props.element,
                   content: {
                     innerText: spanElement.innerText,
+                    href: spanElement.innerText
                   },
                 },
               },
