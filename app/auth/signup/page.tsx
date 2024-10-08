@@ -36,15 +36,25 @@ export default function AuthPageComponent() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if(formData.role === "annotator") {
+      if(formData.domain === "" || formData.lang === "" || formData.location === "") {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "Please fill in all the fields.",
+        })
+        return
+      }
+    }
+
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(formData),
+      body: formData.role === "annotator" ? JSON.stringify(formData) : JSON.stringify({ email:formData.email, password: formData.password, role: formData.role, name: formData.name }),
     })
 
     if (res.ok) {
