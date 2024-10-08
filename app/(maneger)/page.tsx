@@ -40,7 +40,7 @@ export default function ProjectDashboard() {
             description: error.message,
           }));
     }
-  }, [session]);
+  }, [session, router]);
 
   if (!session) {
     return <Loader />;

@@ -5,12 +5,10 @@ import { Checkbox as CheckboxPrimitive } from "@/components/ui/checkbox"
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import useTimer from '@/hooks/use-timer'
 import { EditorBtns } from '@/lib/constants'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
 import { Trash } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
 type Props = {
@@ -19,8 +17,6 @@ type Props = {
 
 const Checkbox = (props: Props) => {
   const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
-  const router = useRouter()
-  const { time } = useTimer()
   const initial = React.useMemo(() => {
     if (Array.isArray(props.element.content)) {
       return []

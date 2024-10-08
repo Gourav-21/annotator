@@ -10,7 +10,6 @@ import { useUploadThing } from '@/utils/uploadthing';
 import clsx from 'clsx';
 import { Send, Trash } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import 'react-h5-audio-player/lib/styles.css';
 import { useReactMediaRecorder } from "react-media-recorder";
@@ -27,8 +26,7 @@ const InputRecordVideoComponent = (props: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [loading, setLoading] = useState(false)
   const session = useSession()
-  const router = useRouter()
-  const { time, running, setRunning } = useTimer()
+  const { setRunning } = useTimer()
   const { status: STATUS, submitted } = useStatus()
 
   useEffect(() => {

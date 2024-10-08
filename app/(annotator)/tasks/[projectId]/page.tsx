@@ -36,7 +36,7 @@ export default function ProjectDashboard() {
       setTasks(JSON.parse(await getTasksByProject(projectId)))
     }
     init();
-  }, [session]);
+  }, [session, projectId]);
 
   if (!session) {
     return <Loader />;

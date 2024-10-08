@@ -10,7 +10,6 @@ import { useUploadThing } from '@/utils/uploadthing';
 import clsx from 'clsx';
 import { Mic, RotateCcw, Send, Square, Trash } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
@@ -28,8 +27,7 @@ const InputRecordAudioComponent = (props: Props) => {
   const [duration, setDuration] = useState(0)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
-  const { time, running, setRunning } = useTimer()
+  const { setRunning } = useTimer()
   const { status: STATUS, submitted } = useStatus()
 
   const formatDuration = (seconds: number) => {
@@ -60,8 +58,6 @@ const InputRecordAudioComponent = (props: Props) => {
   }, [props.element.content])
 
   const session = useSession()
-
-  console.log(props.element.content)
 
   const [src, setSrc] = React.useState(initialSrc)
 

@@ -24,7 +24,7 @@ export default function ProjectDashboard() {
     if (session) {
       if (session?.user?.role === 'annotator') router.push('/tasks');
     }
-  }, [session]);
+  }, [session, router]);
 
   if (!session) {
     return <Loader />;

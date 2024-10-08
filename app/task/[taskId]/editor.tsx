@@ -19,36 +19,36 @@ const Editor = ({ pageId, liveMode }: Props) => {
         payload: { value: true },
       })
     }
-  }, [liveMode,dispatch])
+  }, [liveMode, dispatch])
 
   //CHALLENGE: make this more performant
   useEffect(() => {
     const fetchData = async () => {
-  try {
-    const response = JSON.parse(await getTask(pageId));
-    if (!response) return;
+      try {
+        const response = JSON.parse(await getTask(pageId));
+        if (!response) return;
 
-    // Sanitize the content string (if needed)
-    let content = response.content;
-    // Example: Remove control characters using a regular expression
-    content = content.replace(/[\u0000-\u001F\u007F-\u009F]/g, ''); 
+        // Sanitize the content string (if needed)
+        let content = response.content;
+        // Example: Remove control characters using a regular expression
+        content = content.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
 
-    const parsedContent = JSON.parse(content);
+        const parsedContent = JSON.parse(content);
 
-    dispatch({
-      type: 'LOAD_DATA',
-      payload: {
-        elements: parsedContent,
-        withLive: !!liveMode,
-      },
-    });
-  } catch (error) {
-    console.error('Error parsing JSON:', error);
-    // Handle the error appropriately (e.g., display a message to the user)
-  }
-};
+        dispatch({
+          type: 'LOAD_DATA',
+          payload: {
+            elements: parsedContent,
+            withLive: !!liveMode,
+          },
+        });
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+        // Handle the error appropriately (e.g., display a message to the user)
+      }
+    };
     fetchData()
-  }, [pageId,dispatch])
+  }, [pageId, dispatch])
 
   const handleClick = () => {
     dispatch({
