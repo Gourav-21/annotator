@@ -66,11 +66,11 @@ export default function AuthPageComponent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 ">
-      <div className="bg-white p-8  max-w-4xl w-full">
+      <div className={`bg-white p-8 ${formData.role === "annotator" ? `max-w-xl` : `max-w-md`}   w-full`}>
         <h2 className="text-4xl font-bold text-center mb-6">
           Sign Up
         </h2>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className={` grid ${formData.role === "annotator" ? `grid-cols-2` : `grid-cols-1`}  gap-6`}>
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input id="name" type="text" value={formData.name} onChange={handleChange} placeholder="Enter your name" required />
@@ -84,38 +84,6 @@ export default function AuthPageComponent() {
             <Input id="password" type="password" value={formData.password} minLength={6} onChange={handleChange} placeholder="Enter your password" required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone number</Label>
-            <Input id="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="Enter your phone number" required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="domain">Domain</Label>
-            <Combobox
-              options={domainOptions}
-              value={formData.domain}
-              onChange={(value) => setFormData({ ...formData, domain: value })}
-              placeholder="Select domain"
-              allowCustom={true}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="lang">Language</Label>
-            <Combobox
-              options={languageOptions}
-              value={formData.lang}
-              onChange={(value) => setFormData({ ...formData, lang: value })}
-              placeholder="Select language"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Combobox
-              options={locationOptions}
-              value={formData.location}
-              onChange={(value) => setFormData({ ...formData, location: value })}
-              placeholder="Select location"
-            />
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
             <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })} required>
               <SelectTrigger className="w-full">
@@ -127,6 +95,44 @@ export default function AuthPageComponent() {
               </SelectContent>
             </Select>
           </div>
+           {formData.role === "annotator" && (
+            <>
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone number</Label>
+            <Input id="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="Enter your phone number" required />
+          </div>
+              <div className="space-y-2">
+                <Label htmlFor="domain">Domain</Label>
+                <Combobox
+                  options={domainOptions}
+                  value={formData.domain}
+                  onChange={(value) => setFormData({ ...formData, domain: value })}
+                  placeholder="Select domain"
+                  allowCustom={true}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lang">Language</Label>
+                <Combobox
+                  options={languageOptions}
+                  value={formData.lang}
+                  onChange={(value) => setFormData({ ...formData, lang: value })}
+                  placeholder="Select language"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Combobox
+                  options={locationOptions}
+                  value={formData.location}
+                  onChange={(value) => setFormData({ ...formData, location: value })}
+                  placeholder="Select location"
+                />
+              </div>
+            </>
+          )} 
+
+         
           <div className="md:col-span-2">
             <Button type="submit" className="w-full">
               Sign Up
