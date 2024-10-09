@@ -131,7 +131,6 @@ const DynamicCheckbox = (props: Props) => {
       })
     }
   }
-  console.log(props.element.content)
 
   const handleCheckboxChange = (value: string) => {
     if (checkboxType === 'single') {

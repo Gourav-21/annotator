@@ -68,6 +68,258 @@ const TwoColumns = (props: Props) => {
           },
         })
         break
+      case 'dynamicText':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                innerText: "{{text}}",
+              },
+              id: v4(),
+              name: 'dynamicText',
+              styles: {
+                color: 'black',
+                ...defaultStyles,
+              },
+              type: 'dynamicText',
+            },
+          },
+        })
+        break
+      case 'link':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                innerText: 'Link Element',
+                href: '#',
+              },
+              id: v4(),
+              name: 'Link',
+              styles: {
+                color: 'black',
+                ...defaultStyles,
+              },
+              type: 'link',
+            },
+          },
+        })
+        break
+      case 'video':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                src: '',
+              },
+              id: v4(),
+              name: 'Video',
+              styles: {},
+              type: 'video',
+            },
+          },
+        })
+        break
+      case 'dynamicVideo':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                src: '{{video}}',
+              },
+              id: v4(),
+              name: 'Dynamic Video',
+              styles: {},
+              type: 'dynamicVideo',
+            },
+          },
+        })
+        break
+      case 'dynamicImage':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                src: '{{img}}',
+              },
+              id: v4(),
+              name: 'Dynamic image',
+              styles: {},
+              type: 'dynamicImage',
+            },
+          },
+        })
+        break
+      case 'image':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                href: '{{img}}',
+              },
+              id: v4(),
+              name: 'Image',
+              styles: {},
+              type: 'image',
+            },
+          },
+        })
+        break
+      case 'audio':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                src: '',
+              },
+              id: v4(),
+              name: 'audio',
+              styles: {},
+              type: 'audio',
+            },
+          },
+        })
+        break
+      case 'dynamicAudio':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                src: '{{audio}}',
+              },
+              id: v4(),
+              name: 'audio',
+              styles: {},
+              type: 'dynamicAudio',
+            },
+          },
+        })
+        break
+      case 'checkbox':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                selectedCheckbox: [],
+              },
+              id: v4(),
+              name: 'checkbox',
+              styles: {},
+              type: 'checkbox',
+            },
+          },
+        })
+        break
+      case 'dynamicCheckbox':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {
+                checkboxes: ["{{checkbox}}"],
+              },
+              id: v4(),
+              name: 'dynamicCheckbox',
+              styles: {},
+              type: 'dynamicCheckbox',
+            },
+          },
+        })
+        break
+      case 'recordAudio':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {},
+              id: v4(),
+              name: 'recordAudio',
+              styles: {},
+              type: 'recordAudio',
+            },
+          },
+        })
+        break
+      case 'recordVideo':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: {},
+              id: v4(),
+              name: 'recordVideo',
+              styles: {},
+              type: 'recordVideo',
+            },
+          },
+        })
+        break
+      case 'inputRecordVideo':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: { src: '' },
+              id: v4(),
+              name: 'inputRecordVideo',
+              styles: {},
+              type: 'inputRecordVideo',
+            },
+          },
+        })
+        break
+      case 'inputRecordAudio':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: { src: '' },
+              id: v4(),
+              name: 'inputRecordAudio',
+              styles: {},
+              type: 'inputRecordAudio',
+            },
+          },
+        })
+        break
+      case 'inputText':
+        dispatch({
+          type: 'ADD_ELEMENT',
+          payload: {
+            containerId: id,
+            elementDetails: {
+              content: { innerText: '' },
+              id: v4(),
+              name: 'input Text',
+              styles: { ...defaultStyles, width: '100%' },
+              type: 'inputText',
+            },
+          },
+        })
+        break
     }
   }
 
