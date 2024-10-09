@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast"
 import Combobox from "@/components/ui/combobox"
 import { domains, languages, locations } from "@/lib/constants"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Pencil, Building2, CheckCircle2, DollarSign, Clock, Database, FileSpreadsheet, Globe, MapPin } from "lucide-react"
 
 interface Option {
   value: string
@@ -18,6 +20,7 @@ interface Option {
 export default function AuthPageComponent() {
   const router = useRouter()
   const { toast } = useToast()
+  const [step, setStep] = useState<'role' | 'details'>('role')
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -36,10 +39,16 @@ export default function AuthPageComponent() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
   }
+
+  const handleRoleSelect = (selectedRole: 'annotator' | 'project manager') => {
+    setFormData({ ...formData, role: selectedRole })
+    setStep('details')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if(formData.role === "annotator") {
-      if(formData.domain === "" || formData.lang === "" || formData.location === "") {
+    if (formData.role === "annotator") {
+      if (formData.domain === "" || formData.lang === "" || formData.location === "") {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
@@ -54,13 +63,13 @@ export default function AuthPageComponent() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: formData.role === "annotator" ? JSON.stringify(formData) : JSON.stringify({ email:formData.email, password: formData.password, role: formData.role, name: formData.name }),
+      body: formData.role === "annotator" ? JSON.stringify(formData) : JSON.stringify({ email: formData.email, password: formData.password, role: formData.role, name: formData.name }),
     })
 
     if (res.ok) {
       toast({
         title: "Account created.",
-        description: "Now login with your credentials.",
+        description: "You can now log in with your new account.",
       })
       router.push('/auth/login')
     } else {
@@ -71,6 +80,74 @@ export default function AuthPageComponent() {
         description: data.error,
       })
     }
+  }
+
+  if (step === 'role') {
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <div>
+          <h1 className="text-4xl font-bold text-left mb-8">Choose your role</h1>
+          <p className="text-left mb-8 text-muted-foreground">You can't switch roles with the same account</p>
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card className="cursor-pointer hover:border-primary" onClick={() => handleRoleSelect('annotator')}>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Pencil className="mr-2 h-6 w-6" />
+                  Annotator
+                </CardTitle>
+                <CardDescription>I'm ready to earn money</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="mt-4 space-y-2">
+                  <li className="flex items-center">
+                    <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" />
+                    Complete simple tasks and get paid
+                  </li>
+                  <li className="flex items-center">
+                    <DollarSign className="mr-2 h-4 w-4 text-green-500" />
+                    Earn money whenever you want
+                  </li>
+                  <li className="flex items-center">
+                    <Clock className="mr-2 h-4 w-4 text-green-500" />
+                    Work on your own schedule
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+            <Card className="cursor-pointer hover:border-primary" onClick={() => handleRoleSelect('project manager')}>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Building2 className="mr-2 h-6 w-6" />
+                  Project Manager
+                </CardTitle>
+                <CardDescription>I need data for my projects</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="mt-4 space-y-2">
+                  <li className="flex items-center">
+                    <Database className="mr-2 h-4 w-4 text-blue-500" />
+                    Get data labeled
+                  </li>
+                  <li className="flex items-center">
+                    <FileSpreadsheet className="mr-2 h-4 w-4 text-blue-500" />
+                    Run surveys
+                  </li>
+                  <li className="flex items-center">
+                    <Globe className="mr-2 h-4 w-4 text-blue-500" />
+                    Collect online data
+                  </li>
+                  <li className="flex items-center">
+                    <MapPin className="mr-2 h-4 w-4 text-blue-500" />
+                    Gather field data
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+      </div>
+    )
   }
 
   return (
@@ -92,9 +169,9 @@ export default function AuthPageComponent() {
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" value={formData.password} minLength={6} onChange={handleChange} placeholder="Enter your password" required />
           </div>
-          <div className="space-y-2">
+         {formData.role === "annotator" && <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
-            <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })} required>
+            <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })} disabled required>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
@@ -103,7 +180,7 @@ export default function AuthPageComponent() {
                 <SelectItem value="annotator">Annotator</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </div>}
           {formData.role === "annotator" && (
             <>
               <div className="space-y-2">
