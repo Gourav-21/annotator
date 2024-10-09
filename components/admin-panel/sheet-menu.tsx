@@ -10,6 +10,7 @@ import {
   SheetTrigger,
   SheetTitle
 } from "@/components/ui/sheet";
+import Image from "next/image";
 
 export function SheetMenu() {
   return (
@@ -27,8 +28,15 @@ export function SheetMenu() {
             asChild
           >
             <Link href="/dashboard" className="flex items-center gap-2">
-              <PanelsTopLeft className="w-6 h-6 mr-1" />
-              <SheetTitle className="font-bold text-lg">Annotator</SheetTitle>
+            <div className="w-[170px] h-[100px] overflow-hidden">
+              <Image
+                src={"/image.png"}
+                alt="Logo"
+                width={700}
+                height={700}
+                className="object-cover object-center translate-y-7"
+              />
+            </div>
             </Link>
           </Button>
         </SheetHeader>

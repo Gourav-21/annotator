@@ -2,6 +2,7 @@
 import { Project } from "@/app/(maneger)/page"
 import { upsertTemplate } from "@/app/actions/template"
 import { template } from "@/app/template/page"
+import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { TaskDialog } from "@/components/taskDialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -107,6 +108,7 @@ export default function ProjectDashboard() {
       <header className="bg-white ">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Project - {project?.name} </h1>
+          <SheetMenu />
         </div>
       </header>
       <main className="max-w-7xl mx-auto sm:px-6 lg:px-8">

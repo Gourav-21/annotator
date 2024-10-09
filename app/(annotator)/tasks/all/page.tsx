@@ -1,5 +1,6 @@
 'use client'
 import { getTasksOfAnnotator } from "@/app/actions/task"
+import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { Badge } from "@/components/ui/badge"
 import Loader from '@/components/ui/Loader/Loader'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -50,6 +51,7 @@ export default function ProjectDashboard() {
       <header className="bg-white ">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
+          <SheetMenu />
         </div>
       </header>
       <main className="max-w-7xl mx-auto  sm:px-6 lg:px-8">
