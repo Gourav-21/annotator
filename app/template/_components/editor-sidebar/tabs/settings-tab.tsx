@@ -12,12 +12,32 @@ const SettingsTab = () => {
   const { state, dispatch } = useEditor()
 
   const handleOnChanges = (e: any) => {
-    const styleSettings = e.target.id
-    const value = e.target.value
+    const styleSettings = e.target.id;
+    let value = e.target.value;
+    const inputElement = e.target;
+  
+    // Get the cursor position before modifying the value
+    const cursorPosition = inputElement.selectionStart;
+  
+    const pxStyles = ['fontSize', 'width', 'height', 'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'];
+  
+    // Check if it's a style that needs 'px' and append it if missing
+    if (pxStyles.includes(styleSettings)) {
+      if (!value.endsWith('px')) {
+        value = `${value}px`;
+      }
+    }
+  
+    // Check if it's the backgroundImage style
+    if (styleSettings === 'backgroundImage') {
+      value = `url(${value})`;
+    }
+  
+    // Dispatch the updated style
     const styleObject = {
       [styleSettings]: value,
-    }
-
+    };
+  
     dispatch({
       type: 'UPDATE_ELEMENT',
       payload: {
@@ -29,8 +49,16 @@ const SettingsTab = () => {
           },
         },
       },
-    })
-  }
+    });
+  
+    // After dispatch, set the cursor position back where it was if it's an input
+    if (inputElement.tagName === 'INPUT' || inputElement.tagName === 'TEXTAREA') {
+      window.requestAnimationFrame(() => {
+        inputElement.setSelectionRange(cursorPosition, cursorPosition);
+      });
+    }
+  };
+  
 
   const handleChangeCustomValues = (e: any) => {
     const settingProperty = e.target.id
@@ -61,7 +89,7 @@ const SettingsTab = () => {
     >
       <AccordionItem
         value="Custom"
-        className="px-6 py-0  "
+        className="px-3.5 py-0  "
       >
         <AccordionTrigger className="!no-underline">Custom</AccordionTrigger>
         <AccordionContent>
@@ -81,7 +109,7 @@ const SettingsTab = () => {
       </AccordionItem>
       <AccordionItem
         value="Typography"
-        className="px-6 py-0  border-y-[1px]"
+        className="px-3.5 py-0  border-y-[1px]"
       >
         <AccordionTrigger className="!no-underline">
           Typography
@@ -184,7 +212,7 @@ const SettingsTab = () => {
       </AccordionItem>
       <AccordionItem
         value="Dimensions"
-        className=" px-6 py-0 "
+        className=" px-3.5 py-0 "
       >
         <AccordionTrigger className="!no-underline">
           Dimensions
@@ -308,7 +336,7 @@ const SettingsTab = () => {
       </AccordionItem>
       <AccordionItem
         value="Decorations"
-        className="px-6 py-0 "
+        className="px-3.5 py-0 "
       >
         <AccordionTrigger className="!no-underline">
           Decorations
@@ -466,10 +494,27 @@ const SettingsTab = () => {
       </AccordionItem>
       <AccordionItem
         value="Flexbox"
-        className="px-6 py-0  "
+        className="px-3.5 py-0  "
       >
         <AccordionTrigger className="!no-underline">Flexbox</AccordionTrigger>
-        <AccordionContent>
+        <AccordionContent className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+            <Input
+              className="h-4 w-4"
+              placeholder="px"
+              type="checkbox"
+              id="display"
+              onChange={(va) => {
+                handleOnChanges({
+                  target: {
+                    id: 'display',
+                    value: va.target.checked ? 'flex' : 'block',
+                  },
+                })
+              }}
+            />
+            <Label className="text-muted-foreground">Flex</Label>
+          </div>
           <Label className="text-muted-foreground">Justify Content</Label>
           <Tabs
             onValueChange={(e) =>
@@ -542,32 +587,32 @@ const SettingsTab = () => {
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <div className="flex items-center gap-2">
-            <Input
-              className="h-4 w-4"
-              placeholder="px"
-              type="checkbox"
-              id="display"
-              onChange={(va) => {
-                handleOnChanges({
-                  target: {
-                    id: 'display',
-                    value: va.target.checked ? 'flex' : 'block',
-                  },
-                })
-              }}
-            />
-            <Label className="text-muted-foreground">Flex</Label>
-          </div>
           <div>
-            <Label className="text-muted-foreground"> Direction</Label>
-            <Input
-              placeholder="px"
-              id="flexDirection"
-              onChange={handleOnChanges}
-              value={state.editor.selectedElement.styles.flexDirection}
-            />
-          </div>
+              <Label className="text-muted-foreground">Flex Direction</Label>
+              <Select
+                onValueChange={(e) =>
+                  handleOnChanges({
+                    target: {
+                      id: 'flexDirection',
+                      value: e,
+                    },
+                  })
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a Flex Direction" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Flex Direction</SelectLabel>
+                    <SelectItem value="row">Row</SelectItem>
+                    <SelectItem value="column">Column</SelectItem>
+                    <SelectItem value="row-reverse">Row Reverse</SelectItem>
+                    <SelectItem value="column-reverse">Column Reverse</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
         </AccordionContent>
       </AccordionItem>
     </Accordion>

@@ -27,7 +27,7 @@ const EditorSidebar = ({ projectId }: Props) => {
     >
       <Tabs
         className="w-full "
-        defaultValue="Components"
+        defaultValue="Settings"
       >
         <SheetContent
           side="right"
