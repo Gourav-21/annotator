@@ -112,7 +112,8 @@ export async function setTaskStatus(_id: string, status: string,feedback?:string
     return res.status
   }
   const res = await Task.findOneAndUpdate({ _id }, {
-    status
+    status,
+    feedback: '',
   });
   return res.status
 }

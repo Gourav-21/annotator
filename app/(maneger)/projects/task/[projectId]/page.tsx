@@ -7,6 +7,7 @@ import { template } from "@/app/template/page"
 import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
@@ -16,13 +17,10 @@ import { useToast } from "@/hooks/use-toast"
 import { getStatusBadgeVariant } from "@/lib/constants"
 import { formatTime } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
-import { CalendarIcon, Copy, NotebookPen, PlusCircle, Shuffle, Trash2Icon } from "lucide-react"
+import { CalendarIcon, NotebookPen, PlusCircle, Shuffle, Trash2Icon } from "lucide-react"
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-
 
 interface Task {
   _id: string

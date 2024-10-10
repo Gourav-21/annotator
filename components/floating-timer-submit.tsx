@@ -87,6 +87,8 @@ export default function Timer() {
     try {
       await updateTask({
         ...pageDetails,
+        status:'pending',
+        feedback: '',
         content,
       }, funnelId,subaccountId, time)
       toast({

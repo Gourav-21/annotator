@@ -44,6 +44,7 @@ export default function Dock({ id, status }: { id: string, status: StatusType })
 
   const updateStatus = async (action: StatusType, additionalData?: any) => {
     try {
+      console.log(action, additionalData)
       const newStatus = await setTaskStatus(id, action, additionalData?.feedback, additionalData?.reassignTo)
       setCurrentStatus(newStatus)
       toast.success(`The task has been ${action}`)
@@ -53,7 +54,8 @@ export default function Dock({ id, status }: { id: string, status: StatusType })
     }
   }
 
-  const handleReject = async () => {
+  const handleReject = async (e: React.FormEvent) => {
+    e.preventDefault()
     await updateStatus('rejected', { feedback })
     setShowRejectDialog(false)
     setFeedback("")

@@ -16,6 +16,7 @@ export interface task {
   status: string
   submitted: boolean
   annotator?: string
+  feedback: string
 }
 
 export default function ProjectDashboard() {
