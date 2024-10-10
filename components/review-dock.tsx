@@ -1,16 +1,17 @@
 "use client"
 
-import { useState } from "react"
-import { Check, X, UserPlus } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "sonner"
+import { Annotator } from "@/app/(maneger)/projects/task/[projectId]/page"
+import { getAllAnnotators } from "@/app/actions/annotator"
 import { setTaskStatus } from "@/app/actions/task"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { Check, UserPlus, X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 export type StatusType = 'pending' | 'accepted' | 'rejected' | 'reassigned'
 
@@ -20,7 +21,16 @@ export default function Dock({ id, status }: { id: string, status: StatusType })
   const [showReassignDialog, setShowReassignDialog] = useState(false)
   const [feedback, setFeedback] = useState("")
   const [reassignTo, setReassignTo] = useState("")
+  const [annotators, setAnnotators] = useState<Annotator[]>([])
+
   const router = useRouter()
+
+  useEffect(() => {
+    async function init() {
+      setAnnotators(JSON.parse(await getAllAnnotators()))
+    }
+    init();
+  }, []);
 
   const handleClick = async (action: StatusType) => {
     if (action === 'rejected') {
@@ -150,10 +160,12 @@ export default function Dock({ id, status }: { id: string, status: StatusType })
                 <SelectValue placeholder="Select a person" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="alice">Alice</SelectItem>
-                <SelectItem value="bob">Bob</SelectItem>
-                <SelectItem value="charlie">Charlie</SelectItem>
-              </SelectContent>
+                    {annotators.map((user) => (
+                      <SelectItem key={user._id} value={user._id}>
+                        {user.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
             </Select>
           </div>
           <DialogFooter>

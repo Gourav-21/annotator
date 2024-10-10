@@ -33,7 +33,7 @@ interface Task {
   timeTaken: number
 }
 
-interface Annotator {
+export interface Annotator {
   _id: string
   name: string
   email: string
