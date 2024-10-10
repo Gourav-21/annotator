@@ -106,7 +106,7 @@ export default function ProjectDashboard() {
               onChange={(e) => setNewTemplateName(e.target.value)}
               className="flex-grow"
             />
-            <Button type="submit" disabled={templates.length > 1}>
+            <Button type="submit" disabled={templates.length > 0}>
               <PlusCircle className="mr-2 h-4 w-4" /> Create Template
             </Button>
           </div>
