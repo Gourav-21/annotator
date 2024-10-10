@@ -50,7 +50,6 @@ const DynamicCheckbox = (props: Props) => {
   const [selectedCheckboxes, setSelectedCheckboxes] = useState<string[]>(initial)
   const [checkboxType, setCheckboxType] = useState(type)
   const [checkboxes, setCheckboxes] = useState<string[]>(checkbox)
-  console.log(props.element.content)
   const [newCheckbox, setNewCheckbox] = useState('')
   const [title, setTitle] = useState(ques)
 
