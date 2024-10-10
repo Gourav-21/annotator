@@ -5,6 +5,7 @@ import { connectToDatabase } from "@/lib/db";
 import Task from "@/models/Task";
 import { getServerSession } from "next-auth";
 import { template } from "../template/page";
+import Rework from '@/models/Rework';
 
 export async function updateTask(template: template, _id: string, projectid: string,time:number) {
   await connectToDatabase();
@@ -80,12 +81,33 @@ export async function getTask(_id: string) {
   return JSON.stringify(res)
 }
 
-export async function setTaskStatus(_id: string, status: string) {
+export async function setTaskStatus(_id: string, status: string,feedback?:string,annotator?:string) {
   await connectToDatabase();
   if (status == 'reassigned') {
     const res = await Task.findOneAndUpdate({ _id }, {
       submitted: false,
-      status
+      status,
+      timeTaken: 0,
+      feedback:'',
+      annotator
+    })
+    return res.status
+  }
+  if (status == 'rejected') {
+    const res = await Task.findOneAndUpdate({ _id }, {
+      submitted: false,
+      status,
+      timeTaken: 0,
+      feedback
+    })
+    await Rework.create({
+      name:res.name,
+      created_at:res.created_at,
+      project:res.project,
+      project_Manager:res.project_Manager,
+      annotator:res.annotator,
+      task:res._id,
+      feedback:res.feedback
     })
     return res.status
   }
