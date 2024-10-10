@@ -2,8 +2,9 @@
 
 import { authOptions } from "@/auth";
 import { connectToDatabase } from "@/lib/db";
-import { Project, Template } from "@/models/Project";
+import { Project } from "@/models/Project";
 import Task from "@/models/Task";
+import { Template } from "@/models/Template";
 import { User } from "@/models/User";
 import mongoose from 'mongoose'
 import { getServerSession } from "next-auth";

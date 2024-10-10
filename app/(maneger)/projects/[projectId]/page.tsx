@@ -1,6 +1,6 @@
 'use client'
 import { Project } from "@/app/(maneger)/page"
-import { upsertTemplate } from "@/app/actions/template"
+import { DeleteTemplate, upsertTemplate } from "@/app/actions/template"
 import { template } from "@/app/template/page"
 import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { TaskDialog } from "@/components/taskDialog"
@@ -45,7 +45,7 @@ export default function ProjectDashboard() {
             description: error.message,
           }));
     }
-  }, [session,projectId, toast]);
+  }, [session, projectId, toast]);
 
   if (!session) {
     return <Loader />;
@@ -73,34 +73,18 @@ export default function ProjectDashboard() {
     router.push(`/template?Id=${_id}`);
   }
 
-  const handleDeleteTemplate = (e: React.MouseEvent, _id: string) => {
+  const handleDeleteTemplate = async (e: React.MouseEvent, _id: string) => {
     e.stopPropagation()
-    fetch(`/api/template`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ _id }),
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          const error = await res.json()
-          toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: error.message,
-          });
-        } else {
-          setTemplates(templates.filter(project => project._id !== _id))
-        }
-      })
-      .catch((error) =>
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: error.message,
-        })
-      );
+    const res = await DeleteTemplate(_id)
+    if (!res.success) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: res.error,
+      });
+    } else {
+      setTemplates(templates.filter(project => project._id !== _id))
+    }
   }
 
   return (
@@ -181,7 +165,7 @@ export default function ProjectDashboard() {
             </Table>
           </div>
         )}
-        {project && template && <TaskDialog template={template} setIsDialogOpen={setIsDialogOpen} isDialogOpen={isDialogOpen}  project={project} />}
+        {project && template && <TaskDialog template={template} setIsDialogOpen={setIsDialogOpen} isDialogOpen={isDialogOpen} project={project} />}
       </main>
     </div>
   )

@@ -1,9 +1,10 @@
 'use server'
 import { defaultContent } from "@/lib/constants";
 import { connectToDatabase } from "@/lib/db";
-import { Project, Template } from "@/models/Project";
+import { Project } from "@/models/Project";
 import mongoose from "mongoose";
 import { template } from "../template/page";
+import { Template } from "@/models/Template";
 
 export async function upsertTemplate(projectid: string, template: template, _id: string | undefined, add = false) {
     await connectToDatabase();
@@ -30,4 +31,14 @@ export async function getTemplate(pageId: string) {
     await connectToDatabase();
     const res = await Template.findById(pageId);
     return JSON.stringify(res)
+}
+
+export async function DeleteTemplate(_id: string) {
+    await connectToDatabase();
+    try {
+        await Template.findByIdAndDelete(_id);
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: 'Failed to delete project' }
+    }
 }
