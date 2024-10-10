@@ -1,18 +1,13 @@
 'use client'
 import { getTasksOfAnnotator } from "@/app/actions/task"
 import { SheetMenu } from "@/components/admin-panel/sheet-menu"
-import { Badge } from "@/components/ui/badge"
 import Loader from '@/components/ui/Loader/Loader'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getStatusBadgeVariant } from "@/lib/constants"
-import { format, parseISO } from "date-fns"
-import { CalendarIcon } from "lucide-react"
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import TaskTable from "../_components/TaskTable"
 
-interface task {
+export interface task {
   _id: string
   name: string
   project: string
@@ -43,7 +38,8 @@ export default function ProjectDashboard() {
   const filteredTasks = {
     all: tasks,
     submitted: tasks.filter(task => task.submitted),
-    "newTask": tasks.filter(task => !task.submitted)
+    "newTask": tasks.filter(task => !task.submitted),
+    'rejected': tasks.filter(task => task.status === 'rejected'),
   }
 
   return (
@@ -69,6 +65,7 @@ export default function ProjectDashboard() {
                   <TabsTrigger value="all">All Tasks</TabsTrigger>
                   <TabsTrigger value="newTask">New Tasks</TabsTrigger>
                   <TabsTrigger value="submitted">Submitted Tasks</TabsTrigger>
+                  <TabsTrigger value="rejected">Rejected Tasks</TabsTrigger>
                 </TabsList>
               </div>
               <TabsContent value="all">
@@ -80,51 +77,13 @@ export default function ProjectDashboard() {
               <TabsContent value="newTask">
                 <TaskTable tasks={filteredTasks.newTask} />
               </TabsContent>
+              <TabsContent value="rejected">
+                <TaskTable tasks={filteredTasks.rejected} />
+              </TabsContent>
             </Tabs>
           </>
         )}
       </main>
-    </div>
-  )
-}
-
-function TaskTable({ tasks }: { tasks: task[] }) {
-  const router = useRouter();
-  return (
-    <div className="bg-white shadow-sm rounded-lg overflow-h_idden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Tasks Name</TableHead>
-            <TableHead>Created Date</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-center">Submitted</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {tasks.map((task) => (
-            <TableRow
-              key={task._id}
-              onClick={() => router.push(`/task/${task._id}`)}
-              className="cursor-pointer hover:bg-gray-50"
-            >
-              <TableCell className="font-medium">{task.name}</TableCell>
-              <TableCell>
-                <div className="flex items-center text-sm text-gray-500">
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {format(parseISO(task.created_at), 'PPP')}
-                </div>
-              </TableCell>
-              <TableCell className="font-medium">
-                <Badge variant={getStatusBadgeVariant(task.status)}>
-                  {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
-                </Badge>
-              </TableCell>
-              <TableCell className="font-medium text-center">{task.submitted ? '✔️' : '❌'}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
     </div>
   )
 }
