@@ -38,7 +38,6 @@ const RecordAudioComponent = (props: Props) => {
     return props.element.content?.src || ''
   }, [props.element.content])
 
-  console.log(props.element.content)
 
   const [src, setSrc] = React.useState(initialSrc)
 
