@@ -52,20 +52,8 @@ export function getMenuList(pathname: string): Group[] {
     ];
   }
 
-  if(projectId == "" || projectId == 'dashboard') {
+  if(projectId == "" ) {
     return [
-      {
-        groupLabel: "",
-        menus: [
-          {
-            href: "/dashboard",
-            label: "Dashboard",
-            active: pathname.includes("/dashboard"),
-            icon: LayoutGrid,
-            submenus: []
-          }
-        ]
-      },
       {
         groupLabel: "Contents",
         menus: [
@@ -86,9 +74,9 @@ export function getMenuList(pathname: string): Group[] {
       groupLabel: "",
       menus: [
         {
-          href: "/dashboard",
+          href: `/dashboard/${projectId}`,
           label: "Dashboard",
-          active: pathname.includes("/dashboard"),
+          active: pathname.includes("/dashboard/"),
           icon: LayoutGrid,
           submenus: []
         }

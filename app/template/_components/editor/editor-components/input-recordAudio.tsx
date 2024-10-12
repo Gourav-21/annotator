@@ -1,5 +1,4 @@
 'use client'
-import { updateTask } from '@/app/actions/task';
 import { Badge } from '@/components/ui/badge';
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
@@ -11,7 +10,6 @@ import { useUploadThing } from '@/utils/uploadthing';
 import clsx from 'clsx';
 import { Mic, RotateCcw, Send, Square, Trash } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
@@ -29,8 +27,7 @@ const InputRecordAudioComponent = (props: Props) => {
   const [duration, setDuration] = useState(0)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
-  const { time, running, setRunning } = useTimer()
+  const { setRunning } = useTimer()
   const { status: STATUS, submitted } = useStatus()
 
   const formatDuration = (seconds: number) => {
@@ -41,6 +38,20 @@ const InputRecordAudioComponent = (props: Props) => {
 
   const initialSrc = React.useMemo(() => {
     if (Array.isArray(props.element.content) || (STATUS === 'reassigned' && submitted == false)) {
+      if (props.element.content?.src != '' && loading == false) {
+        dispatch({
+          type: 'UPDATE_ELEMENT',
+          payload: {
+            elementDetails: {
+              ...props.element,
+              content: {
+                ...props.element.content,
+                src: '',
+              },
+            },
+          },
+        })
+      }
       return ''
     }
     return props.element.content?.src || ''
@@ -90,31 +101,6 @@ const InputRecordAudioComponent = (props: Props) => {
     }
   }, [status])
 
-
-  useEffect(() => {
-    async function onClientUploadComplete() {
-      const content = JSON.stringify(state.editor.elements)
-      try {
-        await updateTask({
-          ...pageDetails,
-          content,
-        }, funnelId, subaccountId, time)
-
-        toast.success("Successfully submitted")
-        router.back()
-      } catch (error) {
-        console.log(error)
-        toast.error("Submission failed")
-      }
-      setLoading(false)
-    }
-
-    if (loading && props.element.content.src !== "") {
-      onClientUploadComplete()
-    }
-
-  }, [src])
-
   const reRecord = () => {
     setDuration(0)
     startRecording()
@@ -138,28 +124,14 @@ const InputRecordAudioComponent = (props: Props) => {
         })
       }
 
-
-      // const content = JSON.stringify(state.editor.elements)
-      // console.log(content)
-      // try {
-      //   await updateTask({
-      //     ...pageDetails,
-      //     content,
-      //   }, funnelId, subaccountId, time)
-      //   toast.success("Successfully submitted")
-      //   router.back()
-      // } catch (error) {
-      //   console.log(error)
-      //   toast.error("Submission failed")
-      // }
-      // setLoading(false)
       setDuration(0)
       setSrc(data[0].url)
-
+      setRunning(true)
     },
     onUploadError: () => {
       alert("error occurred while uploading");
       setLoading(false)
+      setRunning(true)
     },
     onUploadBegin: () => {
       setRunning(false)

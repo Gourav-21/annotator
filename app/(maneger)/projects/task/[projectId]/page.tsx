@@ -4,22 +4,23 @@ import { getAllAnnotators } from "@/app/actions/annotator"
 import { changeAnnotator, deleteTask, getAllTasks } from "@/app/actions/task"
 import { upsertTemplate } from "@/app/actions/template"
 import { template } from "@/app/template/page"
+import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { getStatusBadgeVariant } from "@/lib/constants"
+import { formatTime } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
-import { CalendarIcon, LogOut, PlusCircle, Trash2Icon, Shuffle } from "lucide-react"
-import { signOut, useSession } from 'next-auth/react'
+import { CalendarIcon, NotebookPen, PlusCircle, Shuffle, Trash2Icon } from "lucide-react"
+import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { formatTime } from "@/lib/utils"
-import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 
 interface Task {
   _id: string
@@ -31,9 +32,10 @@ interface Task {
   submitted: boolean
   annotator?: string
   timeTaken: number
+  feedback: string
 }
 
-interface Annotator {
+export interface Annotator {
   _id: string
   name: string
   email: string
@@ -160,27 +162,27 @@ export default function Component() {
           </div>
         ) : (
           <>
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <div className="flex justify-between items-center mb-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <div className="flex justify-between items-center mb-4">
                 <TabsList>
                   <TabsTrigger value="all">All Tasks</TabsTrigger>
                   <TabsTrigger value="submitted">Submitted Tasks</TabsTrigger>
                   <TabsTrigger value="unassigned">Unassigned Tasks</TabsTrigger>
                 </TabsList>
-              <Button onClick={handleAutoAssign} variant="outline">
-                <Shuffle className="mr-2 h-4 w-4" /> Auto-assign Tasks
-              </Button>
-            </div>
-            <TabsContent value="all">
-              <TaskTable tasks={filteredTasks.all} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
-            </TabsContent>
-            <TabsContent value="submitted">
-              <TaskTable tasks={filteredTasks.submitted} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
-            </TabsContent>
-            <TabsContent value="unassigned">
-              <TaskTable tasks={filteredTasks.unassigned} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
-            </TabsContent>
-              </Tabs>
+                <Button onClick={handleAutoAssign} variant="outline">
+                  <Shuffle className="mr-2 h-4 w-4" /> Auto-assign Tasks
+                </Button>
+              </div>
+              <TabsContent value="all">
+                <TaskTable tasks={filteredTasks.all} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+              </TabsContent>
+              <TabsContent value="submitted">
+                <TaskTable tasks={filteredTasks.submitted} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+              </TabsContent>
+              <TabsContent value="unassigned">
+                <TaskTable tasks={filteredTasks.unassigned} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+              </TabsContent>
+            </Tabs>
           </>
         )}
       </main>
@@ -197,6 +199,14 @@ interface TaskTableProps {
 }
 
 function TaskTable({ tasks, annotators, handleAssignUser, handleDeleteTemplate, router }: TaskTableProps) {
+  const [dialog, setDialog] = useState(false)
+  const [feedback, setFeedback] = useState('')
+  function handleclick(e: React.MouseEvent,feedback: string) {
+    e.stopPropagation() 
+    setFeedback(feedback)
+    setDialog(true)
+  }
+
   return (
     <div className="bg-white shadow-sm rounded-lg overflow-hidden">
       <Table>
@@ -249,7 +259,7 @@ function TaskTable({ tasks, annotators, handleAssignUser, handleDeleteTemplate, 
                 </Badge>
               </TableCell>
               <TableCell className="font-medium text-center">
-               {formatTime(task.timeTaken)}
+                {formatTime(task.timeTaken)}
               </TableCell>
               <TableCell className="font-medium text-center">
                 <span role="img" aria-label={task.submitted ? "Submitted" : "Not submitted"}>
@@ -257,6 +267,14 @@ function TaskTable({ tasks, annotators, handleAssignUser, handleDeleteTemplate, 
                 </span>
               </TableCell>
               <TableCell className="text-right">
+              {task.feedback &&  <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e)=>handleclick(e,task.feedback)}
+                >
+                  <NotebookPen className="h-4 w-4" />
+                  <span className="sr-only">feedback</span>
+                </Button>}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -269,6 +287,23 @@ function TaskTable({ tasks, annotators, handleAssignUser, handleDeleteTemplate, 
             </TableRow>
           ))}
         </TableBody>
+        <Dialog open={dialog} onOpenChange={setDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Feedback</DialogTitle>
+              <DialogDescription>
+                {feedback}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="sm:justify-start">
+              <DialogClose asChild>
+                <Button type="button" variant="secondary">
+                  Close
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </Table>
     </div>
   )

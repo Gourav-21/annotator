@@ -1,5 +1,6 @@
 import { Schema, model, models } from 'mongoose';
 import Task from './Task';
+import { Template } from './Template';
 
 const projectSchema = new Schema({
   name: { type: String, required: true },
@@ -32,12 +33,3 @@ projectSchema.pre('findOneAndDelete', async function (next) {
 });
 
 export const Project = models?.Project || model('Project', projectSchema);
-
-const templateSchema = new Schema({
-  name: { type: String, required: true },
-  created_at: { type: Date, default: Date.now },
-  content: { type: String, required: true },
-  project: { type: Schema.Types.ObjectId, ref: 'Project', required: true },
-});
-
-export const Template = models?.Template || model('Template', templateSchema);

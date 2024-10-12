@@ -13,29 +13,13 @@ interface OverviewData {
   annotators: number
 }
 
-export default function MinimalistDashboardOverviewCard() {
-  const [data, setData] = React.useState<OverviewData>({
-    projects: 0,
-    templates: 0,
-    tasks: 0,
-    annotators: 0
-  })
-
-  React.useEffect(() => {
-    // Simulating data fetch. Replace this with your actual data fetching logic
-    getProjectDetailsByManager()
-    .then(details => {
-      setData(details)
-      console.log(details)
-    })
-    .catch(err => console.error(err));
-  }, [])
+export default function MinimalistDashboardOverviewCard({ projects, templates,annotator,totalTasks }: { projects: number, templates: number,annotator: number, totalTasks: number }) {
 
   const items = [
-    { label: 'Projects', value: data.projects, icon: Layers },
-    { label: 'Templates', value: data.templates, icon: FileText },
-    { label: 'Tasks', value: data.tasks, icon: CheckSquare },
-    { label: 'Annotators', value: data.annotators, icon: Users },
+    { label: 'Projects', value: projects, icon: Layers },
+    { label: 'Templates', value: templates, icon: FileText },
+    { label: 'Tasks', value: totalTasks? totalTasks : 0, icon: CheckSquare },
+    { label: 'Annotators', value: annotator, icon: Users },
   ]
 
   return (

@@ -1,5 +1,4 @@
 'use client'
-import { updateTask } from '@/app/actions/task';
 import { Badge } from '@/components/ui/badge';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,9 +9,7 @@ import { EditorElement, useEditor } from '@/providers/editor/editor-provider';
 import { useUploadThing } from '@/utils/uploadthing';
 import clsx from 'clsx';
 import { Send, Trash } from 'lucide-react';
-import { set } from 'mongoose';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import 'react-h5-audio-player/lib/styles.css';
 import { useReactMediaRecorder } from "react-media-recorder";
@@ -29,8 +26,7 @@ const InputRecordVideoComponent = (props: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [loading, setLoading] = useState(false)
   const session = useSession()
-  const router = useRouter()
-  const { time, running, setRunning } = useTimer()
+  const { setRunning } = useTimer()
   const { status: STATUS, submitted } = useStatus()
 
   useEffect(() => {
@@ -43,6 +39,20 @@ const InputRecordVideoComponent = (props: Props) => {
 
   const initialSrc = React.useMemo(() => {
     if (Array.isArray(props.element.content) || (STATUS === 'reassigned' && submitted == false)) {
+      if (props.element.content?.src != '' && loading == false) {
+        dispatch({
+          type: 'UPDATE_ELEMENT',
+          payload: {
+            elementDetails: {
+              ...props.element,
+              content: {
+                ...props.element.content,
+                src: '',
+              },
+            },
+          },
+        })
+      }
       return ''
     }
     return props.element.content?.src || ''
@@ -72,32 +82,6 @@ const InputRecordVideoComponent = (props: Props) => {
     })
   }
 
-  useEffect(() => {
-    console.log(props.element.content)
-    async function onClientUploadComplete() {
-      const content = JSON.stringify(state.editor.elements)
-      try {
-        await updateTask({
-          ...pageDetails,
-          content,
-        }, funnelId, subaccountId, time)
-
-        toast.success("Successfully submitted")
-        router.back()
-      } catch (error) {
-        console.log(error)
-        toast.error("Submission failed")
-      }
-      setLoading(false)
-    }
-
-    if (loading && props.element.content.src !== "") {
-      onClientUploadComplete()
-    }
-
-  }, [src])
-
-
   const { startUpload, routeConfig } = useUploadThing("videoUploader", {
     onClientUploadComplete: (data) => {
       setLoading(true)
@@ -118,10 +102,12 @@ const InputRecordVideoComponent = (props: Props) => {
       }
 
       setSrc(data[0].url)
+      setRunning(true)
     },
     onUploadError: () => {
       alert("error occurred while uploading");
       setLoading(false)
+      setRunning(true)
     },
     onUploadBegin: () => {
       console.log("upload has begun");

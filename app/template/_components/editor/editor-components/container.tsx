@@ -187,7 +187,7 @@ const Container = ({ element }: Props) => {
             containerId: id,
             elementDetails: {
               content: {
-                src: '',
+                selectedCheckbox: [],
               },
               id: v4(),
               name: 'checkbox',
@@ -295,7 +295,7 @@ const Container = ({ element }: Props) => {
           payload: {
             containerId: id,
             elementDetails: {
-              content: [],
+              content: { innerText: '' },
               id: v4(),
               name: 'input Text',
               styles: { ...defaultStyles, width: '100%' },

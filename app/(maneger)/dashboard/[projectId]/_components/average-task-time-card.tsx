@@ -9,46 +9,26 @@ interface Task {
   timeTaken: number
 }
 
-export default function AverageTaskTimeCardComponent() {
-  const [fetchedData, setFetchedData ] = React.useState<Task[]>([])
-  const [averageTime, setAverageTime] = React.useState(0)
-  const [totalTasks, setTotalTasks] = React.useState(0)
+export default function AverageTaskTimeCardComponent({ time, totalTasks }: { time: number, totalTasks: number }) {
+  const Time = (time ? time : 0)
 
-  React.useEffect(() => {
-    // Simulating data fetch. Replace this with your actual data fetching logic
-    
-    async function init() {
-      const data = await getTasksAverageTimeOfManager()
-      if(data.error) {
-        console.error(data.error)
-        return
-      }
-      setFetchedData(JSON.parse(data.data as string) as Task[])
-    }
-    init()
-  }, [])
 
-  useEffect(() => {
-    const total = fetchedData.reduce((sum, task) => sum + task.timeTaken, 0)
-    setAverageTime(total / fetchedData.length)
-    setTotalTasks(fetchedData.length)
-  }, [fetchedData])
 
   const formatTime = (seconds: number) => {
     const totalMinutes = Math.floor(seconds / 60);
     const secs = Math.round(seconds % 60); // Round the seconds
     const hours = Math.floor(totalMinutes / 60);
     const mins = totalMinutes % 60;
-  
+
     if (hours > 0) {
       return secs > 0 ? `${hours}h ${mins}m ${secs}s` : `${hours}h ${mins}m`;
     } else {
       return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`;
     }
   };
-  
 
-  const clockHandRotation = (averageTime / 60) * 360 // 360 degrees for 60 minutes
+
+  const clockHandRotation = (Time / 60) * 360 // 360 degrees for 60 minutes
 
   return (
     <Card className="w-full max-w-md">
@@ -87,14 +67,14 @@ export default function AverageTaskTimeCardComponent() {
             />
           </svg>
         </div>
-        <div className="text-4xl font-bold">{formatTime(averageTime)}</div>
+        <div className="text-4xl font-bold">{formatTime(Time)}</div>
         <p className="mt-2 text-sm text-muted-foreground">
           Average time spent on each task
         </p>
       </CardContent>
       <CardFooter className="justify-center">
         <p className="text-xs text-muted-foreground">
-          Based on data from {totalTasks} tasks
+          Based on data from {totalTasks?totalTasks:0} tasks
         </p>
       </CardFooter>
     </Card>

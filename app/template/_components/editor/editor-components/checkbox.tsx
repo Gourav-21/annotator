@@ -1,18 +1,14 @@
 'use client'
-import { updateTask } from '@/app/actions/task'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox as CheckboxPrimitive } from "@/components/ui/checkbox"
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import useTimer from '@/hooks/use-timer'
-import { toast } from '@/hooks/use-toast'
 import { EditorBtns } from '@/lib/constants'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
 import { Trash } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
 type Props = {
@@ -21,8 +17,6 @@ type Props = {
 
 const Checkbox = (props: Props) => {
   const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
-  const router = useRouter()
-  const { time } = useTimer()
   const initial = React.useMemo(() => {
     if (Array.isArray(props.element.content)) {
       return []
@@ -72,37 +66,6 @@ const Checkbox = (props: Props) => {
     })
   }
 
-  const handleSubmit = async () => {
-  if (selectedCheckboxes.length === 0) {
-    toast({
-      variant: 'destructive',
-      title: 'Failed',
-      description: 'Please select at least one checkbox',
-    })
-    return
-  }
-  const content = JSON.stringify(state.editor.elements)
-  if (!state.editor.liveMode) return
-
-  try {
-    await updateTask({
-      ...pageDetails,
-      content,
-    }, funnelId, subaccountId, time)
-    toast({
-      title: 'Success',
-      description: 'Successfully submitted',
-    })
-    router.back()
-  } catch (error) {
-    console.log(error)
-    toast({
-      variant: 'destructive',
-      title: 'Failed',
-      description: 'submission failed',
-    })
-  }
-}
 
 const handleAddCheckbox = (e: React.FormEvent) => {
   e.preventDefault()
@@ -123,7 +86,6 @@ const handleAddCheckbox = (e: React.FormEvent) => {
     })
   }
 }
-console.log(props.element.content)
 
 const handleCheckboxChange = (value: string) => {
   if (checkboxType === 'single') {
@@ -239,7 +201,7 @@ return (
         ) : (
           <p className="text-gray-500 italic">No checkboxes added yet.</p>
         )}
-        <Button onClick={handleSubmit} className='mt-4' disabled={pageDetails.submitted}>{pageDetails.submitted ? "Submitted" : "Submit"}</Button>
+        {/* <Button onClick={handleSubmit} className='mt-4' disabled={pageDetails.submitted}>{pageDetails.submitted ? "Submitted" : "Submit"}</Button> */}
       </div>
 
 

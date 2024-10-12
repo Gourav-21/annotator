@@ -8,13 +8,14 @@ import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Editor from './editor'
-import Timer from '@/components/floating-timer'
+import Timer from '@/components/floating-timer-submit'
 import useStatus from '@/hooks/use-status'
 
 export interface task  {
   _id: string
   name: string
   project: string
+  created_at: string
   content: string
   status: StatusType
   submitted: boolean
@@ -64,7 +65,7 @@ const Page = () => {
     >
       <Editor pageId={taskid} liveMode={true} />
       {session?.user?.role === 'project manager' && <Dock id={taskid} status={task.status} />}
-      {session?.user?.role === 'annotator'&& !task.submitted &&  ( task.status =='pending'|| task.status =='reassigned') && <Timer />}
+      {session?.user?.role === 'annotator'&& !task.submitted &&  ( task.status !=='accepted') && <Timer />}
     </EditorProvider>
   )
 }
