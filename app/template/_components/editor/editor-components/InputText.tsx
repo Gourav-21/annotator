@@ -1,6 +1,7 @@
 'use client'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { EditorBtns } from '@/lib/constants'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
@@ -71,7 +72,7 @@ const InputText = (props: Props) => {
         )}
 
       <form className="flex w-full items-center space-x-2" >
-        <Input type="text" placeholder="write here" required value={text} disabled={pageDetails.submitted} onChange={(e) => setText(e.target.value)} onBlur={(e) => {
+        <Textarea placeholder="write here" required value={text} disabled={pageDetails.submitted} onChange={(e) => setText(e.target.value)} onBlur={(e) => {
           const inputValue = e.target.value;
           dispatch({
             type: 'UPDATE_ELEMENT',
