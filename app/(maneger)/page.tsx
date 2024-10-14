@@ -142,7 +142,7 @@ export default function ProjectDashboard() {
       linkElement.setAttribute('download', exportFileDefaultName)
       linkElement.click()
     } else {
-      jsonToCsvExport({ data: exportItems, fileName: `${name}.csv` })
+      jsonToCsvExport({ data: exportItems, filename: `${name}.csv` })
     }
 
     setOpen(false)
