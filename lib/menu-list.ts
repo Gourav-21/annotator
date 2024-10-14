@@ -52,9 +52,20 @@ export function getMenuList(pathname: string): Group[] {
     ];
   }
 
-  if(projectId == "" ) {
+  if(projectId == "" || projectId == 'dashboard') {
     return [
       {
+        groupLabel: "",
+        menus: [
+          {
+            href: "/dashboard",
+            label: "Dashboard",
+            active: pathname.includes("/dashboard"),
+            icon: LayoutGrid,
+            submenus: []
+          }
+        ]
+      },{
         groupLabel: "Contents",
         menus: [
           {
