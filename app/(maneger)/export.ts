@@ -3,7 +3,6 @@ export function extractElementDetails(content) {
 
     // Recursively iterate through the content to extract elements
     function extractContent(node) {
-        console.log(node)
         if (node.content && Array.isArray(node.content)) {
             node.content.forEach(extractContent); // If content is an array, recurse
         } else if (node.name && node.content) {

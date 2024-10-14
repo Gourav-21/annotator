@@ -120,7 +120,6 @@ export default function ProjectDashboard() {
       return
     }
     const extractedElements = extractElementDetails(JSON.parse(res[0].content));
-    console.log(extractedElements)
     setRes(res)
     setName(project.name)
     setExportItems(extractedElements)
