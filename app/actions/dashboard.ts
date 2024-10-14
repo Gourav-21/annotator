@@ -23,6 +23,55 @@ export async function getTasksStatusOfManager() {
   }
 }
 
+export async function getGlobalDashboard() {
+  try {
+    await connectToDatabase();
+    const session = await getServerSession(authOptions);
+    const managerId = session?.user.id;
+
+    if (!managerId) {
+      return { error: 'User is not authenticated' };
+    }
+
+    // Aggregating project, task, and other related data
+    const result = await Task.aggregate([
+      { $match: { project_Manager: new mongoose.Types.ObjectId(managerId) } }, // Match tasks by manager
+      
+      // Group to count tasks, calculate average time, and statuses/submissions
+      {
+        $group: {
+          _id: "$project_Manager",
+          totalTasks: { $sum: 1 },
+          averageTime: { $avg: "$timeTaken" },
+          submittedTasks: { $sum: { $cond: [{ $eq: ["$submitted", true] }, 1, 0] } }, // Count submitted tasks
+          statuses: { $push: "$status" } // Collect all statuses
+        }
+      }
+    ]);
+
+    // Count projects and templates using Project and Template collections
+    const projects = await Project.countDocuments({ project_Manager: managerId });
+    const templates = await Template.countDocuments({
+      project: { $in: await Project.find({ project_Manager: managerId }) }
+    });
+
+    // Count annotators
+    const annotators = await User.countDocuments({ role: 'annotator' });
+
+    return JSON.stringify({
+      tasksData: result.length ? result[0] : {},
+      projects,
+      templates,
+      annotators
+    });
+
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    return { error: 'Error occurred while fetching dashboard data' };
+  }
+}
+
+
 export async function getProjectDashboard(id:string) {
   try {
     await connectToDatabase();
