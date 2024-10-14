@@ -15,6 +15,7 @@ type Props = {
 
 const InputText = (props: Props) => {
   const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
+  const [name, setName] = React.useState(props.element.name)
   const initialText = React.useMemo(() => {
     if (Array.isArray(props.element.content)) {
       return ''
@@ -22,6 +23,7 @@ const InputText = (props: Props) => {
     return props.element.content?.innerText || ''
   }, [props.element.content])
 
+  console.log(props.element)
   const [text, setText] = React.useState(initialText)
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
@@ -66,9 +68,18 @@ const InputText = (props: Props) => {
     >
       {state.editor.selectedElement.id === props.element.id &&
         !state.editor.liveMode && (
-          <Badge className="absolute -top-[23px] -left-[1px] rounded-none rounded-t-lg ">
-            {state.editor.selectedElement.name}
-          </Badge>
+          <div className="absolute -top-[23px] -left-[1px]  flex ">
+            {/* <Badge className=" rounded-none rounded-t-lg">
+              {state.editor.selectedElement.name}
+            </Badge> */}
+            <Input className="w-full h-6 bg-black text-white font-semibold text-xs rounded-none rounded-t-lg" placeholder='title' value={name} onChange={(e) => setName(e.target.value)}
+              onBlur={(e) => dispatch({
+                type: 'UPDATE_ELEMENT',
+                payload: {
+                  elementDetails: { ...props.element, name: e.target.value},
+                },
+              })} />
+          </div>
         )}
 
       <form className="flex w-full items-center space-x-2" >

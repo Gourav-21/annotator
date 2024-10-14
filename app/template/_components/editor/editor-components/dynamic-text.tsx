@@ -1,5 +1,6 @@
 'use client'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
 import clsx from 'clsx'
 import { Trash } from 'lucide-react'
@@ -11,6 +12,7 @@ type Props = {
 
 const DynamicTextComponent = (props: Props) => {
   const { dispatch, state } = useEditor()
+  const [name, setName] = React.useState(props.element.name)
 
   const handleDeleteElement = () => {
     dispatch({
@@ -48,9 +50,18 @@ const DynamicTextComponent = (props: Props) => {
     >
       {state.editor.selectedElement.id === props.element.id &&
         !state.editor.liveMode && (
-          <Badge className="absolute -top-[23px] -left-[1px] rounded-none rounded-t-lg">
-            {state.editor.selectedElement.name}
-          </Badge>
+          <div className="absolute -top-[23px] -left-[1px]  flex ">
+            {/* <Badge className=" rounded-none rounded-t-lg">
+              {state.editor.selectedElement.name}
+            </Badge> */}
+            <Input className="w-full h-6 bg-black text-white font-semibold text-xs rounded-none rounded-t-lg" placeholder='title' value={name} onChange={(e) => setName(e.target.value)}
+              onBlur={(e) => dispatch({
+                type: 'UPDATE_ELEMENT',
+                payload: {
+                  elementDetails: { ...props.element, name: e.target.value },
+                },
+              })} />
+          </div>
         )}
       <span
         contentEditable={!state.editor.liveMode}

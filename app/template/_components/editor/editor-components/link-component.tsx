@@ -1,5 +1,6 @@
 'use client'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { EditorBtns } from '@/lib/constants'
 
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
@@ -15,6 +16,7 @@ type Props = {
 
 const LinkComponent = (props: Props) => {
   const { dispatch, state } = useEditor()
+  const [name, setName] = React.useState(props.element.name)
 
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
@@ -65,9 +67,18 @@ const LinkComponent = (props: Props) => {
         )}
       {!Array.isArray(props.element.content) &&
         (state.editor.previewMode || state.editor.liveMode) && (
-          <Link target="_blank" href={props.element.content.href || '#'}>
-            {props.element.content.innerText}
-          </Link>
+          <div className="absolute -top-[23px] -left-[1px]  flex ">
+          {/* <Badge className=" rounded-none rounded-t-lg">
+            {state.editor.selectedElement.name}
+          </Badge> */}
+          <Input className="w-full h-6 bg-black text-white font-semibold text-xs rounded-none rounded-t-lg" placeholder='title' value={name} onChange={(e) => setName(e.target.value)}
+            onBlur={(e) => dispatch({
+              type: 'UPDATE_ELEMENT',
+              payload: {
+                elementDetails: { ...props.element, name: e.target.value},
+              },
+            })} />
+        </div>
         )}
       {!state.editor.previewMode && !state.editor.liveMode && (
         <span

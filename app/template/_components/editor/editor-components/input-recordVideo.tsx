@@ -2,6 +2,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from '@/components/ui/input';
 import useStatus from '@/hooks/use-status';
 import useTimer from '@/hooks/use-timer';
 import { EditorBtns } from '@/lib/constants';
@@ -22,6 +23,8 @@ type Props = {
 
 const InputRecordVideoComponent = (props: Props) => {
   const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
+  const [name, setName] = React.useState(props.element.name)
+
   const { status, startRecording, stopRecording, mediaBlobUrl, previewStream } = useReactMediaRecorder({ video: true });
   const videoRef = useRef<HTMLVideoElement>(null)
   const [loading, setLoading] = useState(false)
@@ -144,9 +147,18 @@ const InputRecordVideoComponent = (props: Props) => {
     >
       {state.editor.selectedElement.id === props.element.id &&
         !state.editor.liveMode && (
-          <Badge className="absolute -top-[23px] -left-[1px] rounded-none rounded-t-lg ">
-            {state.editor.selectedElement.name}
-          </Badge>
+          <div className="absolute -top-[23px] -left-[1px]  flex ">
+            {/* <Badge className=" rounded-none rounded-t-lg">
+              {state.editor.selectedElement.name}
+            </Badge> */}
+            <Input className="w-full h-6 bg-black text-white font-semibold text-xs rounded-none rounded-t-lg" placeholder='title' value={name} onChange={(e) => setName(e.target.value)}
+              onBlur={(e) => dispatch({
+                type: 'UPDATE_ELEMENT',
+                payload: {
+                  elementDetails: { ...props.element, name: e.target.value},
+                },
+              })} />
+          </div>
         )}
 
 

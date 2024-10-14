@@ -1,5 +1,6 @@
 'use client'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { EditorBtns } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
@@ -13,6 +14,8 @@ type Props = {
 
 const DynamicImageComponent = (props: Props) => {
   const { dispatch, state } = useEditor()
+  const [name, setName] = React.useState(props.element.name)
+
   const styles = props.element.styles
 
   const initialSrc = React.useMemo(() => {
@@ -64,9 +67,18 @@ const DynamicImageComponent = (props: Props) => {
     >
       {state.editor.selectedElement.id === props.element.id &&
         !state.editor.liveMode && (
-          <Badge className="absolute -top-[23px] -left-[1px] rounded-none rounded-t-lg ">
-            {state.editor.selectedElement.name}
-          </Badge>
+          <div className="absolute -top-[23px] -left-[1px]  flex ">
+            {/* <Badge className=" rounded-none rounded-t-lg">
+              {state.editor.selectedElement.name}
+            </Badge> */}
+            <Input className="w-full h-6 bg-black text-white font-semibold text-xs rounded-none rounded-t-lg" placeholder='title' value={name} onChange={(e) => setName(e.target.value)}
+              onBlur={(e) => dispatch({
+                type: 'UPDATE_ELEMENT',
+                payload: {
+                  elementDetails: { ...props.element, name: e.target.value},
+                },
+              })} />
+          </div>
         )}
 
       {!Array.isArray(props.element.content) && state.editor.liveMode && (
