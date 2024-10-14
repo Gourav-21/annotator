@@ -3,15 +3,16 @@ export function extractElementDetails(content) {
 
     // Recursively iterate through the content to extract elements
     function extractContent(node) {
+        console.log(node)
         if (node.content && Array.isArray(node.content)) {
             node.content.forEach(extractContent); // If content is an array, recurse
         } else if (node.name && node.content) {
             let extractedContent;
 
             // Extract the specific content based on the element's name
-            switch (node.name) {
-                case 'input Text':
-                case 'Text':
+            switch (node.type) {
+                case 'inputText':
+                case 'text':
                 case 'dynamicText':
                     extractedContent = node.content.innerText || '';
                     break;
