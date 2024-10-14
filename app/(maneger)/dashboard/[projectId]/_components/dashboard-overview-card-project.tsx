@@ -11,11 +11,12 @@ interface OverviewData {
   annotators: number
 }
 
-export default function MinimalistDashboardOverviewCard({ projects, templates,annotator,totalTasks }: { projects: number, templates: number,annotator: number, totalTasks: number }) {
+export default function ProjectDashboardCard({ rework,annotator,totalTasks }: { rework: number,annotator: number, totalTasks: number }) {
 
   const items = [
-    { label: 'Projects', value: projects, icon: Layers },
-    { label: 'Templates', value: templates, icon: FileText },
+    // { label: 'Projects', value: projects, icon: Layers },
+    // { label: 'Templates', value: templates, icon: FileText },
+    { label: 'Reworks', value: rework, icon: Layers },
     { label: 'Tasks', value: totalTasks? totalTasks : 0, icon: CheckSquare },
     { label: 'Annotators', value: annotator, icon: Users },
   ]
@@ -23,7 +24,7 @@ export default function MinimalistDashboardOverviewCard({ projects, templates,an
   return (
     <Card className="w-full overflow-hidden">
       <CardContent className="p-6">
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3">
           {items.map((item, index) => (
             <motion.div
               key={index}

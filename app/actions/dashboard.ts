@@ -3,6 +3,7 @@
 import { authOptions } from "@/auth";
 import { connectToDatabase } from "@/lib/db";
 import { Project } from "@/models/Project";
+import Rework from "@/models/Rework";
 import Task from "@/models/Task";
 import { Template } from "@/models/Template";
 import { User } from "@/models/User";
@@ -99,18 +100,14 @@ export async function getProjectDashboard(id:string) {
     ]);
 
     // Count projects and templates using Project and Template collections
-    const projects = await Project.countDocuments({ project_Manager: managerId });
-    const templates = await Template.countDocuments({
-      project: { $in: await Project.find({ project_Manager: managerId , _id: id }).distinct('_id') }
-    });
+    const rework: number = await Rework.countDocuments({ project: id });
 
     // Count annotators
     const annotators = await User.countDocuments({ role: 'annotator' });
 
     return JSON.stringify({
       tasksData: result.length ? result[0] : {},
-      projects,
-      templates,
+      rework,
       annotators
     });
 

@@ -1,14 +1,14 @@
 'use client'
+import { getProjectDashboard } from '@/app/actions/dashboard'
+import { SheetMenu } from '@/components/admin-panel/sheet-menu'
 import Loader from '@/components/ui/Loader/Loader'
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import AverageTaskTimeCardComponent from "./_components/average-task-time-card"
 import ChartComponent from "./_components/chart"
-import DashboardOverviewCardComponent from "./_components/dashboard-overview-card"
 import TaskSubmissionChartComponent from "./_components/task-submission-chart"
-import { SheetMenu } from '@/components/admin-panel/sheet-menu'
-import { getProjectDashboard } from '@/app/actions/dashboard'
+import ProjectDashboardCard from './_components/dashboard-overview-card-project'
 
 export interface Project {
   _id: string
@@ -97,7 +97,7 @@ export default function ProjectDashboard() {
             <AverageTaskTimeCardComponent time={data.tasksData.averageTime? data.tasksData.averageTime : 0} totalTasks={data.tasksData.totalTasks? data.tasksData.totalTasks : 0} />
             <TaskSubmissionChartComponent totalTasks={data.tasksData.totalTasks? data.tasksData.totalTasks : 0} submittedTasks={data.tasksData.submittedTasks? data.tasksData.submittedTasks : 0}  />
           </div>
-          <DashboardOverviewCardComponent projects={data.projects? data.projects : 0} templates={data.templates? data.templates : 0} annotator={data.annotators? data.annotators : 0} totalTasks={data.tasksData.totalTasks? data.tasksData.totalTasks : 0} />
+          <ProjectDashboardCard rework={data.projects? data.projects : 0} annotator={data.annotators? data.annotators : 0} totalTasks={data.tasksData.totalTasks? data.tasksData.totalTasks : 0} />
         </main>
       </div>
     )
