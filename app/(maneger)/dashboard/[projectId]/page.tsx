@@ -23,8 +23,7 @@ interface DashboardData {
     submittedTasks: number;
     statuses: string[];
   };
-  projects: number;
-  templates: number;
+  rework: number;
   annotators: number;
 }
 
@@ -97,7 +96,7 @@ export default function ProjectDashboard() {
             <AverageTaskTimeCardComponent time={data.tasksData.averageTime? data.tasksData.averageTime : 0} totalTasks={data.tasksData.totalTasks? data.tasksData.totalTasks : 0} />
             <TaskSubmissionChartComponent totalTasks={data.tasksData.totalTasks? data.tasksData.totalTasks : 0} submittedTasks={data.tasksData.submittedTasks? data.tasksData.submittedTasks : 0}  />
           </div>
-          <ProjectDashboardCard rework={data.projects? data.projects : 0} annotator={data.annotators? data.annotators : 0} totalTasks={data.tasksData.totalTasks? data.tasksData.totalTasks : 0} />
+          <ProjectDashboardCard rework={data.rework? data.rework : 0} annotator={data.annotators? data.annotators : 0} totalTasks={data.tasksData.totalTasks? data.tasksData.totalTasks : 0} />
         </main>
       </div>
     )

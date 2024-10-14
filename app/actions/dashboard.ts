@@ -100,7 +100,7 @@ export async function getProjectDashboard(id:string) {
     ]);
 
     // Count projects and templates using Project and Template collections
-    const rework: number = await Rework.countDocuments({ project: id });
+    const rework: number = await Rework.countDocuments({ project: new mongoose.Types.ObjectId(id) });
 
     // Count annotators
     const annotators = await User.countDocuments({ role: 'annotator' });
