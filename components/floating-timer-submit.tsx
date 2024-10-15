@@ -36,6 +36,12 @@ export default function Timer() {
   }, [running])
 
 
+  useEffect(() => {
+    if (!running)
+    toggleTimer()
+  }, [])
+
+
   const toggleTimer = () => {
     setRunning(!running)
   }

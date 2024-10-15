@@ -18,8 +18,9 @@ interface Task {
 }
 
 interface Placeholder {
-  type: 'text' | 'video' | 'img' | 'audio' | 'checkbox'
+  type: 'text' | 'video' | 'img' | 'audio'
   index: number
+  name: string
 }
 
 export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }: { template: template, isDialogOpen: boolean, setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>, project: Project}) {
@@ -28,24 +29,56 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    const placeholderRegex = /{{(text|video|img|audio|checkbox)}}/g
-    const matches = Array.from(template.content.matchAll(placeholderRegex))
-    setPlaceholders(matches.map((match, index) => ({
-      type: match[1] as 'text' | 'video' | 'img' | 'audio' | 'checkbox',
-      index
-    })))
+    try {
+      const content = JSON.parse(template.content)
+      const extractedPlaceholders: Placeholder[] = content[0].content.reduce((acc: Placeholder[], item: any, index: number) => {
+        if (item.type.startsWith('dynamic')) {
+          let type: 'text' | 'video' | 'img' | 'audio'
+          switch (item.type) {
+            case 'dynamicText':
+              type = 'text'
+              break
+            case 'dynamicVideo':
+              type = 'video'
+              break
+            case 'dynamicImage':
+              type = 'img'
+              break
+            case 'dynamicAudio':
+              type = 'audio'
+              break
+            default:
+              return acc
+          }
+          acc.push({
+            type,
+            index,
+            name: item.name
+          })
+        }
+        return acc
+      }, [])
+      setPlaceholders(extractedPlaceholders)
+    } catch (error) {
+      console.error("Error parsing template content:", error)
+      toast({
+        title: "Template Error",
+        description: "Failed to parse template content. Please check the template format.",
+        variant: "destructive",
+      })
+    }
   }, [template])
 
   const handleAddTask = () => {
-    setTasks([...tasks, { id: tasks.length + 1, values: {}, count: 1 }])
+    setTasks(prevTasks => [...prevTasks, { id: prevTasks.length + 1, values: {}, count: 1 }])
   }
 
   const handleRemoveTask = (id: number) => {
-    setTasks(tasks.filter(task => task.id !== id))
+    setTasks(prevTasks => prevTasks.filter(task => task.id !== id))
   }
 
   const handleInputChange = (taskId: number, placeholder: Placeholder, value: string) => {
-    setTasks(tasks.map(task =>
+    setTasks(prevTasks => prevTasks.map(task =>
       task.id === taskId
         ? { ...task, values: { ...task.values, [placeholder.index]: value } }
         : task
@@ -53,7 +86,7 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
   }
 
   const handleCountChange = (taskId: number, count: number) => {
-    setTasks(tasks.map(task =>
+    setTasks(prevTasks => prevTasks.map(task =>
       task.id === taskId
         ? { ...task, count: Math.max(1, count) }
         : task
@@ -61,13 +94,29 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
   }
 
   const renderFilledTemplate = (values: { [key: string]: string }) => {
-    let filledTemplate = template.content
-    placeholders.forEach((placeholder, index) => {
-      const regex = new RegExp(`{{${placeholder.type}}}`)
-      const value = values[index] || `{{${placeholder.type}}}`
-      filledTemplate = filledTemplate.replace(regex, value)
-    })
-    return filledTemplate
+    try {
+      let content = JSON.parse(template.content)
+      content[0].content = content[0].content.map((item: any, index: number) => {
+        const placeholder = placeholders.find(p => p.index === index)
+        if (placeholder) {
+          if (item.type === 'dynamicText') {
+            item.content.innerText = values[index] || `{{${placeholder.type}}}`
+          } else {
+            item.content.src = values[index] || `{{${placeholder.type}}}`
+          }
+        }
+        return item
+      })
+      return JSON.stringify(content)
+    } catch (error) {
+      console.error("Error rendering filled template:", error)
+      toast({
+        title: "Render Error",
+        description: "Failed to render filled template. Please check the input values.",
+        variant: "destructive",
+      })
+      return ''
+    }
   }
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +138,7 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
           const newTasks = (results.data as string[][]).slice(1).map((row, index) => {
             return {
               id: index + 1,
-              values: Object.fromEntries(placeholders.map((_, i) => [i, row[i] || ''])),
+              values: Object.fromEntries(placeholders.map((placeholder, i) => [placeholder.index, row[i] || ''])),
               count: 1
             }
           })
@@ -164,16 +213,16 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
                   </Button>
                 </div>
               </div>
-              {placeholders.map((placeholder, index) => (
-                <div key={index} className="mb-2">
-                  <label htmlFor={`${task.id}-${index}`} className="block text-sm font-medium text-gray-700">
-                    {placeholder.type} (#{index + 1})
+              {placeholders.map((placeholder) => (
+                <div key={placeholder.index} className="mb-2">
+                  <label htmlFor={`${task.id}-${placeholder.index}`} className="block text-sm font-medium text-gray-700">
+                    {placeholder.name} ({placeholder.type})
                   </label>
                   <Input
-                    id={`${task.id}-${index}`}
-                    value={task.values[index] || ""}
+                    id={`${task.id}-${placeholder.index}`}
+                    value={task.values[placeholder.index] || ""}
                     onChange={(e) => handleInputChange(task.id, placeholder, e.target.value)}
-                    placeholder={`Enter ${placeholder.type} content`}
+                    placeholder={`Enter ${placeholder.type} content for ${placeholder.name}`}
                   />
                 </div>
               ))}
