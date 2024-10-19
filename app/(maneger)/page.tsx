@@ -111,7 +111,6 @@ export default function ProjectDashboard() {
   const handledownload = async (e: React.MouseEvent, project: Project) => {
     e.stopPropagation()
     const res = JSON.parse(await getAllAcceptedTasks(project._id))
-    console.log(res)
     if (res.length === 0) {
       toast({
         variant: "destructive",

@@ -25,7 +25,6 @@ const InputText = (props: Props) => {
     return props.element.content?.innerText || ''
   }, [props.element.content])
 
-  console.log(props.element)
   const [text, setText] = React.useState(initialText)
   const handleDragStart = (e: React.DragEvent, type: EditorBtns) => {
     if (type === null) return
