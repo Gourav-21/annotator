@@ -28,6 +28,12 @@ export async function upsertTemplate(projectid: string, template: template, _id:
     return JSON.stringify(res)
 }
 
+export async function updateTimer(_id: string, timer: number) {
+    await connectToDatabase();
+    await Template.findOneAndUpdate({ _id }, {
+        timer
+    });
+}
 
 export async function getTemplate(pageId: string) {
     await connectToDatabase();
