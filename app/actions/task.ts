@@ -25,6 +25,7 @@ export async function createTasks(tasks: {
   project: string;
   name: string;
   content: string;
+  timer: number;
 }[]) {
   await connectToDatabase();
   const session = await getServerSession(authOptions);

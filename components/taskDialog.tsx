@@ -156,14 +156,15 @@ export function TaskDialog({ template, isDialogOpen, setIsDialogOpen, project }:
   }
 
   const generateFilledTemplates = async () => {
-    const filledTasks: { project: string, name: string, content: string }[] = []
+    const filledTasks: { project: string, name: string, content: string, timer: number }[] = []
     tasks.forEach((task, taskIndex) => {
       const filled = renderFilledTemplate(task.values)
       for (let i = 0; i < task.count; i++) {
         filledTasks.push({
           project: project._id,
           name: `${project.name} - ${template.name} - ${taskIndex + 1}.${i + 1}`,
-          content: filled
+          content: filled,
+          timer: template.timer
         })
       }
     })

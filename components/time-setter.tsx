@@ -28,7 +28,6 @@ export function TimeSetterComponent({ templateId }: { templateId: string }) {
     if (hasChanged) {
       try {
         const total = hours * 3600 + minutes * 60 + seconds // Recalculate here
-        console.log(total)
         await updateTimer(templateId, total)
         toast.success(`Timer set to ${hours} hr ${minutes} min ${seconds} sec`)
         setHasChanged(false)
