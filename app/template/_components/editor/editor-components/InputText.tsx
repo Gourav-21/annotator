@@ -1,6 +1,7 @@
 'use client'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { EditorBtns } from '@/lib/constants'
 import { EditorElement, useEditor } from '@/providers/editor/editor-provider'
@@ -16,6 +17,7 @@ type Props = {
 const InputText = (props: Props) => {
   const { dispatch, state, subaccountId, funnelId, pageDetails } = useEditor()
   const [name, setName] = React.useState(props.element.name)
+  const [limit, setLimit] = React.useState(props.element.content?.limit || 10000)
   const initialText = React.useMemo(() => {
     if (Array.isArray(props.element.content)) {
       return ''
@@ -79,11 +81,27 @@ const InputText = (props: Props) => {
                   elementDetails: { ...props.element, name: e.target.value},
                 },
               })} />
+            <span className="flex">
+              <Label htmlFor="char" className='w-full inline-flex items-center justify-center  bg-black text-white font-semibold text-xs rounded-none rounded-tl-lg'>Char limit:</Label>
+              <Input className="w-full h-6 bg-black text-white font-semibold text-xs rounded-none rounded-tr-lg" placeholder='limit' type="number" value={limit} onChange={(e) => setLimit(parseInt(e.target.value))}
+                onBlur={(e) => dispatch({
+                  type: 'UPDATE_ELEMENT',
+                  payload: {
+                    elementDetails: {
+                      ...props.element,
+                      content: {
+                        ...props.element.content,
+                        limit: limit,
+                      },
+                    },
+                  },
+                })} />
+            </span>
           </div>
         )}
 
       <form className="flex w-full items-center space-x-2" >
-        <Textarea placeholder="write here" required value={text} disabled={pageDetails.submitted} onChange={(e) => setText(e.target.value)} onBlur={(e) => {
+        <Textarea placeholder="write here" required value={text} maxLength={limit} disabled={pageDetails.submitted} onChange={(e) => setText(e.target.value)} onBlur={(e) => {
           const inputValue = e.target.value;
           dispatch({
             type: 'UPDATE_ELEMENT',
@@ -91,6 +109,7 @@ const InputText = (props: Props) => {
               elementDetails: {
                 ...props.element,
                 content: {
+                  ...props.element.content,
                   innerText: inputValue,
                 },
               },
