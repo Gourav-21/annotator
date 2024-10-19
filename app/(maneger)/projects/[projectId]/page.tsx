@@ -4,13 +4,14 @@ import { DeleteTemplate, upsertTemplate } from "@/app/actions/template"
 import { template } from "@/app/template/page"
 import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { TaskDialog } from "@/components/taskDialog"
+import { TemplateCopier } from "@/components/template-copier"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/hooks/use-toast"
 import { format, parseISO } from "date-fns"
-import { CalendarIcon, Edit2Icon, PlusCircle, Trash2Icon } from "lucide-react"
+import { CalendarIcon, Copy, Edit2Icon, PlusCircle, Trash2Icon } from "lucide-react"
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -22,6 +23,7 @@ export default function ProjectDashboard() {
   const projectId = pathName.split("/")[2];
   const [newTemplateName, setNewTemplateName] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isDialogOpen2, setIsDialogOpen2] = useState(false)
   const [template, setTemplate] = useState<template>()
   const router = useRouter();
   const { data: session } = useSession();
@@ -71,6 +73,12 @@ export default function ProjectDashboard() {
   const handleEditTemplate = (e: React.MouseEvent, _id: string) => {
     e.stopPropagation()
     router.push(`/template?Id=${_id}`);
+  }
+
+  const handleCopyTemplate = async (e: React.MouseEvent, temp: template) => {
+    e.stopPropagation()
+    setTemplate(temp)
+    setIsDialogOpen2(true)
   }
 
   const handleDeleteTemplate = async (e: React.MouseEvent, _id: string) => {
@@ -145,6 +153,14 @@ export default function ProjectDashboard() {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={(e) => handleCopyTemplate(e, template)}
+                      >
+                        <Copy className="h-4 w-4" />
+                        <span className="sr-only">copy</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={(e) => handleEditTemplate(e, template._id)}
                       >
                         <Edit2Icon className="h-4 w-4" />
@@ -166,6 +182,7 @@ export default function ProjectDashboard() {
           </div>
         )}
         {project && template && <TaskDialog template={template} setIsDialogOpen={setIsDialogOpen} isDialogOpen={isDialogOpen} project={project} />}
+        {project && template && <TemplateCopier template={template} setIsDialogOpen={setIsDialogOpen2} isDialogOpen={isDialogOpen2} />}
       </main>
     </div>
   )
