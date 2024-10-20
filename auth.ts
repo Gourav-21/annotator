@@ -43,7 +43,7 @@ export const authOptions: AuthOptions = {
         }
 
         if (user.role == 'annotator') {
-          User.updateOne({ _id: user._id }, { lastLogin: new Date() });
+           await User.updateOne({ _id: user._id }, { lastLogin: new Date() });
         }
 
         return {
