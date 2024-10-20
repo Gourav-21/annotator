@@ -1,4 +1,5 @@
 import {
+  BookUser,
   ClipboardList,
   Folder,
   LayoutGrid,
@@ -52,7 +53,7 @@ export function getMenuList(pathname: string): Group[] {
     ];
   }
 
-  if(projectId == "" || projectId == 'dashboard') {
+  if(projectId == "" || projectId == 'dashboard' || projectId == 'annotator') {
     return [
       {
         groupLabel: "",
@@ -62,6 +63,13 @@ export function getMenuList(pathname: string): Group[] {
             label: "Dashboard",
             active: pathname.includes("/dashboard"),
             icon: LayoutGrid,
+            submenus: []
+          },
+          {
+            href: "/annotator",
+            label: "Annotator",
+            active: pathname.includes("/annotator"),
+            icon: BookUser,
             submenus: []
           }
         ]
@@ -89,6 +97,13 @@ export function getMenuList(pathname: string): Group[] {
           label: "Dashboard",
           active: pathname.includes("/dashboard/"),
           icon: LayoutGrid,
+          submenus: []
+        },
+        {
+          href: "/annotator",
+          label: "Annotator",
+          active: pathname.includes("/annotator"),
+          icon: BookUser,
           submenus: []
         }
       ]
