@@ -6,16 +6,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { MessageSquare, MoreVertical, UserMinus, UserPlus, Users } from 'lucide-react'
+import { MessageCircle, MoreVertical, Trash2, UserMinus, UserPlus, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { createGroup } from "@/app/actions/chat"
+import { createGroup, deleteGroup } from "@/app/actions/chat"
 import { toast } from "@/hooks/use-toast"
+import useUserGroups from "@/hooks/use-userGroups"
 import { Annotator } from "../projects/task/[projectId]/page"
 import { ChatArea } from "./_components/chatArea"
 import { GroupList } from './_components/groupList'
 import MemberCombobox from "./_components/MemberCombobox"
-import useUserGroups from "@/hooks/use-userGroups"
 
 type Message = {
   _id: string
@@ -43,8 +43,7 @@ export type UserGroups = {
 
 
 export default function ChatUI() {
-
-  const { userGroups, setUserGroups } = useUserGroups()
+  const { userGroups, setUserGroups,removeUserGroup } = useUserGroups()
   const [selectedGroup, setSelectedGroup] = useState<UserGroups | null>(null)
   // create
   const [newGroupName, setNewGroupName] = useState('')
@@ -104,6 +103,21 @@ export default function ChatUI() {
     // }
   }
 
+  async function handleDeleteGroup(id: string) {
+    const res = await deleteGroup(id)
+    if (!res.success) {
+      toast({
+        title: 'Error',
+        description: res.message,
+        variant: 'destructive',
+      })
+      return
+    }
+
+    removeUserGroup(id)
+    setSelectedGroup(null)
+  }
+
   const handleGroupSelect = (group: UserGroups) => {
     setSelectedGroup(group)
     setUserGroups(userGroups.map(g => g._id === group._id ? { ...g } : g))
@@ -146,6 +160,7 @@ export default function ChatUI() {
                         <span>Edit group</span>
                       </DropdownMenuItem>
                     </DialogTrigger>
+                    <DropdownMenuItem onClick={() => handleDeleteGroup(selectedGroup.group._id)}><Trash2 className="mr-2 h-4 w-4" />Delete group</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <DialogContent>
@@ -196,7 +211,7 @@ export default function ChatUI() {
         ) : (
           <div className="flex-1 flex items-center justify-center text-muted-foreground">
             <div className="text-center">
-              <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground/50" />
+              <MessageCircle className="mx-auto h-12 w-12 text-muted-foreground/50" />
               <h2 className="mt-2 text-xl font-semibold">Welcome to Chat</h2>
               <p className="mt-1 text-sm text-muted-foreground">Select a group to start chatting</p>
             </div>
