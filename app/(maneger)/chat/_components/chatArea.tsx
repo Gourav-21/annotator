@@ -24,11 +24,15 @@ export function ChatArea({ groupId }: { groupId: string }) {
   const [loading, setLoading] = useState(false)
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
-
   const { getLastReadMessage, updateLastReadMessage: updateLastRead, updateLastMessage } = useUserGroups()
+  const [loadingMessage, setLoadingMessage] = useState(false)
+  const [showNewMessagesIndicator, setShowNewMessagesIndicator] = useState(false)
+  const [hide,sethide]=useState(false)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
+  const lastReadMessageRef = useRef<HTMLDivElement>(null)
+
 
   console.log(messages)
 
@@ -41,22 +45,36 @@ export function ChatArea({ groupId }: { groupId: string }) {
   }
 
   async function fetchOldMessages() {
+    if(loadingMessage) return
+    setLoadingMessage(true)
+    if (messages.length === 0) return
+    const oldScrollHeight = scrollAreaRef.current?.scrollHeight || 0
+    const oldScrollTop = scrollAreaRef.current?.scrollTop || 0
     const msg = await fetch(`/api/chat/getMessages?groupId=${groupId}&&limitBefore=20&&messageId=${messages[0]._id}`).then(res => res.json())
     if (msg.error) {
       return console.log(msg.error)
     }
+    if(msg.messages.length === 0){
+      sethide(true)
+    }
     setMessages((p) => [...msg.messages, ...p])
+    setLoadingMessage(false)
+    requestAnimationFrame(() => {
+      if (scrollAreaRef.current) {
+        const newScrollHeight = scrollAreaRef.current.scrollHeight
+        scrollAreaRef.current.scrollTop = newScrollHeight - oldScrollHeight + oldScrollTop
+      }
+    })
   }
 
-  // Polling messages every 3 seconds
   useEffect(() => {
     fetchMessages()
 
-    const intervalId = setInterval(() => {
-      fetchMessages() // Fetch messages every 3 seconds
-    }, 3000)
+    // const intervalId = setInterval(() => {
+    //   fetchMessages() // Fetch messages every 3 seconds
+    // }, 3000)
 
-    return () => clearInterval(intervalId) 
+    // return () => clearInterval(intervalId) 
   }, [groupId])
 
   useEffect(() => {
@@ -78,10 +96,15 @@ export function ChatArea({ groupId }: { groupId: string }) {
   }, [messages, groupId])
 
   useEffect(() => {
-    if (isAtBottom && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    const lastReadMessageId = getLastReadMessage(groupId)
+    const lastReadMessageIndex = messages.findIndex(msg => msg._id === lastReadMessageId)
+    
+    if (lastReadMessageIndex !== -1) {
+      lastReadMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    } else if (isAtBottom) {
+      scrollToBottom()
     }
-  }, [messages, isAtBottom])
+  }, [messages, groupId])
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -106,29 +129,34 @@ export function ChatArea({ groupId }: { groupId: string }) {
   }
 
   useEffect(() => {
-    const scrollViewport = scrollAreaRef.current;
-    if (!scrollViewport) {
-      console.log('No scroll viewport found');
-      return;
-    }
-  
+    const scrollViewport = scrollAreaRef.current
+    if (!scrollViewport) return
+
     const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = scrollViewport;
-      const isBottom = scrollHeight - scrollTop - clientHeight < 1;
-      setIsAtBottom(isBottom);
-      setShowScrollButton(!isBottom);
-  
-      console.log('Scroll Top:', scrollTop); // Check if this logs
-  
+      const { scrollTop, scrollHeight, clientHeight } = scrollViewport
+      const isBottom = scrollHeight - scrollTop - clientHeight < 1
+      setIsAtBottom(isBottom)
+      setShowScrollButton(!isBottom)
+
       if (scrollTop === 0 && messages.length > 0) {
-        console.log('fetching older messages'); // Check if this logs
-        fetchOldMessages();
+        fetchOldMessages()
       }
-    };
-  
-    scrollViewport.addEventListener('scroll', handleScroll);
-    return () => scrollViewport.removeEventListener('scroll', handleScroll);
-  }, [messages]);
+
+      // Check for new messages indicator
+      const lastReadMessageId = getLastReadMessage(groupId)
+      const lastReadMessageIndex = messages.findIndex(msg => msg._id === lastReadMessageId)
+      if (lastReadMessageIndex !== -1 && lastReadMessageIndex < messages.length - 1) {
+        const lastReadMessagePosition = lastReadMessageRef.current?.offsetTop || 0
+        setShowNewMessagesIndicator(scrollTop + clientHeight < lastReadMessagePosition)
+      } else {
+        setShowNewMessagesIndicator(false)
+      }
+    }
+
+    scrollViewport.addEventListener('scroll', handleScroll)
+    return () => scrollViewport.removeEventListener('scroll', handleScroll)
+  }, [messages, groupId])
+
   
 
   return (
@@ -137,8 +165,10 @@ export function ChatArea({ groupId }: { groupId: string }) {
         className="flex-1 px-4 overflow-y-auto overflow-x-hidden h-full flex flex-col"
         ref={scrollAreaRef}
       >
+        {!hide && <div className="text-center p-4 text-medium">Loading...</div>}
         {messages.map((message) => (
-          <div key={message._id} className={`flex items-start space-x-2 my-4 ${message.sender?._id === session?.user.id ? 'justify-end' : ''}`}>
+          <div key={message._id} className={`flex items-start space-x-2 my-4 ${message.sender?._id === session?.user.id ? 'justify-end' : ''}`} 
+           ref={message._id === getLastReadMessage(groupId) ? lastReadMessageRef : null} >
             {message.sender?._id !== session?.user.id && (
               <Avatar className="w-8 h-8">
                 <AvatarFallback>{message.sender?.name[0]}</AvatarFallback>
@@ -176,17 +206,27 @@ export function ChatArea({ groupId }: { groupId: string }) {
           <ChevronDown className="h-4 w-4" />
         </Button>
       )}
+      {showNewMessagesIndicator && (
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2">
+          <Button
+            className="rounded-full shadow-md"
+            size="sm"
+            onClick={scrollToBottom}
+          >
+            New Messages
+          </Button>
+        </div>
+      )}
       <div className="p-4 border-t bg-muted/30">
         <div className="flex items-center space-x-2">
           <Input
             placeholder="Type a message"
             value={newMessage}
-            disabled={loading}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && send()}
             className="flex-1"
           />
-          <Button onClick={send} size="icon" className="rounded-full">
+          <Button onClick={send} disabled={loading} size="icon" className="rounded-full">
             <Send className="h-4 w-4" />
             <span className="sr-only">Send message</span>
           </Button>

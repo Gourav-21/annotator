@@ -71,11 +71,11 @@ export default function ChatUI() {
       setUserGroups(res.userGroups as UserGroups[])
     }
     init()
-    const intervalId = setInterval(() => {
-      init() // Fetch messages every 3 seconds
-    }, 3000)
+    // const intervalId = setInterval(() => {
+      // init() // Fetch messages every 3 seconds
+    // }, 5000)
 
-    return () => clearInterval(intervalId) 
+    // return () => clearInterval(intervalId) 
   }, [])
 
 
