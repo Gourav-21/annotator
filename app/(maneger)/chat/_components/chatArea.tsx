@@ -86,10 +86,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
 
   useEffect(() => {
     const lastReadMessageId = getLastReadMessage(groupId)
-    console.log(lastReadMessageId)
-
     const lastReadMessageIndex = messages.findIndex(msg => msg._id === lastReadMessageId)
-    console.log(lastReadMessageIndex)
     if (lastReadMessageIndex !== -1) {
       lastReadMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     } else if (isAtBottom) {
