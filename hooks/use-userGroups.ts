@@ -18,8 +18,7 @@ const useUserGroups = create<Status>()((set, get) => ({
   updateLastReadMessage: (data: Message) => set((state) => ({ userGroups: state.userGroups.map((group) => group.group._id === data.group ? { ...group, lastReadMessage: data } : group) })),
   getLastReadMessage: (id: string) => {
     const { userGroups } = get();
-    // console.log(userGroups.find((group) => group._id === id)?.lastReadMessage?._id)
-    return userGroups.find((group) => group._id === id)?.lastReadMessage?._id
+    return userGroups.find((group) => group.group._id === id)?.lastReadMessage?._id
   },
   updateLastMessage: (data: Message) => set((state) => ({
     userGroups: state.userGroups.map((group) =>
