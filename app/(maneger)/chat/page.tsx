@@ -16,6 +16,7 @@ import { Annotator } from "../projects/task/[projectId]/page"
 import { ChatArea } from "./_components/chatArea"
 import { GroupList } from './_components/groupList'
 import MemberCombobox from "./_components/MemberCombobox"
+import { useSession } from "next-auth/react"
 
 type Message = {
   _id: string
@@ -50,6 +51,7 @@ export default function ChatUI() {
   const [selectedMembers, setSelectedMembers] = useState<Annotator[]>([])
   const [openCreateDialog, setOpenCreateDialog] = useState(false)
   const [openEditDialog, setOpenEditDialog] = useState(false)
+  const { data: session } = useSession();
 
   useEffect(() => {
     async function init() {
@@ -142,7 +144,7 @@ export default function ChatUI() {
                   </div>
                 </div>
               </div>
-              <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
+             {session?.user.role == 'project manager'  && <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -204,7 +206,7 @@ export default function ChatUI() {
                     </Button>
                   </div>
                 </DialogContent>
-              </Dialog>
+              </Dialog>}
             </div>
             <ChatArea groupId={selectedGroup.group._id} />
           </>
