@@ -24,28 +24,38 @@ export function ChatArea({ groupId }: { groupId: string }) {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false)
 
-  const { getLastReadMessage, updateLastReadMessage: updateLastRead,updateLastMessage } = useUserGroups()
+  const { getLastReadMessage, updateLastReadMessage: updateLastRead, updateLastMessage } = useUserGroups()
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const [showScrollButton, setShowScrollButton] = useState(false)
 
-  useEffect(() => {
-    async function init() {
-      const msg = await fetch(`/api/chat/getMessagesWithContext?groupId=${groupId}&&limitBefore=10&&limitAfter=20`).then(res => res.json())
-      if (msg.error) {
-        return console.log(msg.error)
-      }
-      setMessages(msg.messages as Message[])
+  console.log(messages)
+
+  const fetchMessages = async () => {
+    const msg = await fetch(`/api/chat/getMessagesWithContext?groupId=${groupId}&&limitBefore=10&&limitAfter=20`).then(res => res.json())
+    if (msg.error) {
+      return console.log(msg.error)
     }
-    init()
+    setMessages(msg.messages as Message[])
+  }
+
+  // Polling messages every 3 seconds
+  useEffect(() => {
+    fetchMessages() // Fetch immediately on component mount
+
+    // const intervalId = setInterval(() => {
+    //   fetchMessages() // Fetch messages every 3 seconds
+    // }, 3000)
+
+    // return () => clearInterval(intervalId) // Clean up the interval on component unmount
   }, [groupId])
 
   useEffect(() => {
     async function init() {
       if (messages[messages.length - 1] && getLastReadMessage(groupId) !== messages[messages.length - 1]._id) {
         console.log(messages[messages.length - 1])
-        
+
         const res = await updateLastReadMessage(groupId, messages[messages.length - 1]._id)
         if (res?.error) {
           return console.log(res.error)
@@ -58,7 +68,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
 
     init()
     scrollToBottom()
-  }, [messages,groupId])
+  }, [messages, groupId])
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -74,7 +84,8 @@ export function ChatArea({ groupId }: { groupId: string }) {
         setLoading(false)
         return console.log(msg.error)
       }
-      setMessages([...messages, JSON.parse(msg.message as string) as Message])
+      const messsge: Message = JSON.parse(msg.message as string)
+      setMessages([...messages, { ...messsge, sender: { _id: session?.user?.id, name: session?.user.name } } as Message])
       setNewMessage('')
       setLoading(false)
     }
