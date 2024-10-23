@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { MessageCircle, MoreVertical, Trash2, UserMinus, UserPlus, Users } from 'lucide-react'
+import { MessageCircle, MoreVertical, Trash2, UserMinus, UserPlus, Users, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { deleteGroup } from "@/app/actions/chat"
 import { toast } from "@/hooks/use-toast"
@@ -43,7 +43,7 @@ export type UserGroups = {
 
 
 export default function ChatUI() {
-  const { userGroups, setUserGroups,removeUserGroup } = useUserGroups()
+  const { userGroups, setUserGroups, removeUserGroup } = useUserGroups()
   const [selectedGroup, setSelectedGroup] = useState<UserGroups | null>(null)
   // create
   const [newGroupName, setNewGroupName] = useState('')
@@ -52,6 +52,14 @@ export default function ChatUI() {
   const [openEditDialog, setOpenEditDialog] = useState(false)
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     async function init() {
@@ -136,10 +144,18 @@ export default function ChatUI() {
 
   return (
     <div className="flex h-screen w-full mx-auto overflow-hidden bg-background">
-      <GroupList userGroups={userGroups} selectedGroup={selectedGroup} setSelectedGroup={handleGroupSelect} onCreateGroup={() => setOpenCreateDialog(true)} />
-      <div className="flex-1 flex flex-col">
+      <GroupList userGroups={userGroups} selectedGroup={selectedGroup} setSelectedGroup={handleGroupSelect} onCreateGroup={() => setOpenCreateDialog(true)} isMobile={isMobile} />
+      <div className={`flex-1 flex flex-col ${isMobile && !selectedGroup ? 'hidden' : 'block'}`}>
         {selectedGroup ? (
-          <>
+          <> {isMobile && (
+            <Button 
+              variant="ghost" 
+              className={`absolute top-5 ${session?.user.role == 'project manager' ? 'right-10 top-5' : 'right-2' } z-10`}
+              onClick={() => setSelectedGroup(null)}
+            >
+              <X className="h-6 w-6" />
+            </Button>
+          )}
             <div className="p-4 border-b bg-muted/30 flex justify-between items-center">
               <div className="flex items-center space-x-3">
                 <Avatar className="w-10 h-10">
@@ -153,7 +169,7 @@ export default function ChatUI() {
                   </div>
                 </div>
               </div>
-             {session?.user.role == 'project manager'  && <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
+              {session?.user.role == 'project manager' && <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -215,7 +231,8 @@ export default function ChatUI() {
                     </Button>
                   </div>
                 </DialogContent>
-              </Dialog>}
+              </Dialog>
+              }
             </div>
             <ChatArea groupId={selectedGroup.group._id} />
           </>

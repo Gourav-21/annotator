@@ -14,15 +14,16 @@ type GroupListProps = {
   selectedGroup: UserGroups | null
   setSelectedGroup: (group: UserGroups) => void
   onCreateGroup: () => void
+  isMobile: boolean
 }
 
-export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreateGroup }: GroupListProps) {
+export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreateGroup, isMobile }: GroupListProps) {
   const { getLastReadMessage } = useUserGroups()
   const { data: session } = useSession();
   console.log(userGroups)
 
   return (
-    <div className="w-96 border-r flex flex-col">
+    <div className={`${isMobile && selectedGroup ? 'hidden' : 'block'} ${isMobile ? 'w-full' : 'w-96'}  border-r flex flex-col`}>
       <header className="bg-white">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Chat</h1>
