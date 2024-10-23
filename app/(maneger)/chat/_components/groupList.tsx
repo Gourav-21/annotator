@@ -2,10 +2,10 @@ import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { PlusCircle } from 'lucide-react'
-import { UserGroups } from "../page"
 import useUserGroups from "@/hooks/use-userGroups"
-import { get } from "http"
+import { PlusCircle } from 'lucide-react'
+import { useSession } from "next-auth/react"
+import { UserGroups } from "../page"
 
 
 type GroupListProps = {
@@ -17,6 +17,8 @@ type GroupListProps = {
 
 export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreateGroup }: GroupListProps) {
   const { getLastReadMessage } = useUserGroups()
+  const { data: session } = useSession();
+  console.log(userGroups)
 
   return (
     <div className="w-96 border-r flex flex-col">
@@ -42,17 +44,22 @@ export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreat
                 <div className="flex-1 min-w-0 text-left">
                   <p className="font-medium truncate text-left">{userGroup.group.name}</p>
                   <p className="text-xs text-muted-foreground truncate text-left">
-                    {userGroup?.lastReadMessage  ? (
+                    {userGroup?.lastReadMessage ? (
                       <>
-                        <span className="font-medium">{userGroup.lastReadMessage.sender.name}: </span>
+                        <span className="font-medium">{userGroup.lastReadMessage.sender?.name ? userGroup.lastReadMessage.sender.name : 'Deleted User'}: </span>
                         {userGroup.lastReadMessage.content}
+                        <div>
+
+                        {userGroup.group.lastMessage?._id}
+                        </div>
+                         and this is user {getLastReadMessage(userGroup._id)}
                       </>
                     ) : (
                       'No messages yet'
                     )}
                   </p>
                 </div>
-                {userGroup.lastReadMessage &&  userGroup.group.lastMessage?._id != getLastReadMessage(userGroup._id)   && userGroup._id != selectedGroup?._id  && (
+                {userGroup.group.lastMessage && getLastReadMessage(userGroup._id) !== userGroup.group.lastMessage._id && selectedGroup?._id !== userGroup._id && (
                   <span className="flex h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
                 )}
               </div>
@@ -63,12 +70,12 @@ export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreat
           )}
         </div>
       </ScrollArea>
-      <div className="p-4 border-t bg-muted/30">
+      {session?.user.role == 'project manager'  && <div className="p-4 border-t bg-muted/30">
         <Button onClick={onCreateGroup} className="w-full">
           <PlusCircle className="mr-2" size={16} />
           Create New Group
         </Button>
-      </div>
+      </div>}
     </div>
   )
 }
