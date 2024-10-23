@@ -7,14 +7,28 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
   await connectToDatabase();
-  console.log('GET /api/chat/getMessagesWithContext')
   const searchParams = req.nextUrl.searchParams
   const groupId = searchParams.get('groupId')
   const limitBefore = Number(searchParams.get('limitBefore')) || 0
   const limitAfter = Number(searchParams.get('limitAfter')) || 20
+  const messageId = searchParams.get('messageId') || null
   const session = await getServerSession(authOptions)
 
   try {
+    if (messageId) {
+      const referenceMessage = await Message.findById(messageId);
+
+      const messagesBefore = await Message.find({
+        group: groupId,
+        sent_at: { $lt: referenceMessage.sent_at }
+      })
+        .sort({ sent_at: -1 })
+        .limit(Number(limitBefore))
+        .populate('sender', 'name');
+
+      return NextResponse.json({ success: true, messages: messagesBefore }, { status: 200 });
+    }
+
     const userGroup = await UserGroup.findOne({ group: groupId, user: session?.user.id });
 
     if (!userGroup || !userGroup.lastReadMessage) {
