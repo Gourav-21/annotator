@@ -42,17 +42,17 @@ export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreat
                   <AvatarFallback>{userGroup.group.name[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0 text-left">
-                  <p className="font-medium truncate text-left">{userGroup.group.name}</p>
-                  <p className="text-xs text-muted-foreground truncate text-left">
-                    {userGroup?.lastReadMessage ? (
-                      <>
-                        <span className="font-medium">{userGroup.lastReadMessage.sender?.name ? userGroup.lastReadMessage.sender.name : 'Deleted User'}: </span>
-                        {userGroup.lastReadMessage.content}
-                        <div>
+                  <div className="flex justify-between">
+                    <p className="font-medium truncate text-left">{userGroup.group.name}</p>
+                    <p className="font-normal text-muted-foreground text-xs truncate text-left">{new Date(userGroup.group.lastMessage?.sent_at as Date).toLocaleString()}</p>
 
-                        {userGroup.group.lastMessage?._id}
-                        </div>
-                         and this is user {getLastReadMessage(userGroup._id)}
+                  </div>
+
+                  <p className="text-xs text-muted-foreground truncate text-left">
+                    {userGroup?.group.lastMessage ? (
+                      <>
+                        <span className="font-medium">{userGroup.group.lastMessage.sender?.name ? userGroup.group.lastMessage.sender.name : 'Deleted User'}: </span>
+                        {userGroup.group.lastMessage.content}
                       </>
                     ) : (
                       'No messages yet'
@@ -70,7 +70,7 @@ export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreat
           )}
         </div>
       </ScrollArea>
-      {session?.user.role == 'project manager'  && <div className="p-4 border-t bg-muted/30">
+      {session?.user.role == 'project manager' && <div className="p-4 border-t bg-muted/30">
         <Button onClick={onCreateGroup} className="w-full">
           <PlusCircle className="mr-2" size={16} />
           Create New Group
