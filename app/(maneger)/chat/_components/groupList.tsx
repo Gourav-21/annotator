@@ -18,9 +18,7 @@ type GroupListProps = {
 }
 
 export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreateGroup, isMobile }: GroupListProps) {
-  const { getLastReadMessage } = useUserGroups()
   const { data: session } = useSession();
-  console.log(userGroups)
 
   return (
     <div className={`${isMobile && selectedGroup ? 'hidden' : 'block'} ${isMobile ? 'w-full' : 'w-96'}  border-r flex flex-col`}>
@@ -60,7 +58,7 @@ export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreat
                     )}
                   </p>
                 </div>
-                {userGroup.group.lastMessage && getLastReadMessage(userGroup._id) !== userGroup.group.lastMessage._id && selectedGroup?._id !== userGroup._id && (
+                {userGroup.group.lastMessage && userGroup.group.lastMessage._id !== userGroup.group.lastMessage._id && selectedGroup?._id !== userGroup._id && (
                   <span className="flex h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
                 )}
               </div>

@@ -30,7 +30,7 @@ type Groups = {
   members: Annotator[]
   projectManager: Annotator
   lastMessage?: Message
-  created_at: Date
+  created_at: string
 }
 
 export type UserGroups = {
@@ -38,7 +38,7 @@ export type UserGroups = {
   group: Groups
   user: Annotator
   lastReadMessage?: Message
-  joined_at: Date
+  joined_at: string
 }
 
 
