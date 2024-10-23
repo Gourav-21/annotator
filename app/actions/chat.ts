@@ -7,9 +7,6 @@ import mongoose from 'mongoose';
 import { getServerSession } from "next-auth";
 
 export async function updateLastReadMessage(groupId: string, messageId: string) {
-  console.log("updateLastReadMessage")
-
-
   await connectToDatabase();
   const session = await getServerSession(authOptions)
   try {
@@ -24,8 +21,6 @@ export async function updateLastReadMessage(groupId: string, messageId: string) 
 };
 
 export async function sendMessage(groupId: string, message: string) {
-  console.log("sendMessage")
-
   await connectToDatabase();
   const session = await getServerSession(authOptions)
   try {
