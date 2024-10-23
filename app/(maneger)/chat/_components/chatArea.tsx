@@ -22,12 +22,13 @@ export function ChatArea({ groupId }: { groupId: string }) {
   const [newMessage, setNewMessage] = useState('')
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false)
+  const [showScrollButton, setShowScrollButton] = useState(false)
+  const [isAtBottom, setIsAtBottom] = useState(true)
 
   const { getLastReadMessage, updateLastReadMessage: updateLastRead, updateLastMessage } = useUserGroups()
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
-  const [showScrollButton, setShowScrollButton] = useState(false)
 
   console.log(messages)
 
@@ -44,18 +45,18 @@ export function ChatArea({ groupId }: { groupId: string }) {
     if (msg.error) {
       return console.log(msg.error)
     }
-    setMessages((p)=>[...msg.messages, ...p])
+    setMessages((p) => [...msg.messages, ...p])
   }
 
   // Polling messages every 3 seconds
   useEffect(() => {
     fetchMessages()
 
-    // const intervalId = setInterval(() => {
-    //   fetchMessages() // Fetch messages every 3 seconds
-    // }, 3000)
+    const intervalId = setInterval(() => {
+      fetchMessages() // Fetch messages every 3 seconds
+    }, 3000)
 
-    // return () => clearInterval(intervalId) 
+    return () => clearInterval(intervalId) 
   }, [groupId])
 
   useEffect(() => {
@@ -74,8 +75,13 @@ export function ChatArea({ groupId }: { groupId: string }) {
     }
 
     init()
-    scrollToBottom()
   }, [messages, groupId])
+
+  useEffect(() => {
+    if (isAtBottom && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages, isAtBottom])
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -95,28 +101,40 @@ export function ChatArea({ groupId }: { groupId: string }) {
       setMessages([...messages, { ...messsge, sender: { _id: session?.user?.id, name: session?.user.name } } as Message])
       setNewMessage('')
       setLoading(false)
+      setIsAtBottom(true)
     }
   }
 
   useEffect(() => {
+    const scrollViewport = scrollAreaRef.current;
+    if (!scrollViewport) {
+      console.log('No scroll viewport found');
+      return;
+    }
+  
     const handleScroll = () => {
-      if (scrollAreaRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current
-        setShowScrollButton(scrollHeight - scrollTop - clientHeight > 100)
+      const { scrollTop, scrollHeight, clientHeight } = scrollViewport;
+      const isBottom = scrollHeight - scrollTop - clientHeight < 1;
+      setIsAtBottom(isBottom);
+      setShowScrollButton(!isBottom);
+  
+      console.log('Scroll Top:', scrollTop); // Check if this logs
+  
+      if (scrollTop === 0 && messages.length > 0) {
+        console.log('fetching older messages'); // Check if this logs
+        fetchOldMessages();
       }
-    }
-
-    const scrollArea = scrollAreaRef.current
-    if (scrollArea) {
-      scrollArea.addEventListener('scroll', handleScroll)
-      return () => scrollArea.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
+    };
+  
+    scrollViewport.addEventListener('scroll', handleScroll);
+    return () => scrollViewport.removeEventListener('scroll', handleScroll);
+  }, [messages]);
+  
 
   return (
     <>
-      <ScrollArea
-        className="flex-1 px-4"
+      <div 
+        className="flex-1 px-4 overflow-y-auto overflow-x-hidden h-full flex flex-col"
         ref={scrollAreaRef}
       >
         {messages.map((message) => (
@@ -148,7 +166,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
           </div>
         )}
         <div ref={messagesEndRef} />
-      </ScrollArea>
+      </div>
       {showScrollButton && (
         <Button
           className="absolute bottom-20 right-8 rounded-full shadow-md"
