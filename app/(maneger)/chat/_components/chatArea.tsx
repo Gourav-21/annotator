@@ -44,6 +44,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
   useEffect(() => {
     async function init() {
       if (messages[messages.length - 1] && getLastReadMessage(groupId) !== messages[messages.length - 1]._id) {
+        console.log(messages[messages.length - 1])
         
         const res = await updateLastReadMessage(groupId, messages[messages.length - 1]._id)
         if (res?.error) {
@@ -57,7 +58,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
 
     init()
     scrollToBottom()
-  }, [messages])
+  }, [messages,groupId])
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -73,7 +74,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
         setLoading(false)
         return console.log(msg.error)
       }
-      setMessages([...messages, msg.message as Message])
+      setMessages([...messages, JSON.parse(msg.message as string) as Message])
       setNewMessage('')
       setLoading(false)
     }
@@ -101,22 +102,22 @@ export function ChatArea({ groupId }: { groupId: string }) {
         ref={scrollAreaRef}
       >
         {messages.map((message) => (
-          <div key={message._id} className={`flex items-start space-x-2 mb-4 ${message.sender._id === session?.user.id ? 'justify-end' : ''}`}>
-            {message.sender._id !== session?.user.id && (
+          <div key={message._id} className={`flex items-start space-x-2 mb-4 ${message.sender?._id === session?.user.id ? 'justify-end' : ''}`}>
+            {message.sender?._id !== session?.user.id && (
               <Avatar className="w-8 h-8">
-                <AvatarFallback>{message.sender.name}</AvatarFallback>
+                <AvatarFallback>{message.sender?.name}</AvatarFallback>
               </Avatar>
             )}
-            <div className={`max-w-[70%] ${message.sender._id === session?.user.id ? 'bg-primary text-primary-foreground' : 'bg-muted'} rounded-lg p-3`}>
-              {message.sender._id !== session?.user.id && (
-                <p className="font-semibold text-sm mb-1">{message.sender.name}</p>
+            <div className={`max-w-[70%] ${message.sender?._id === session?.user.id ? 'bg-primary text-primary-foreground' : 'bg-muted'} rounded-lg p-3`}>
+              {message.sender?._id !== session?.user.id && (
+                <p className="font-semibold text-sm mb-1">{message.sender?.name ? message.sender?.name : "Deleted User"}</p>
               )}
               <p className="text-sm">{message.content}</p>
               <p className="text-xs mt-1 opacity-70">
                 {new Date(message.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
-            {message.sender._id === session?.user.id && (
+            {message.sender?._id === session?.user.id && (
               <Avatar className="w-8 h-8">
                 <AvatarFallback>You</AvatarFallback>
               </Avatar>
