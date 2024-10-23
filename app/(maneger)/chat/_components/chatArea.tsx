@@ -14,7 +14,7 @@ export type Message = {
   sender: Annotator
   group: string
   content: string
-  sent_at: Date
+  sent_at: string
 }
 
 export function ChatArea({ groupId }: { groupId: string }) {
@@ -23,7 +23,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false)
   const [showScrollButton, setShowScrollButton] = useState(false)
-  const [isAtBottom, setIsAtBottom] = useState(true)
+  const [isAtBottom, setIsAtBottom] = useState(false)
   const { getLastReadMessage, updateLastReadMessage: updateLastRead, updateLastMessage } = useUserGroups()
   const [loadingMessage, setLoadingMessage] = useState(false)
   const [showNewMessagesIndicator, setShowNewMessagesIndicator] = useState(false)
@@ -33,8 +33,6 @@ export function ChatArea({ groupId }: { groupId: string }) {
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const lastReadMessageRef = useRef<HTMLDivElement>(null)
 
-
-  console.log(messages)
 
   const fetchMessages = async () => {
     const msg = await fetch(`/api/chat/getMessages?groupId=${groupId}&&limitBefore=10&&limitAfter=20`).then(res => res.json())
@@ -78,27 +76,20 @@ export function ChatArea({ groupId }: { groupId: string }) {
   }, [groupId])
 
   useEffect(() => {
-    async function init() {
-      if (messages[messages.length - 1] && getLastReadMessage(groupId) !== messages[messages.length - 1]._id) {
-        console.log(messages[messages.length - 1])
-
-        const res = await updateLastReadMessage(groupId, messages[messages.length - 1]._id)
-        if (res?.error) {
-          return console.log(res.error)
-        } else {
-          updateLastRead(messages[messages.length - 1])
-          updateLastMessage(messages[messages.length - 1])
-        }
-      }
+    if (isAtBottom && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      updateLastReadMessage(groupId, lastMessage._id)
+      updateLastRead(lastMessage)
+      updateLastMessage(lastMessage)
     }
-
-    init()
-  }, [messages, groupId])
+  }, [messages, isAtBottom, groupId])
 
   useEffect(() => {
     const lastReadMessageId = getLastReadMessage(groupId)
+    console.log(lastReadMessageId)
+
     const lastReadMessageIndex = messages.findIndex(msg => msg._id === lastReadMessageId)
-    
+    console.log(lastReadMessageIndex)
     if (lastReadMessageIndex !== -1) {
       lastReadMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     } else if (isAtBottom) {
