@@ -58,7 +58,7 @@ export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreat
                     )}
                   </p>
                 </div>
-                {userGroup.group.lastMessage && userGroup.group.lastMessage._id !== userGroup.group.lastMessage._id && selectedGroup?._id !== userGroup._id && (
+                {userGroup.lastReadMessage && userGroup.group.lastMessage && userGroup?.lastReadMessage._id !== userGroup.group.lastMessage._id && selectedGroup?._id !== userGroup._id && (
                   <span className="flex h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" />
                 )}
               </div>
