@@ -52,6 +52,7 @@ export default function ChatUI() {
   const [openCreateDialog, setOpenCreateDialog] = useState(false)
   const [openEditDialog, setOpenEditDialog] = useState(false)
   const { data: session } = useSession();
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     async function init() {
@@ -68,11 +69,19 @@ export default function ChatUI() {
 
   const handleCreateGroup = async () => {
     if (newGroupName.trim() && selectedMembers.length > 0) {
-      const res = await createGroup(newGroupName.trim(), selectedMembers.map(m => m._id))
-      if (!res.success) {
+      setLoading(true)
+      const res = await fetch('/api/chat/createGroup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ groupName: newGroupName.trim(), members: selectedMembers.map(m => m._id) }),
+      })
+      const data = await res.json()
+      if (!data.success) {
         toast({
           title: 'Error',
-          description: res.error,
+          description: data.error,
           variant: 'destructive',
         })
         return
@@ -83,7 +92,8 @@ export default function ChatUI() {
         })
       }
 
-      setUserGroups([...userGroups, res.userGroups as UserGroups])
+      setLoading(false)
+      setUserGroups([...userGroups, data.userGroups as UserGroups])
       setNewGroupName('')
       setSelectedMembers([])
       setOpenCreateDialog(false)
