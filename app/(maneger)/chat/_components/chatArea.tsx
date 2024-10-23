@@ -23,7 +23,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false)
   const [showScrollButton, setShowScrollButton] = useState(false)
-  const [isAtBottom, setIsAtBottom] = useState(false)
+  const [isAtBottom, setIsAtBottom] = useState(true)
   const { getLastReadMessage, updateLastReadMessage: updateLastRead, updateLastMessage } = useUserGroups()
   const [loadingMessage, setLoadingMessage] = useState(false)
   const [showNewMessagesIndicator, setShowNewMessagesIndicator] = useState(false)
@@ -68,11 +68,11 @@ export function ChatArea({ groupId }: { groupId: string }) {
   useEffect(() => {
     fetchMessages()
 
-    // const intervalId = setInterval(() => {
-    //   fetchMessages() // Fetch messages every 3 seconds
-    // }, 3000)
+    const intervalId = setInterval(() => {
+      fetchMessages() // Fetch messages every 3 seconds
+    }, 5000)
 
-    // return () => clearInterval(intervalId) 
+    return () => clearInterval(intervalId) 
   }, [groupId])
 
   useEffect(() => {
@@ -88,6 +88,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
     const lastReadMessageId = getLastReadMessage(groupId)
     const lastReadMessageIndex = messages.findIndex(msg => msg._id === lastReadMessageId)
     if (lastReadMessageIndex !== -1) {
+      if(isAtBottom)
       lastReadMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     } else if (isAtBottom) {
       scrollToBottom()
