@@ -11,6 +11,7 @@ import Combobox from "@/components/ui/combobox"
 import { domains, languages, locations } from "@/lib/constants"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Pencil, Building2, CheckCircle2, DollarSign, Clock, Database, FileSpreadsheet, Globe, MapPin } from "lucide-react"
+import MultiCombobox from "@/components/ui/multi-combobox"
 
 interface Option {
   value: string
@@ -27,8 +28,8 @@ export default function AuthPageComponent() {
     role: "",
     name: "",
     phone: "",
-    domain: "",
-    lang: "",
+    domain: [] as string[], 
+    lang: [] as string[],
     location: "",
   })
 
@@ -48,7 +49,7 @@ export default function AuthPageComponent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.role === "annotator") {
-      if (formData.domain === "" || formData.lang === "" || formData.location === "") {
+      if (formData.domain.length === 0 || formData.lang.length === 0 || formData.location === "") {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
@@ -189,7 +190,7 @@ export default function AuthPageComponent() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="domain">Domain</Label>
-                <Combobox
+                <MultiCombobox
                   options={domainOptions}
                   value={formData.domain}
                   onChange={(value) => setFormData({ ...formData, domain: value })}
@@ -199,7 +200,7 @@ export default function AuthPageComponent() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lang">Language</Label>
-                <Combobox
+                <MultiCombobox
                   options={languageOptions}
                   value={formData.lang}
                   onChange={(value) => setFormData({ ...formData, lang: value })}
