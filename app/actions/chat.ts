@@ -43,60 +43,6 @@ export async function sendMessage(groupId: string, message: string) {
   }
 };
 
-// export async function createGroup(groupName: string, userIds: string[]) {
-//   console.log("createGroup")
-
-//   await connectToDatabase();
-//   const session = await mongoose.startSession();
-//   const serverSession = await getServerSession(authOptions)
-
-//   try {
-//     session.startTransaction();
-
-//     const newGroup = await Group.create([{
-//       name: groupName,
-//       projectManager: serverSession?.user.id,
-//       created_at: Date.now()
-//     }], { new: true, session });
-
-//     const groupId = newGroup[0]._id;
-
-//     const userGroupDocs = userIds.map(userId => ({
-//       user: userId,
-//       group: groupId,
-//       joined_at: Date.now()
-//     }));
-
-//     userGroupDocs.push({
-//       user: serverSession?.user.id as string,
-//       group: groupId,
-//       joined_at: Date.now()
-//     });
-
-//     await UserGroup.insertMany(userGroupDocs, { session });
-
-//     const group = await Group.findByIdAndUpdate(groupId, {
-//       $addToSet: { members: { $each: [...userIds, serverSession?.user.id] } } // Add users and project manager
-//     }, { new: true, session })
-//       .populate('members', 'name email');
-
-//     await session.commitTransaction();
-//     session.endSession();
-
-//     const updatedUserGroup = await UserGroup.findOne({ group: groupId, user: serverSession?.user.id });
-
-//     updatedUserGroup.group = group;
-
-//     return { success: true, message: 'Group created and users added successfully', userGroups: updatedUserGroup };
-
-//   } catch (error) {
-//     console.error('Error creating group and adding users:', error);
-//     await session.abortTransaction();
-//     session.endSession();
-//     return { success: false, error: 'Failed to create group and add multiple users' };
-//   }
-// };
-
 export async function deleteGroup(groupId: string) {
   await connectToDatabase();
 

@@ -267,7 +267,7 @@ export default function ChatUI() {
                 </div>
               ))}
             </div>
-            <Button onClick={handleCreateGroup} className="w-full">
+            <Button disabled={loading} onClick={handleCreateGroup} className="w-full">
               Create Group
             </Button>
           </div>
