@@ -6,6 +6,7 @@ import useUserGroups from "@/hooks/use-userGroups"
 import { PlusCircle } from 'lucide-react'
 import { useSession } from "next-auth/react"
 import { UserGroups } from "../page"
+import { formatDistance, parseISO } from "date-fns"
 
 
 type GroupListProps = {
@@ -44,8 +45,7 @@ export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreat
                 <div className="flex-1 min-w-0 text-left">
                   <div className="flex justify-between">
                     <p className="font-medium truncate text-left">{userGroup.group.name}</p>
-                    <p className="font-normal text-muted-foreground text-xs truncate text-left">{new Date(userGroup.group.lastMessage?.sent_at as Date).toLocaleString()}</p>
-
+                    <p className="font-normal text-muted-foreground text-xs truncate text-left">{userGroup.group.lastMessage?.sent_at ? formatDistance(parseISO(userGroup.group.lastMessage.sent_at), new Date()) : 'No messages yet'}</p>
                   </div>
 
                   <p className="text-xs text-muted-foreground truncate text-left">

@@ -8,21 +8,20 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MessageCircle, MoreVertical, Trash2, UserMinus, UserPlus, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
-import { createGroup, deleteGroup } from "@/app/actions/chat"
+import { deleteGroup } from "@/app/actions/chat"
 import { toast } from "@/hooks/use-toast"
 import useUserGroups from "@/hooks/use-userGroups"
+import { useSession } from "next-auth/react"
 import { Annotator } from "../projects/task/[projectId]/page"
 import { ChatArea } from "./_components/chatArea"
 import { GroupList } from './_components/groupList'
 import MemberCombobox from "./_components/MemberCombobox"
-import { useSession } from "next-auth/react"
 
 type Message = {
   _id: string
   sender: Annotator
   content: string
-  sent_at: Date
+  sent_at: string
 }
 
 type Groups = {
@@ -144,7 +143,7 @@ export default function ChatUI() {
             <div className="p-4 border-b bg-muted/30 flex justify-between items-center">
               <div className="flex items-center space-x-3">
                 <Avatar className="w-10 h-10">
-                  <AvatarFallback>{selectedGroup.group.name}</AvatarFallback>
+                  <AvatarFallback>{selectedGroup.group.name[0]}</AvatarFallback>
                 </Avatar>
                 <div>
                   <h2 className="text-lg font-semibold">{selectedGroup.group.name}</h2>

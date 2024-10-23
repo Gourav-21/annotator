@@ -116,7 +116,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
           <div key={message._id} className={`flex items-start space-x-2 mb-4 ${message.sender?._id === session?.user.id ? 'justify-end' : ''}`}>
             {message.sender?._id !== session?.user.id && (
               <Avatar className="w-8 h-8">
-                <AvatarFallback>{message.sender?.name}</AvatarFallback>
+                <AvatarFallback>{message.sender?.name[0]}</AvatarFallback>
               </Avatar>
             )}
             <div className={`max-w-[70%] ${message.sender?._id === session?.user.id ? 'bg-primary text-primary-foreground' : 'bg-muted'} rounded-lg p-3`}>
