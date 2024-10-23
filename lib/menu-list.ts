@@ -4,6 +4,7 @@ import {
   Folder,
   LayoutGrid,
   LucideIcon,
+  MessageCircle,
   SquarePen
 } from "lucide-react";
 
@@ -33,6 +34,17 @@ export function getMenuList(pathname: string): Group[] {
   if(fpath == 'tasks'){
     return [
       {
+        groupLabel: "",
+        menus: [
+          {
+            href: "/tasks/chat",
+            label: "Chat",
+            active: pathname.includes("/chat"),
+            icon: MessageCircle,
+            submenus: []
+          }
+        ]
+      },{
         groupLabel: "Contents",
         menus: [
           {
@@ -53,7 +65,7 @@ export function getMenuList(pathname: string): Group[] {
     ];
   }
 
-  if(projectId == "" || projectId == 'dashboard' || projectId == 'annotator') {
+  if(projectId == "" || projectId == 'dashboard' || projectId == 'annotator' || projectId == 'chat') {
     return [
       {
         groupLabel: "",
@@ -70,6 +82,13 @@ export function getMenuList(pathname: string): Group[] {
             label: "Annotator",
             active: pathname.includes("/annotator"),
             icon: BookUser,
+            submenus: []
+          },
+          {
+            href: "/chat",
+            label: "Chat",
+            active: pathname.includes("/chat"),
+            icon: MessageCircle,
             submenus: []
           }
         ]
