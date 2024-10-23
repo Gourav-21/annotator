@@ -27,7 +27,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
   const { getLastReadMessage, updateLastReadMessage: updateLastRead, updateLastMessage } = useUserGroups()
   const [loadingMessage, setLoadingMessage] = useState(false)
   const [showNewMessagesIndicator, setShowNewMessagesIndicator] = useState(false)
-  const [hide,sethide]=useState(false)
+  const [hide,sethide]=useState(true)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
@@ -40,6 +40,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
       return console.log(msg.error)
     }
     setMessages(msg.messages as Message[])
+    sethide(false)
   }
 
   async function fetchOldMessages() {
@@ -154,7 +155,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
         className="flex-1 px-4 overflow-y-auto overflow-x-hidden h-full flex flex-col"
         ref={scrollAreaRef}
       >
-        {!hide && <div className="text-center p-4 text-medium">Loading...</div>}
+        {!hide && messages.length > 6 && <div className="text-center p-4 text-medium">Loading...</div>}
         {messages.map((message) => (
           <div key={message._id} className={`flex items-start space-x-2 my-4 ${message.sender?._id === session?.user.id ? 'justify-end' : ''}`} 
            ref={message._id === getLastReadMessage(groupId) ? lastReadMessageRef : null} >
@@ -195,7 +196,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
           <ChevronDown className="h-4 w-4" />
         </Button>
       )}
-      {showNewMessagesIndicator && (
+      {/* {showNewMessagesIndicator && (
         <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2">
           <Button
             className="rounded-full shadow-md"
@@ -205,7 +206,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
             New Messages
           </Button>
         </div>
-      )}
+      )} */}
       <div className="p-4 border-t bg-muted/30">
         <div className="flex items-center space-x-2">
           <Input

@@ -16,6 +16,7 @@ import { Annotator } from "../projects/task/[projectId]/page"
 import { ChatArea } from "./_components/chatArea"
 import { GroupList } from './_components/groupList'
 import MemberCombobox from "./_components/MemberCombobox"
+import { sortUserGroupsByLastMessage } from "@/lib/utils"
 
 type Message = {
   _id: string
@@ -68,7 +69,7 @@ export default function ChatUI() {
         console.log(res.error)
         return
       }
-      setUserGroups(res.userGroups as UserGroups[])
+      setUserGroups(sortUserGroupsByLastMessage(res.userGroups) as UserGroups[])
     }
     init()
     const intervalId = setInterval(() => {
