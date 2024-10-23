@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
         .limit(Number(limitBefore))
         .populate('sender', 'name');
 
-      return NextResponse.json({ success: true, messages: messagesBefore }, { status: 200 });
+      return NextResponse.json({ success: true, messages: messagesBefore.reverse() }, { status: 200 });
     }
 
     const userGroup = await UserGroup.findOne({ group: groupId, user: session?.user.id });
