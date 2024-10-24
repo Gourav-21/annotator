@@ -124,6 +124,13 @@ export function getMenuList(pathname: string): Group[] {
           active: pathname.includes("/annotator"),
           icon: BookUser,
           submenus: []
+        },
+        {
+          href: "/chat",
+          label: "Chat",
+          active: pathname.includes("/chat"),
+          icon: MessageCircle,
+          submenus: []
         }
       ]
     },
