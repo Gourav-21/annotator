@@ -113,19 +113,52 @@ export default function ChatUI() {
     }
   }
 
-  const editGroup = () => {
-    // if (selectedGroup && newGroupName.trim() && selectedMembers.length > 0) {
-    //   const updatedGroups = userGroups.map(group => 
-    //     group.id === selectedGroup.id 
-    //       ? { ...group, name: newGroupName.trim(), members: selectedMembers }
-    //       : group
-    //   )
-    //   setUserGroups(updatedGroups)
-    //   setSelectedGroup({ ...selectedGroup, name: newGroupName.trim(), members: selectedMembers })
-    //   setNewGroupName('')
-    //   setSelectedMembers([])
-    //   setOpenEditDialog(false)
-    // }
+  const editGroup = async () => {
+    if (selectedGroup && newGroupName.trim() && selectedMembers.length > 0) {
+      setLoading(true)
+      const res = await fetch('/api/chat/editGroup', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          groupId: selectedGroup.group._id,
+          name: newGroupName.trim(),
+          members: selectedMembers.map(m => m._id)
+        }),
+      })
+      const data = await res.json()
+      if (!data.success) {
+        toast({
+          title: 'Error',
+          description: data.error,
+          variant: 'destructive',
+        })
+        setLoading(false)
+        return
+      }
+
+      const updatedGroup = {
+        ...selectedGroup,
+        group: {
+          ...selectedGroup.group,
+          name: newGroupName.trim(),
+          members: selectedMembers
+        }
+      }
+
+      setUserGroups(userGroups.map(group => group._id === selectedGroup._id ? updatedGroup : group))
+      setSelectedGroup(updatedGroup)
+      setNewGroupName('')
+      setSelectedMembers([])
+      setOpenEditDialog(false)
+      setLoading(false)
+
+      toast({
+        title: 'Success',
+        description: 'Group updated successfully',
+      })
+    }
   }
 
   async function handleDeleteGroup(id: string) {
