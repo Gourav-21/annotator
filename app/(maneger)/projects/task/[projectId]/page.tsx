@@ -1,8 +1,10 @@
 'use client'
 
+import { generateAndSaveAIResponse } from "@/app/actions/ai"
 import { getAllAnnotators } from "@/app/actions/annotator"
 import { changeAnnotator, deleteTask, getAllTasks } from "@/app/actions/task"
 import { upsertTemplate } from "@/app/actions/template"
+import { task } from "@/app/task/[taskId]/page"
 import { template } from "@/app/template/page"
 import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { Badge } from "@/components/ui/badge"
@@ -17,10 +19,11 @@ import { useToast } from "@/hooks/use-toast"
 import { getStatusBadgeVariant } from "@/lib/constants"
 import { formatTime } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
-import { CalendarIcon, NotebookPen, PlusCircle, Shuffle, Trash2Icon } from "lucide-react"
+import { Bot, CalendarIcon, NotebookPen, PlusCircle, Shuffle, Trash2Icon } from "lucide-react"
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { toast } from "sonner"
 
 interface Task {
   _id: string
@@ -201,10 +204,42 @@ interface TaskTableProps {
 function TaskTable({ tasks, annotators, handleAssignUser, handleDeleteTemplate, router }: TaskTableProps) {
   const [dialog, setDialog] = useState(false)
   const [feedback, setFeedback] = useState('')
-  function handleclick(e: React.MouseEvent,feedback: string) {
-    e.stopPropagation() 
+  function handleclick(e: React.MouseEvent, feedback: string) {
+    e.stopPropagation()
     setFeedback(feedback)
     setDialog(true)
+  }
+  function aiSolve(e: React.MouseEvent, task: task) {
+    e.stopPropagation()
+    const content = JSON.parse(task.content)
+    const extractedPlaceholders: string[] = []
+    let hasInputText = false;
+    const extractPlaceholders = (item: any) => {
+      if (Array.isArray(item.content)) {
+        item.content.forEach(extractPlaceholders)
+      } else if (item.type) {
+        if (item.type === "inputText") {
+          hasInputText = true;
+        }
+        if ((item.type === "dynamicText" || item.type === "text") && item.content?.innerText) {
+          extractedPlaceholders.push(item.content.innerText);
+        }
+      }
+    }
+
+    try {
+      content.forEach(extractPlaceholders)
+      console.log(extractedPlaceholders)
+      if (!hasInputText) {
+        throw new Error("Error: Missing 'inputText' type.");
+      }
+      if (extractedPlaceholders.length === 0) {
+        throw new Error("Error: Missing 'dynamicText' or 'text' types.");
+      }
+      generateAndSaveAIResponse(extractedPlaceholders.join("\n"), task.content, task._id)
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   }
 
   return (
@@ -216,6 +251,7 @@ function TaskTable({ tasks, annotators, handleAssignUser, handleDeleteTemplate, 
             <TableHead>Created Date</TableHead>
             <TableHead>Assignee</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead className="text-center">Ai solve</TableHead>
             <TableHead className="text-center">Time Taken</TableHead>
             <TableHead className="text-center">Submitted</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -258,6 +294,9 @@ function TaskTable({ tasks, annotators, handleAssignUser, handleDeleteTemplate, 
                   {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
                 </Badge>
               </TableCell>
+              <TableCell className="text-center">
+                <Button variant="outline" size="sm" onClick={(e) => aiSolve(e, task)}><Bot className=" h-4 w-4" /></Button>
+              </TableCell>
               <TableCell className="font-medium text-center">
                 {formatTime(task.timeTaken)}
               </TableCell>
@@ -267,10 +306,10 @@ function TaskTable({ tasks, annotators, handleAssignUser, handleDeleteTemplate, 
                 </span>
               </TableCell>
               <TableCell className="text-right">
-              {task.feedback &&  <Button
+                {task.feedback && <Button
                   variant="ghost"
                   size="sm"
-                  onClick={(e)=>handleclick(e,task.feedback)}
+                  onClick={(e) => handleclick(e, task.feedback)}
                 >
                   <NotebookPen className="h-4 w-4" />
                   <span className="sr-only">feedback</span>
