@@ -34,6 +34,12 @@ export function GroupList({ userGroups, selectedGroup, handleCreateGroup, setSel
     group.group.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  const isUserOnline = (lastLogin: string) => {
+    const lastLoginDate = new Date(lastLogin);
+    const currentTime = new Date();
+    return (currentTime.getTime() - lastLoginDate.getTime()) / 1000 <= 15;
+  };
+
   function createchat(user: Annotator) {
     const group = userGroups.find(group =>
       group.group.name === "#chat" &&
@@ -77,9 +83,18 @@ export function GroupList({ userGroups, selectedGroup, handleCreateGroup, setSel
               onClick={() => setSelectedGroup(userGroup)}
             >
               <div className="flex items-center space-x-3 w-full">
-                <Avatar className="w-10 h-10 flex-shrink-0">
-                  <AvatarFallback>{userGroup.group.name != '#chat' ? userGroup.group.name[0] : userGroup.group.members.filter(member => member._id !== session?.user.id)?.[0].name[0]}</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="w-10 h-10 flex-shrink-0">
+                    <AvatarFallback>{userGroup.group.name != '#chat' ? userGroup.group.name[0] : userGroup.group.members.filter(member => member._id !== session?.user.id)?.[0].name[0]}</AvatarFallback>
+                  </Avatar>
+                  {userGroup.group.name === '#chat' && (
+                    <>
+                      {isUserOnline(userGroup.group.members.filter(member => member._id !== session?.user.id)?.[0].lastLogin) && (
+                        <span className="absolute z-30 bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+                      )}
+                    </>
+                  )}
+                </div>
                 <div className="flex-1 min-w-0 text-left">
                   <div className="flex justify-between">
                     <p className="font-medium truncate text-left">{userGroup.group.name != '#chat' ? userGroup.group.name : userGroup.group.members.filter(member => member._id !== session?.user.id)?.[0].name}</p>

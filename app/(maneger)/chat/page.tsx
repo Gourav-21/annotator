@@ -190,7 +190,7 @@ export default function ChatUI() {
 
   return (
     <div className="flex h-screen w-full mx-auto overflow-hidden bg-background">
-      <GroupList setNewGroupName={setNewGroupName} userGroups={userGroups} handleCreateGroup={handleCreateGroup} setSelectedMembers={setSelectedMembers} selectedGroup={selectedGroup} setSelectedGroup={handleGroupSelect} onCreateGroup={() => setOpenCreateDialog(true)} isMobile={isMobile} />
+      <GroupList userGroups={userGroups} handleCreateGroup={handleCreateGroup} selectedGroup={selectedGroup} setSelectedGroup={handleGroupSelect} onCreateGroup={() => setOpenCreateDialog(true)} isMobile={isMobile} />
       <div className={`flex-1 flex flex-col ${isMobile && !selectedGroup ? 'hidden' : 'block'}`}>
         {selectedGroup ? (
           <> {isMobile && (

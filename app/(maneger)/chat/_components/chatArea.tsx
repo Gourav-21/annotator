@@ -70,7 +70,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
     fetchMessages()
 
     const intervalId = setInterval(() => {
-      fetchMessages() // Fetch messages every 3 seconds
+      // fetchMessages() // Fetch messages every 3 seconds
     }, 5000)
 
     return () => clearInterval(intervalId) 

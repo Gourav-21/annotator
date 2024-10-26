@@ -39,6 +39,7 @@ export interface Annotator {
   _id: string
   name: string
   email: string
+  lastLogin: string
 }
 
 export default function Component() {
