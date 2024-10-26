@@ -3,13 +3,34 @@
 import { createGroq } from '@ai-sdk/groq';
 import OpenAI from 'openai';
 import { generateText } from 'ai';
+import Task from '@/models/Task';
 
 const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
+function updateInputTextContent(contentArray, responseText) {
+  return contentArray.map(item => {
+    // If it's an inputText type, update innerText with response
+    if (item.type === 'inputText') {
+      item.content.innerText = responseText;
+    }
+
+    // If the element has nested content, call the function recursively
+    if (item.content && Array.isArray(item.content)) {
+      item.content = updateInputTextContent(item.content, responseText);
+    }
+
+    return item;
+  });
+}
+
+
 async function saveToDatabase(content: string, response: string, taskId: string) {
+  const newContent = updateInputTextContent(JSON.parse(content), response);
+  const a =await Task.updateOne({ _id: taskId }, { content: JSON.stringify(newContent), submitted: true },{ new: true });
   console.log('Saving to database:', { content, response })
+  console.log(a)
 }
 
 
@@ -18,9 +39,9 @@ export async function generateAndSaveAIResponse(extractedcontent: string, conten
   const apiKey = "as"
   const provider = "groq"
 
-  // if (!apiKey || !provider || !content) {
-  //   return { error: 'Missing required fields' }
-  // }
+  if (!apiKey || !taskId || !content) {
+    return { error: 'Missing required fields' }
+  }
 
   try {
     let response: string
@@ -36,11 +57,11 @@ export async function generateAndSaveAIResponse(extractedcontent: string, conten
     } else if (provider === 'groq') {
 
       const { text } = await generateText({
-        model: groq('gemma2-9b-it'),
+        model: groq('llama-3.2-1b-preview'),
         prompt: `
-         You're an AI assistant who answers questions in a concise way.
-
-          You're a chat bot, so keep your replies succinct.
+         You're helping in filling data
+         directly give the answers like humans
+         so help with these questions:
         ${extractedcontent}
         `,
       });

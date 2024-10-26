@@ -1,31 +1,22 @@
 'use client'
 
-import { generateAndSaveAIResponse } from "@/app/actions/ai"
 import { getAllAnnotators } from "@/app/actions/annotator"
 import { changeAnnotator, deleteTask, getAllTasks } from "@/app/actions/task"
 import { upsertTemplate } from "@/app/actions/template"
-import { task } from "@/app/task/[taskId]/page"
 import { template } from "@/app/template/page"
 import { SheetMenu } from "@/components/admin-panel/sheet-menu"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
-import { getStatusBadgeVariant } from "@/lib/constants"
-import { formatTime } from "@/lib/utils"
-import { format, parseISO } from "date-fns"
-import { Bot, CalendarIcon, NotebookPen, PlusCircle, Shuffle, Trash2Icon } from "lucide-react"
+import { PlusCircle, Shuffle } from "lucide-react"
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { toast } from "sonner"
+import { TaskTable } from "./table"
 
-interface Task {
+export interface Task {
   _id: string
   name: string
   project: string
@@ -48,6 +39,7 @@ export default function Component() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTemplateName, setNewTemplateName] = useState('')
   const [annotators, setAnnotators] = useState<Annotator[]>([])
+  const [disable,setDisable] = useState([])
   const [activeTab, setActiveTab] = useState("all")
   const pathName = usePathname();
   const projectId = pathName.split("/")[3];
@@ -177,173 +169,18 @@ export default function Component() {
                 </Button>
               </div>
               <TabsContent value="all">
-                <TaskTable tasks={filteredTasks.all} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+                <TaskTable setTasks={setTasks}  tasks={filteredTasks.all} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
               </TabsContent>
               <TabsContent value="submitted">
-                <TaskTable tasks={filteredTasks.submitted} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+                <TaskTable setTasks={setTasks} tasks={filteredTasks.submitted} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
               </TabsContent>
               <TabsContent value="unassigned">
-                <TaskTable tasks={filteredTasks.unassigned} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+                <TaskTable setTasks={setTasks} tasks={filteredTasks.unassigned} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
               </TabsContent>
             </Tabs>
           </>
         )}
       </main>
-    </div>
-  )
-}
-
-interface TaskTableProps {
-  tasks: Task[]
-  annotators: Annotator[]
-  handleAssignUser: (annotatorId: string, taskId: string) => void
-  handleDeleteTemplate: (e: React.MouseEvent, _id: string) => void
-  router: any
-}
-
-function TaskTable({ tasks, annotators, handleAssignUser, handleDeleteTemplate, router }: TaskTableProps) {
-  const [dialog, setDialog] = useState(false)
-  const [feedback, setFeedback] = useState('')
-  function handleclick(e: React.MouseEvent, feedback: string) {
-    e.stopPropagation()
-    setFeedback(feedback)
-    setDialog(true)
-  }
-  function aiSolve(e: React.MouseEvent, task: task) {
-    e.stopPropagation()
-    const content = JSON.parse(task.content)
-    const extractedPlaceholders: string[] = []
-    let hasInputText = false;
-    const extractPlaceholders = (item: any) => {
-      if (Array.isArray(item.content)) {
-        item.content.forEach(extractPlaceholders)
-      } else if (item.type) {
-        if (item.type === "inputText") {
-          hasInputText = true;
-        }
-        if ((item.type === "dynamicText" || item.type === "text") && item.content?.innerText) {
-          extractedPlaceholders.push(item.content.innerText);
-        }
-      }
-    }
-
-    try {
-      content.forEach(extractPlaceholders)
-      console.log(extractedPlaceholders)
-      if (!hasInputText) {
-        throw new Error("Error: Missing 'inputText' type.");
-      }
-      if (extractedPlaceholders.length === 0) {
-        throw new Error("Error: Missing 'dynamicText' or 'text' types.");
-      }
-      generateAndSaveAIResponse(extractedPlaceholders.join("\n"), task.content, task._id)
-    } catch (error: any) {
-      toast.error(error.message);
-    }
-  }
-
-  return (
-    <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Tasks Name</TableHead>
-            <TableHead>Created Date</TableHead>
-            <TableHead>Assignee</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-center">Ai solve</TableHead>
-            <TableHead className="text-center">Time Taken</TableHead>
-            <TableHead className="text-center">Submitted</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {tasks.map((task) => (
-            <TableRow
-              key={task._id}
-              onClick={() => router.push(`/task/${task._id}`)}
-              className="cursor-pointer hover:bg-gray-50"
-            >
-              <TableCell className="font-medium">{task.name}</TableCell>
-              <TableCell>
-                <div className="flex items-center text-sm text-gray-500">
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {format(parseISO(task.created_at), 'PPP')}
-                </div>
-              </TableCell>
-              <TableCell>
-                <Select
-                  value={task.annotator || ""}
-                  onValueChange={(value) => handleAssignUser(value, task._id)}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Assign user" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {/* <SelectItem value="">Unassigned</SelectItem> */}
-                    {annotators.map((user) => (
-                      <SelectItem key={user._id} value={user._id}>
-                        {user.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </TableCell>
-              <TableCell className="font-medium">
-                <Badge variant={getStatusBadgeVariant(task.status)}>
-                  {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-center">
-                <Button variant="outline" size="sm" onClick={(e) => aiSolve(e, task)}><Bot className=" h-4 w-4" /></Button>
-              </TableCell>
-              <TableCell className="font-medium text-center">
-                {formatTime(task.timeTaken)}
-              </TableCell>
-              <TableCell className="font-medium text-center">
-                <span role="img" aria-label={task.submitted ? "Submitted" : "Not submitted"}>
-                  {task.submitted ? '✔️' : '❌'}
-                </span>
-              </TableCell>
-              <TableCell className="text-right">
-                {task.feedback && <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => handleclick(e, task.feedback)}
-                >
-                  <NotebookPen className="h-4 w-4" />
-                  <span className="sr-only">feedback</span>
-                </Button>}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => handleDeleteTemplate(e, task._id)}
-                >
-                  <Trash2Icon className="h-4 w-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-        <Dialog open={dialog} onOpenChange={setDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Feedback</DialogTitle>
-              <DialogDescription>
-                {feedback}
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="sm:justify-start">
-              <DialogClose asChild>
-                <Button type="button" variant="secondary">
-                  Close
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </Table>
     </div>
   )
 }
