@@ -2,7 +2,6 @@ import { sendMessage, updateLastReadMessage } from '@/app/actions/chat'
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import useUserGroups from '@/hooks/use-userGroups'
 import { ChevronDown, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -47,11 +46,11 @@ export function ChatArea({ groupId }: { groupId: string }) {
   }
 
   const fetchMessages = async () => {
-    const msg = await fetch(`/api/chat/getMessages?groupId=${groupId}&&limitBefore=10&&limitAfter=20`).then(res => res.json())
+    const msg = await fetch(`/api/chat/getMessages?groupId=${groupId}&&limitAfter=20`).then(res => res.json())
     if (msg.error) {
       return console.log(msg.error)
     }
-    setMessages(msg.messages as Message[])
+    setMessages(p=>[...p,...msg.messages])
     sethide(false)
   }
 
@@ -172,9 +171,6 @@ export function ChatArea({ groupId }: { groupId: string }) {
           <div key={message._id} className={`flex items-start space-x-2 my-4 ${message.sender?._id === session?.user.id ? 'justify-end' : ''}`}
             ref={message._id === getLastReadMessage(groupId) ? lastReadMessageRef : null} >
             {message.sender?._id !== session?.user.id && (
-              // <Avatar className="w-8 h-8">
-              //   <AvatarFallback>{}</AvatarFallback>
-              // </Avatar>
               <div className="relative">
                 <Avatar className="w-8 h-8 flex-shrink-0">
                   <AvatarFallback>{message.sender?.name[0]}</AvatarFallback>

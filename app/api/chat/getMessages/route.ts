@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
     if (limitBefore === 0) {
       const messagesAfter = await Message.find({
         group: groupId,
-        sent_at: { $gte: lastReadMessage.sent_at }
+        sent_at: { $gt: lastReadMessage.sent_at }
       })
         .sort({ sent_at: 1 })
         .limit(Number(limitAfter))
