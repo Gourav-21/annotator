@@ -14,16 +14,20 @@ import { useEffect, useState } from 'react'
 import { UserGroups } from "../page"
 import { Annotator } from "../../projects/task/[projectId]/page"
 import { getAllAnnotators } from "@/app/actions/annotator"
+import { toast } from "@/hooks/use-toast"
 
 type GroupListProps = {
   userGroups: UserGroups[]
   selectedGroup: UserGroups | null
+  setSelectedMembers: React.Dispatch<React.SetStateAction<Annotator[]>>
+  handleCreateGroup: (name?: string, members?: Annotator[]) => void
+  setNewGroupName: React.Dispatch<React.SetStateAction<string>>
   setSelectedGroup: (group: UserGroups) => void
   onCreateGroup: () => void
   isMobile: boolean
 }
 
-export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreateGroup, isMobile }: GroupListProps) {
+export function GroupList({ userGroups, selectedGroup, handleCreateGroup, setNewGroupName, setSelectedGroup, setSelectedMembers, onCreateGroup, isMobile }: GroupListProps) {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState('')
   const [isCommandOpen, setIsCommandOpen] = useState(false)
@@ -31,6 +35,15 @@ export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreat
   const filteredGroups = userGroups.filter(group =>
     group.group.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  function createchat(user: Annotator) {
+    handleCreateGroup()
+    setIsCommandOpen(false)
+    toast({
+      title: "Creating chat",
+      description: 'Starting chat with ' + user.name + '!'
+    })
+  }
 
   return (
     <div className={`${isMobile && selectedGroup ? 'hidden' : 'block'} ${isMobile ? 'w-full' : 'w-96'} relative border-r flex flex-col`}>
@@ -109,19 +122,21 @@ export function GroupList({ userGroups, selectedGroup, setSelectedGroup, onCreat
           </DialogTrigger>
         }
         <DialogContent className="sm:max-w-[425px] p-0 bg-transparent">
-          <AnnotatorList />
+          <AnnotatorList createchat={createchat} />
         </DialogContent>
       </Dialog >
     </div >
   )
 }
 
-export default function AnnotatorList() {
+export default function AnnotatorList({ createchat }: { createchat: Function }) {
   const [annotators, setAnnotators] = useState<Annotator[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function init() {
       setAnnotators(JSON.parse(await getAllAnnotators()))
+      setLoading(false)
     }
     init();
   }, []);
@@ -129,13 +144,13 @@ export default function AnnotatorList() {
   return (
     <Command>
       <CommandInput placeholder="Search members..." />
-      <CommandEmpty>No member found.</CommandEmpty>
+      <CommandEmpty>{loading ? 'Loading...' : 'No member found.'}</CommandEmpty>
       <CommandList>
         <CommandGroup>
           {annotators.map((member) => (
             <CommandItem
               key={member._id}
-              onSelect={() => handleSelect(member)}
+              onSelect={() => createchat(member)}
             >
               {member.name}
             </CommandItem>
