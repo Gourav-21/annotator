@@ -7,6 +7,7 @@ import { ChevronDown, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 import { Annotator } from '../../projects/task/[projectId]/page'
+import { Group } from 'next/dist/shared/lib/router/utils/route-regex'
 
 export type Message = {
   _id: string
@@ -24,7 +25,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
   const [Fetchloading, setFetchLoading] = useState(false)
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(false)
-  const { getLastReadMessage, updateLastReadMessage: updateLastRead, updateLastMessage } = useUserGroups()
+  const { getLastReadMessage, updateLastReadMessage: updateLastRead, updateLastMessage, getGroupfromUserGroups } = useUserGroups()
   const [loadingMessage, setLoadingMessage] = useState(false)
   const [hasScrolledToLastRead, setHasScrolledToLastRead] = useState(false)
   const [hide, sethide] = useState(true)
@@ -176,7 +177,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
                   <AvatarFallback>{message.sender?.name[0]}</AvatarFallback>
                 </Avatar>
                 <>
-                  {isUserOnline(message.sender?.lastLogin) && (
+                  {isUserOnline(getGroupfromUserGroups(groupId)?.members.filter((member) => member._id === message.sender?._id)[0].lastLogin as string) && (
                     <span className="absolute z-30 bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
                   )}
                 </>

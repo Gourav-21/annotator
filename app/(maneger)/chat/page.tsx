@@ -25,7 +25,7 @@ type Message = {
   sent_at: string
 }
 
-type Groups = {
+export type Groups = {
   _id: string
   name: string
   members: Annotator[]
