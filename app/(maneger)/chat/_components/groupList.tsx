@@ -73,11 +73,11 @@ export function GroupList({ userGroups, selectedGroup, handleCreateGroup, setNew
             >
               <div className="flex items-center space-x-3 w-full">
                 <Avatar className="w-10 h-10 flex-shrink-0">
-                  <AvatarFallback>{userGroup.group.name[0]}</AvatarFallback>
+                  <AvatarFallback>{userGroup.group.name != '#chat' ? userGroup.group.name[0] : userGroup.group.members.filter(member => member._id !== session?.user.id)?.[0].name[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0 text-left">
                   <div className="flex justify-between">
-                    <p className="font-medium truncate text-left">{userGroup.group.name}</p>
+                    <p className="font-medium truncate text-left">{userGroup.group.name != '#chat' ? userGroup.group.name : userGroup.group.members.filter(member => member._id !== session?.user.id)?.[0].name}</p>
                     <p className="font-normal text-muted-foreground text-xs truncate text-left">{userGroup.group.lastMessage?.sent_at ? formatDistance(parseISO(userGroup.group.lastMessage.sent_at), new Date()) : 'No messages yet'}</p>
                   </div>
 
