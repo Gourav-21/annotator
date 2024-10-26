@@ -84,7 +84,7 @@ export default function AnnotatorsPage() {
                     <TableCell>
                       <div className="flex items-center text-sm text-gray-500">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {format(parseISO(user.lastLogin.toString()), 'PPP')}
+                        {format(parseISO(user.lastLogin.toString()), 'PPPpp')}
                       </div>
                     </TableCell>
                   </TableRow>
