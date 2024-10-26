@@ -43,6 +43,12 @@ export function ChatArea({ groupId }: { groupId: string }) {
     sethide(false)
   }
 
+  const isUserOnline = (lastLogin: string) => {
+    const lastLoginDate = new Date(lastLogin);
+    const currentTime = new Date();
+    return (currentTime.getTime() - lastLoginDate.getTime()) / 1000 <= 15;
+  };
+
   async function fetchOldMessages() {
     if(loadingMessage) return
     setLoadingMessage(true)
@@ -70,7 +76,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
     fetchMessages()
 
     const intervalId = setInterval(() => {
-      // fetchMessages() // Fetch messages every 3 seconds
+      fetchMessages() // Fetch messages every 3 seconds
     }, 5000)
 
     return () => clearInterval(intervalId) 
@@ -89,7 +95,7 @@ export function ChatArea({ groupId }: { groupId: string }) {
     const lastReadMessageId = getLastReadMessage(groupId)
     const lastReadMessageIndex = messages.findIndex(msg => msg._id === lastReadMessageId)
     if (lastReadMessageIndex !== -1) {
-      if(isAtBottom)
+      // if(isAtBottom)
       lastReadMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     } else if (isAtBottom) {
       scrollToBottom()
@@ -160,9 +166,19 @@ export function ChatArea({ groupId }: { groupId: string }) {
           <div key={message._id} className={`flex items-start space-x-2 my-4 ${message.sender?._id === session?.user.id ? 'justify-end' : ''}`} 
            ref={message._id === getLastReadMessage(groupId) ? lastReadMessageRef : null} >
             {message.sender?._id !== session?.user.id && (
-              <Avatar className="w-8 h-8">
+              // <Avatar className="w-8 h-8">
+              //   <AvatarFallback>{}</AvatarFallback>
+              // </Avatar>
+              <div className="relative">
+              <Avatar className="w-8 h-8 flex-shrink-0">
                 <AvatarFallback>{message.sender?.name[0]}</AvatarFallback>
               </Avatar>
+                <>
+                  {isUserOnline(message.sender?.lastLogin) && (
+                    <span className="absolute z-30 bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+                  )}
+                </>
+            </div>
             )}
             <div className={`max-w-[70%] ${message.sender?._id === session?.user.id ? 'bg-primary text-primary-foreground' : 'bg-muted'} rounded-lg p-3`}>
               {message.sender?._id !== session?.user.id && (
