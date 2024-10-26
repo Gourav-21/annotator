@@ -37,7 +37,7 @@ export function GroupList({ userGroups, selectedGroup, handleCreateGroup, setNew
   )
 
   function createchat(user: Annotator) {
-    handleCreateGroup()
+    handleCreateGroup('#chat', [user])
     setIsCommandOpen(false)
     toast({
       title: "Creating chat",
