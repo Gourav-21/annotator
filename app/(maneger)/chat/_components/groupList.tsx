@@ -19,15 +19,13 @@ import { UserGroups } from "../page"
 type GroupListProps = {
   userGroups: UserGroups[]
   selectedGroup: UserGroups | null
-  setSelectedMembers: React.Dispatch<React.SetStateAction<Annotator[]>>
   handleCreateGroup: (name?: string, members?: Annotator[]) => void
-  setNewGroupName: React.Dispatch<React.SetStateAction<string>>
   setSelectedGroup: (group: UserGroups) => void
   onCreateGroup: () => void
   isMobile: boolean
 }
 
-export function GroupList({ userGroups, selectedGroup, handleCreateGroup, setNewGroupName, setSelectedGroup, setSelectedMembers, onCreateGroup, isMobile }: GroupListProps) {
+export function GroupList({ userGroups, selectedGroup, handleCreateGroup, setSelectedGroup, onCreateGroup, isMobile }: GroupListProps) {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState('')
   const [isCommandOpen, setIsCommandOpen] = useState(false)
@@ -36,9 +34,7 @@ export function GroupList({ userGroups, selectedGroup, handleCreateGroup, setNew
     group.group.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  console.log(userGroups)
   function createchat(user: Annotator) {
-    console.log(user)
     const group = userGroups.find(group =>
       group.group.name === "#chat" &&
       group.group.members.some(member => member._id === user._id))
