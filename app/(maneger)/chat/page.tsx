@@ -76,19 +76,19 @@ export default function ChatUI() {
       init() // Fetch messages every 3 seconds
     }, 5000)
 
-    return () => clearInterval(intervalId) 
+    return () => clearInterval(intervalId)
   }, [])
 
 
-  const handleCreateGroup = async () => {
-    if (newGroupName.trim() && selectedMembers.length > 0) {
+  const handleCreateGroup = async (name?: string, members?: Annotator[]) => {
+    if ((name != undefined && members != undefined) ? (name && members.length > 0) : (newGroupName.trim() && selectedMembers.length > 0)) {
       setLoading(true)
       const res = await fetch('/api/chat/createGroup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ groupName: newGroupName.trim(), members: selectedMembers.map(m => m._id) }),
+        body: JSON.stringify({ groupName: name != undefined ? name : newGroupName.trim(), members: members != undefined ? members : selectedMembers.map(m => m._id) }),
       })
       const data = await res.json()
       if (!data.success) {
@@ -99,6 +99,13 @@ export default function ChatUI() {
         })
         return
       } else {
+        if (newGroupName == '#chat') {
+          toast({
+            title: 'Success',
+            description: 'Chat created successfully',
+          })
+          return
+        }
         toast({
           title: 'Success',
           description: 'Group created successfully',
@@ -183,13 +190,13 @@ export default function ChatUI() {
 
   return (
     <div className="flex h-screen w-full mx-auto overflow-hidden bg-background">
-      <GroupList userGroups={userGroups} selectedGroup={selectedGroup} setSelectedGroup={handleGroupSelect} onCreateGroup={() => setOpenCreateDialog(true)} isMobile={isMobile} />
+      <GroupList setNewGroupName={setNewGroupName} userGroups={userGroups} handleCreateGroup={handleCreateGroup} setSelectedMembers={setSelectedMembers} selectedGroup={selectedGroup} setSelectedGroup={handleGroupSelect} onCreateGroup={() => setOpenCreateDialog(true)} isMobile={isMobile} />
       <div className={`flex-1 flex flex-col ${isMobile && !selectedGroup ? 'hidden' : 'block'}`}>
         {selectedGroup ? (
           <> {isMobile && (
-            <Button 
-              variant="ghost" 
-              className={`absolute top-5 ${session?.user.role == 'project manager' ? 'right-10 top-5' : 'right-2' } z-10`}
+            <Button
+              variant="ghost"
+              className={`absolute top-5 ${session?.user.role == 'project manager' ? 'right-10 top-5' : 'right-2'} z-10`}
               onClick={() => setSelectedGroup(null)}
             >
               <X className="h-6 w-6" />
@@ -198,14 +205,14 @@ export default function ChatUI() {
             <div className="p-4 border-b bg-muted/30 flex justify-between items-center">
               <div className="flex items-center space-x-3">
                 <Avatar className="w-10 h-10">
-                  <AvatarFallback>{selectedGroup.group.name[0]}</AvatarFallback>
+                  <AvatarFallback>{selectedGroup.group.name != '#chat' ? selectedGroup.group.name[0] : selectedGroup.group.members.filter(member => member._id !== session?.user.id)?.[0].name[0]}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h2 className="text-lg font-semibold">{selectedGroup.group.name}</h2>
-                  <div className="flex items-center text-sm text-muted-foreground">
+                  <h2 className="text-lg font-semibold">{selectedGroup.group.name != '#chat' ? selectedGroup.group.name : selectedGroup.group.members.filter(member => member._id !== session?.user.id)?.[0].name}</h2>
+                  {selectedGroup.group.name != '#chat' && <div className="flex items-center text-sm text-muted-foreground">
                     <Users className="mr-1" size={14} />
                     {selectedGroup.group.members.length} members
-                  </div>
+                  </div>}
                 </div>
               </div>
               {session?.user.role == 'project manager' && <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
@@ -217,7 +224,7 @@ export default function ChatUI() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DialogTrigger asChild>
+                    {selectedGroup.group.name != '#chat' && <DialogTrigger asChild>
                       <DropdownMenuItem onSelect={() => {
                         setNewGroupName(selectedGroup.group.name)
                         setSelectedMembers(selectedGroup.group.members)
@@ -225,8 +232,8 @@ export default function ChatUI() {
                         <UserPlus className="mr-2 h-4 w-4" />
                         <span>Edit group</span>
                       </DropdownMenuItem>
-                    </DialogTrigger>
-                    <DropdownMenuItem onClick={() => handleDeleteGroup(selectedGroup.group._id)}><Trash2 className="mr-2 h-4 w-4" />Delete group</DropdownMenuItem>
+                    </DialogTrigger>}
+                    <DropdownMenuItem onClick={() => handleDeleteGroup(selectedGroup.group._id)}><Trash2 className="mr-2 h-4 w-4" />    {selectedGroup.group.name != '#chat' ? 'Delete group' : 'Delete Chat'}</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <DialogContent>
@@ -322,7 +329,7 @@ export default function ChatUI() {
                 </div>
               ))}
             </div>
-            <Button disabled={loading} onClick={handleCreateGroup} className="w-full">
+            <Button disabled={loading} onClick={()=>handleCreateGroup()} className="w-full">
               Create Group
             </Button>
           </div>
