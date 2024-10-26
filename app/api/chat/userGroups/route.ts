@@ -12,7 +12,10 @@ export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
 
   try {
-    // Find UserGroups by user and populate all necessary fields
+    // update user login time
+    User.updateOne({ _id: session?.user.id }, { lastLogin: Date.now() })
+    .catch(error => console.error('Error updating lastLogin:', error));
+        // Find UserGroups by user and populate all necessary fields
     const userGroups = await UserGroup.find({ user: session?.user.id })
       .populate({
         path: 'group', // Populate group field
