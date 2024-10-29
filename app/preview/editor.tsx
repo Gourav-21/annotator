@@ -1,5 +1,4 @@
 'use client'
-import { getTask } from '@/app/actions/task'
 import Recursive from '@/app/template/_components/editor/editor-components/recursive'
 import { Button } from '@/components/ui/button'
 import { useEditor } from '@/providers/editor/editor-provider'
@@ -49,7 +48,7 @@ const Editor = ({ pageId, liveMode }: Props) => {
       }
     };
     fetchData()
-  }, [pageId, dispatch])
+  }, [liveMode,pageId, dispatch])
 
   const handleClick = () => {
     dispatch({
