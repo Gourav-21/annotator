@@ -34,7 +34,7 @@ export function GroupList({ userGroups, selectedGroup, handleCreateGroup, setSel
     group.group.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  const isUserOnline = (lastLogin: string) => {
+  const isUserOnline = (lastLogin: string): boolean => {
     const lastLoginDate = new Date(lastLogin);
     const currentTime = new Date();
     return (currentTime.getTime() - lastLoginDate.getTime()) / 1000 <= 15;
@@ -149,7 +149,7 @@ export function GroupList({ userGroups, selectedGroup, handleCreateGroup, setSel
   )
 }
 
-export default function AnnotatorList({ createchat }: { createchat: Function }) {
+export default function AnnotatorList({ createchat }: { createchat: (user: Annotator) => void }) {
   const [annotators, setAnnotators] = useState<Annotator[]>([])
   const [loading, setLoading] = useState(true)
 

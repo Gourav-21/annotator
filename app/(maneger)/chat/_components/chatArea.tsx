@@ -7,7 +7,6 @@ import { ChevronDown, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 import { Annotator } from '../../projects/task/[projectId]/page'
-import { Group } from 'next/dist/shared/lib/router/utils/route-regex'
 
 export type Message = {
   _id: string
