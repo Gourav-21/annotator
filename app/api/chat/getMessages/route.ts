@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
       })
         .sort({ sent_at: -1 })
         .limit(Number(limitBefore))
-        .populate('sender', 'name');
+        .populate('sender', 'name ');
 
       return NextResponse.json({ success: true, messages: messagesBefore.reverse() }, { status: 200 });
     }
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
       const recentMessages = await Message.find({ group: groupId })
         .sort({ sent_at: -1 })
         .limit(limitAfter)
-        .populate('sender', 'name');
+        .populate('sender', 'name ');
 
       return NextResponse.json({ success: true, messages: recentMessages.reverse() }, { status: 200 });
     }
@@ -45,11 +45,11 @@ export async function GET(req: NextRequest) {
     if (limitBefore === 0) {
       const messagesAfter = await Message.find({
         group: groupId,
-        sent_at: { $gte: lastReadMessage.sent_at }
+        sent_at: { $gt: lastReadMessage.sent_at }
       })
         .sort({ sent_at: 1 })
         .limit(Number(limitAfter))
-        .populate('sender', 'name');
+        .populate('sender', 'name ');
       return NextResponse.json({ success: true, messages: messagesAfter }, { status: 200 });
     }
 
@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
     })
       .sort({ sent_at: -1 })
       .limit(Number(limitBefore))
-      .populate('sender', 'name');
+      .populate('sender', 'name ');
 
     const messagesAfter = await Message.find({
       group: groupId,
@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
     })
       .sort({ sent_at: 1 })
       .limit(Number(limitAfter))
-      .populate('sender', 'name');
+      .populate('sender', 'name ');
 
     const combinedMessages = [...messagesBefore.reverse(), ...messagesAfter];
 

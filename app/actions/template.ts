@@ -77,3 +77,16 @@ export async function DeleteTemplate(_id: string) {
         return { success: false, error: 'Failed to delete project' }
     }
 }
+
+export async function UpdateVisibilityTemplate(_id: string,visibility:boolean) {
+    await connectToDatabase();
+    try {
+        await Template.findByIdAndUpdate(_id, {
+            $set: { private: visibility }
+        });
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: 'Failed to update the visibility of project' }
+    }
+}
+
