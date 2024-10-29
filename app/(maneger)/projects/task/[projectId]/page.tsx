@@ -10,11 +10,12 @@ import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
-import { PlusCircle, Shuffle } from "lucide-react"
+import { Bot, PlusCircle, Shuffle } from "lucide-react"
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { TaskTable } from "./table"
+import { AssignAi } from "@/app/actions/ai"
 
 export interface Task {
   _id: string
@@ -27,6 +28,7 @@ export interface Task {
   annotator?: string
   timeTaken: number
   feedback: string
+  ai: boolean
 }
 
 export interface Annotator {
@@ -63,8 +65,8 @@ export default function Component() {
   if (session?.user?.role === 'annotator') router.push('/tasks');
 
   async function handleAssignUser(annotatorId: string, taskId: string) {
-    await changeAnnotator(taskId, annotatorId)
-    setTasks(tasks.map(task => task._id === taskId ? { ...task, annotator: annotatorId } : task))
+    const res = JSON.parse(await changeAnnotator(taskId, annotatorId))
+    setTasks(tasks.map(task => task._id === taskId ? res : task))
   }
 
   const handleCreateTemplate = async (e: React.FormEvent) => {
@@ -121,6 +123,17 @@ export default function Component() {
     });
   }
 
+  async function handleAssignAI(){
+    const unassignedTasks = tasks.filter(task => !task.annotator);
+    AssignAi(unassignedTasks.map(task => task._id))
+    setTasks(tasks.map(task => unassignedTasks.includes(task) ? { ...task, ai: true } : task))
+    toast({
+      title: "AI assigned",
+      description: `${unassignedTasks.length} tasks have been assigned to AI.
+                    Please refresh the page to see the changes.`,
+    });
+  }
+
   const filteredTasks = {
     all: tasks,
     submitted: tasks.filter(task => task.submitted),
@@ -165,6 +178,9 @@ export default function Component() {
                   <TabsTrigger value="submitted">Submitted Tasks</TabsTrigger>
                   <TabsTrigger value="unassigned">Unassigned Tasks</TabsTrigger>
                 </TabsList>
+                <Button onClick={ handleAssignAI} variant="outline" className="ml-auto mr-2">
+                  <Bot className="mr-2 h-4 w-4" /> Assign Tasks To AI
+                </Button>
                 <Button onClick={handleAutoAssign} variant="outline">
                   <Shuffle className="mr-2 h-4 w-4" /> Auto-assign Tasks
                 </Button>
