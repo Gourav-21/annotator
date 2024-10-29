@@ -127,9 +127,6 @@ export default function ProjectDashboard() {
 
   const handleExport = (format: string) => {
     const exportItems = parseAndAddSelectedItemsToArray(res, selectedItems)
-    // console.log(exportItems)
-    // const exportData = exportItems.filter(item => selectedItems.includes(item.name))
-    // console.log('Exporting:', exportData)
     if (format === 'json') {
 
       const dataStr = JSON.stringify(exportItems, null, 2)

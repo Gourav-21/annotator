@@ -50,14 +50,12 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
 
         try {
             content.forEach(extractPlaceholders)
-            console.log(extractedPlaceholders)
             if (!hasInputText) {
                 throw new Error("Error: Missing 'inputText' type.");
             }
             if (extractedPlaceholders.length === 0) {
                 throw new Error("Error: Missing 'dynamicText' or 'text' types.");
             }
-            console.log(task.content)
             generateAndSaveAIResponse(extractedPlaceholders.join("\n"), task.content, task._id)
             setTasks((prevTasks) => prevTasks.map((t) => t._id === task._id ? { ...t, pause: true } : t))
             toast.success("Task has been assigned to ai.");

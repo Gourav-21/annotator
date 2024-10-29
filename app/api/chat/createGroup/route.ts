@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
   const serverSession = await getServerSession(authOptions)
 
   const { groupName, members } = await req.json();
-  console.log(groupName, members)
   try {
     session.startTransaction();
 

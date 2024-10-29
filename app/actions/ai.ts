@@ -1,16 +1,22 @@
 'use server'
 
-import { createGroq } from '@ai-sdk/groq';
-import OpenAI from 'openai';
-import { generateText } from 'ai';
 import Task from '@/models/Task';
+import { createGroq } from '@ai-sdk/groq';
+import { createOpenAI } from '@ai-sdk/openai';
+import { generateText } from 'ai';
 import { task } from '../preview/page';
+
 
 const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-function updateInputTextContent(contentArray, responseText) {
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  compatibility: 'strict',
+});
+
+function updateInputTextContent(contentArray: any[], responseText: string) {
   return contentArray.map(item => {
     // If it's an inputText type, update innerText with response
     if (item.type === 'inputText') {
@@ -31,16 +37,14 @@ async function saveToDatabase(content: string, response: string, taskId: string)
   const newContent = updateInputTextContent(JSON.parse(content), response);
   const a = await Task.updateOne({ _id: taskId }, { ai: true, content: JSON.stringify(newContent), submitted: true }, { new: true });
   console.log('Saving to database:', { content, response })
-  console.log(a)
 }
 
 
 
 export async function generateAndSaveAIResponse(extractedcontent: string, content: string, taskId: string) {
-  const apiKey = "as"
   const provider = "groq"
 
-  if (!apiKey || !taskId || !content) {
+  if (!taskId || !content) {
     return { error: 'Missing required fields' }
   }
 
@@ -48,12 +52,18 @@ export async function generateAndSaveAIResponse(extractedcontent: string, conten
     let response: string
 
     if (provider === 'openai') {
-      const openai = new OpenAI({ apiKey })
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content }],
-      })
-      response = completion.choices[0].message.content || ''
+
+      const { text } = await generateText({
+        model: openai('gpt-3.5-turbo'),
+        prompt: `
+         You're helping in filling data
+         directly give the answers like humans
+         so help with these questions:
+        ${extractedcontent}
+        `,
+      });
+
+      response = text
 
     } else if (provider === 'groq') {
 

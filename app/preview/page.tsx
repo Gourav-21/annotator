@@ -36,7 +36,6 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const template: template = JSON.parse(await getTemplate(templateId as string))
-        console.log(template)
         setTemplate(template)
         setLoading(false)
       } catch (error: any) {

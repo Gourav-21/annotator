@@ -58,8 +58,6 @@ export async function deleteTask(_id: string) {
 
 export async function changeAnnotator(_id: string, annotator: string) {
   await connectToDatabase();
-  console.log(annotator)
-  console.log(annotator == 'ai')
   if(annotator == 'ai') {
     const res = await Task.findOneAndUpdate({ _id }, {
       annotator: null,

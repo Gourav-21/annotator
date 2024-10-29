@@ -20,16 +20,11 @@ export async function PUT(req: NextRequest) {
 
     const currentGroup = await Group.findById(groupId)
     const currentMemberIds = currentGroup?.members.map((member: mongoose.Types.ObjectId) => member.toString());
-    // console.log("currentMemberIds", currentMemberIds)
 
-    // const convertedMembers = members.map((member: string) => new mongoose.Types.ObjectId(member));
-    // console.log("convertedMembers", convertedMembers)
 
     const membersToRemove = currentMemberIds.filter((id: string) => !members.includes(id));
     const membersToAdd = members.filter((id: string) => !currentMemberIds.includes(id));
 
-    // console.log("membersToRemove", membersToRemove)
-    // console.log("membersToAdd", membersToAdd)
 
     if (membersToRemove.length > 0) {
       await UserGroup.deleteMany({ user: { $in: membersToRemove }, group: groupId }, { session });

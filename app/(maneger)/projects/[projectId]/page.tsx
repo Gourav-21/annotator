@@ -258,7 +258,6 @@ export function Suggesion() {
   }, [])
 
   function onclick(template: template) {
-    // console.log(template)
     router.push(`/preview?projectId=${projectId}&templateId=${template._id}`);
   }
 
