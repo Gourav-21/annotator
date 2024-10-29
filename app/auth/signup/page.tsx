@@ -88,7 +88,7 @@ export default function AuthPageComponent() {
       <div className="h-screen flex justify-center items-center">
         <div>
           <h1 className="text-4xl font-bold text-left mb-8">Choose your role</h1>
-          <p className="text-left mb-8 text-muted-foreground">You can't switch roles with the same account</p>
+          <p className="text-left mb-8 text-muted-foreground">You can&apos;t switch roles with the same account</p>
           <div className="grid md:grid-cols-2 gap-6">
             <Card className="cursor-pointer hover:border-primary" onClick={() => handleRoleSelect('annotator')}>
               <CardHeader>
@@ -96,7 +96,7 @@ export default function AuthPageComponent() {
                   <Pencil className="mr-2 h-6 w-6" />
                   Annotator
                 </CardTitle>
-                <CardDescription>I'm ready to earn money</CardDescription>
+                <CardDescription>I&apos;m ready to earn money</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="mt-4 space-y-2">

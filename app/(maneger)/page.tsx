@@ -262,7 +262,7 @@ export default function ProjectDashboard() {
                     <DialogHeader>
                       <DialogTitle>Export Data</DialogTitle>
                       <DialogDescription>
-                        Select the items you want to export. Click export when you're done.
+                        Select the items you want to export. Click export when you&apos;re done.
                       </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">

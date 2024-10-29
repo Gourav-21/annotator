@@ -11,6 +11,7 @@ import { template } from '../template/page'
 import Editor from './editor'
 import { Button } from '@/components/ui/button'
 
+export const dynamic = 'force-dynamic'
 export interface task {
   _id: string
   name: string

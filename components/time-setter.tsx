@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useEditor } from "@/providers/editor/editor-provider"
 import { set } from "mongoose"
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { toast } from "sonner"
 
 export function TimeSetterComponent({ templateId }: { templateId: string }) {
@@ -24,7 +24,7 @@ export function TimeSetterComponent({ templateId }: { templateId: string }) {
     setHasChanged(true)
   }, [hours, minutes, seconds])
 
-  const handleBlur = async () => {
+  const handleBlur = useCallback(async () => {
     if (hasChanged) {
       try {
         const total = hours * 3600 + minutes * 60 + seconds // Recalculate here
@@ -35,7 +35,7 @@ export function TimeSetterComponent({ templateId }: { templateId: string }) {
         toast.error('Failed to set timer')
       }
     }
-  }
+  }, [hasChanged, hours, minutes, seconds, templateId])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -48,7 +48,7 @@ export function TimeSetterComponent({ templateId }: { templateId: string }) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [hours, minutes, seconds, hasChanged])
+  }, [hours, minutes, seconds, hasChanged,handleBlur])
 
   return (
     <div ref={componentRef} className="flex items-center gap-4 mr-10">
