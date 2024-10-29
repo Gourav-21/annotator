@@ -58,8 +58,23 @@ export async function deleteTask(_id: string) {
 
 export async function changeAnnotator(_id: string, annotator: string) {
   await connectToDatabase();
+  console.log(annotator)
+  console.log(annotator == 'ai')
+  if(annotator == 'ai') {
+    const res = await Task.findOneAndUpdate({ _id }, {
+      annotator: null,
+      ai: true
+    },{
+      new: true
+    });
+    return JSON.stringify(res)
+  }
+
   const res = await Task.findOneAndUpdate({ _id }, {
-    annotator
+    annotator,
+    ai: false
+  },{
+    new: true
   });
   return JSON.stringify(res)
 }
@@ -96,7 +111,8 @@ export async function setTaskStatus(_id: string, status: string,feedback?:string
       status,
       timeTaken: 0,
       feedback:'',
-      annotator
+      annotator,
+      ai: false
     })
     return res.status
   }
@@ -105,7 +121,8 @@ export async function setTaskStatus(_id: string, status: string,feedback?:string
       submitted: false,
       status,
       timeTaken: 0,
-      feedback
+      feedback,
+      ai: false
     })
     await Rework.create({
       name:res.name,

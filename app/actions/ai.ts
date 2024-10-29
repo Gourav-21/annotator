@@ -4,6 +4,7 @@ import { createGroq } from '@ai-sdk/groq';
 import OpenAI from 'openai';
 import { generateText } from 'ai';
 import Task from '@/models/Task';
+import { task } from '../preview/page';
 
 const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY,
@@ -28,7 +29,7 @@ function updateInputTextContent(contentArray, responseText) {
 
 async function saveToDatabase(content: string, response: string, taskId: string) {
   const newContent = updateInputTextContent(JSON.parse(content), response);
-  const a =await Task.updateOne({ _id: taskId }, { content: JSON.stringify(newContent), submitted: true },{ new: true });
+  const a = await Task.updateOne({ _id: taskId }, { ai: true, content: JSON.stringify(newContent), submitted: true }, { new: true });
   console.log('Saving to database:', { content, response })
   console.log(a)
 }
@@ -78,5 +79,50 @@ export async function generateAndSaveAIResponse(extractedcontent: string, conten
   } catch (error) {
     console.error('Error generating or saving AI response:', error)
     return { error: 'An error occurred while generating or saving the AI response' }
+  }
+}
+
+export async function AssignAi(ids: string[]) {
+  const tasks = await Task.find({ _id: { $in: ids } });
+  const taskPromises = tasks.map(async (task) => {
+    if (!task.annotator) {
+      const content = extractPlaceholdersFromResponse(task);
+      const response = await generateAndSaveAIResponse(content as string, task.content, task._id);
+      if (response.error) {
+        console.error('Error:', response.error);
+      }
+    }
+  });
+  await Promise.all(taskPromises);
+}
+
+function extractPlaceholdersFromResponse(task: task) {
+  const content = JSON.parse(task.content)
+  const extractedPlaceholders: string[] = []
+  let hasInputText = false;
+  const extractPlaceholders = (item: any) => {
+    if (Array.isArray(item.content)) {
+      item.content.forEach(extractPlaceholders)
+    } else if (item.type) {
+      if (item.type === "inputText") {
+        hasInputText = true;
+      }
+      if ((item.type === "dynamicText" || item.type === "text") && item.content?.innerText) {
+        extractedPlaceholders.push(item.content.innerText);
+      }
+    }
+  }
+
+  try {
+    content.forEach(extractPlaceholders)
+    if (!hasInputText) {
+      throw new Error("Error: Missing 'inputText' type.");
+    }
+    if (extractedPlaceholders.length === 0) {
+      throw new Error("Error: Missing 'dynamicText' or 'text' types.");
+    }
+    return extractedPlaceholders.join("\n")
+  } catch (error: any) {
+    console.error(error.message);
   }
 }
