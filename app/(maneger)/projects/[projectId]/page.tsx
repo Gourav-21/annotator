@@ -217,6 +217,10 @@ export function Suggesion() {
   const [isLoading, setIsLoading] = useState(false)
   const [end, setEnd] = useState(false)
 
+  const router = useRouter()
+  const pathName = usePathname();
+  const projectId = pathName.split("/")[2];
+
   async function fetchTemplates() {
     setIsLoading(true)
     try {
@@ -253,6 +257,11 @@ export function Suggesion() {
     fetchTemplates()
   }, [])
 
+  function onclick(template: template) {
+    // console.log(template)
+    router.push(`/preview?projectId=${projectId}&templateId=${template._id}`);
+  }
+
 
   return (
     <div className="space-y-6 mt-20">
@@ -262,7 +271,7 @@ export function Suggesion() {
           <Card
             key={template._id}
             className="hover:shadow-md transition-shadow cursor-pointer aspect-square flex flex-col items-center justify-center text-center p-2"
-            onClick={() => console.log(`Use template: ${template.name}`)}
+            onClick={() => onclick(template)}
           >
             <CardContent className="p-0 flex flex-col items-center justify-center h-full">
               <div className="text-4xl mb-2">📄</div>
