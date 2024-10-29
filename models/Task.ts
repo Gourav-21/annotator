@@ -7,6 +7,7 @@ const taskSchema = new mongoose.Schema({
   project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true },
   project_Manager: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   annotator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+  ai:{type: Boolean, default: false},
   status: { type: String, enum: ['pending', 'accepted', 'rejected', 'reassigned'], default: 'pending' },
   submitted: { type: Boolean, default: false },
   timeTaken: { type: Number, default: 0 },
