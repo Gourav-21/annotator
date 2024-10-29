@@ -75,7 +75,6 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                         <TableHead>Created Date</TableHead>
                         <TableHead>Assignee</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead className="text-center">Ai solve</TableHead>
                         <TableHead className="text-center">Time Taken</TableHead>
                         <TableHead className="text-center">Submitted</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
@@ -97,14 +96,14 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                             </TableCell>
                             <TableCell>
                                 <Select
-                                    value={task.annotator || ""}
+                                    value={task.ai? "ai" : (task.annotator || "")}
                                     onValueChange={(value) => handleAssignUser(value, task._id)}
                                 >
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Assign user" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem key="ai" disabled={task.submitted || task?.pause} value="ai" onClick={(e) => aiSolve(e, task)}>ai</SelectItem>
+                                        <SelectItem key="ai" disabled={task.submitted || task.ai} value="ai" onClick={(e) => aiSolve(e, task)}>AI</SelectItem>
                                         {annotators.map((user) => (
                                             <SelectItem key={user._id} value={user._id}>
                                                 {user.name}
@@ -117,8 +116,6 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                                 <Badge variant={getStatusBadgeVariant(task.status)}>
                                     {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
                                 </Badge>
-                            </TableCell>
-                            <TableCell className="text-center">
                             </TableCell>
                             <TableCell className="font-medium text-center">
                                 {formatTime(task.timeTaken)}
