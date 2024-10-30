@@ -1,15 +1,9 @@
 'use server'
 
 import Task from '@/models/Task';
-import { createGroq } from '@ai-sdk/groq';
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import { task } from '../preview/page';
-
-
-const groq = createGroq({
-  apiKey: process.env.GROQ_API_KEY,
-});
 
 const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -39,11 +33,7 @@ async function saveToDatabase(content: string, response: string, taskId: string)
   console.log('Saving to database:', { content, response })
 }
 
-
-
 export async function generateAndSaveAIResponse(extractedcontent: string, content: string, taskId: string) {
-  const provider = "groq"
-
   if (!taskId || !content) {
     return { error: 'Missing required fields' }
   }
@@ -51,37 +41,17 @@ export async function generateAndSaveAIResponse(extractedcontent: string, conten
   try {
     let response: string
 
-    if (provider === 'openai') {
-
-      const { text } = await generateText({
-        model: openai('gpt-3.5-turbo'),
-        prompt: `
+    const { text } = await generateText({
+      model: openai('gpt-3.5-turbo'),
+      prompt: `
          You're helping in filling data
          directly give the answers like humans
          so help with these questions:
         ${extractedcontent}
         `,
-      });
+    });
 
-      response = text
-
-    } else if (provider === 'groq') {
-
-      const { text } = await generateText({
-        model: groq('llama-3.2-1b-preview'),
-        prompt: `
-         You're helping in filling data
-         directly give the answers like humans
-         so help with these questions:
-        ${extractedcontent}
-        `,
-      });
-
-      response = text
-
-    } else {
-      return { error: 'Invalid provider' }
-    }
+    response = text
 
     await saveToDatabase(content, response, taskId)
 
