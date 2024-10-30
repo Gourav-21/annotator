@@ -124,7 +124,16 @@ export default function Component() {
   }
 
   async function handleAssignAI(){
-    const unassignedTasks = tasks.filter(task => !task.annotator);
+    const unassignedTasks = tasks.filter(task => !task.annotator && !task.ai);
+
+    if (unassignedTasks.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "AI assignment failed",
+        description: "No unassigned tasks found.",
+      })
+      return
+    }
     AssignAi(unassignedTasks.map(task => task._id))
     setTasks(tasks.map(task => unassignedTasks.includes(task) ? { ...task, ai: true } : task))
     toast({
