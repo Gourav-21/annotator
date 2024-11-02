@@ -35,7 +35,11 @@ export default function Component() {
     const fetchJudges = async () => {
       const res = await fetch(`/api/aiModel?projectId=${projectId}`)
       const judges = await res.json()
-      setJudges(judges)
+      if(judges.error){
+        toast.error(judges.error)
+        return
+      }
+      setJudges(judges.models)
     }
     fetchJudges()
   }, [])
@@ -122,7 +126,7 @@ export default function Component() {
           </Card>
         ) : (
           <div className="space-y-3">
-            {judges.map((judge) => (
+            {judges.length > 0 && judges.map((judge) => (
               <Dialog key={judge._id} onOpenChange={(open) => {
                 if (open) {
                   setEditingJudge({ ...judge })
