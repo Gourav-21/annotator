@@ -1,6 +1,7 @@
 "use client"
 
 import { addModel, deleteModel, toggleModel, updateModel } from "@/app/actions/aiModel"
+import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -35,7 +36,7 @@ export default function Component() {
     const fetchJudges = async () => {
       const res = await fetch(`/api/aiModel?projectId=${projectId}`)
       const judges = await res.json()
-      if(judges.error){
+      if (judges.error) {
         toast.error(judges.error)
         return
       }
@@ -113,7 +114,10 @@ export default function Component() {
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Configured Judges</h2>
+        <div className="flex justify-between">
+          <h2 className="text-xl font-semibold mb-4">Configured Judges</h2>
+          <SheetMenu />
+        </div>
         {judges.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center p-6 text-center">

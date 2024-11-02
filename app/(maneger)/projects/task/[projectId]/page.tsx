@@ -180,7 +180,7 @@ export default function Component() {
         ) : (
           <>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-4 flex-wrap">
                 <TabsList>
                   <TabsTrigger value="all">All Tasks</TabsTrigger>
                   <TabsTrigger value="submitted">Submitted Tasks</TabsTrigger>
