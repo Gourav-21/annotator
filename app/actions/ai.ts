@@ -39,8 +39,6 @@ export async function generateAndSaveAIResponse(extractedcontent: string, conten
   }
 
   try {
-    let response: string
-
     const { text } = await generateText({
       model: openai('gpt-3.5-turbo'),
       prompt: `
@@ -51,7 +49,7 @@ export async function generateAndSaveAIResponse(extractedcontent: string, conten
         `,
     });
 
-    response = text
+    const response = text
 
     await saveToDatabase(content, response, taskId)
 
