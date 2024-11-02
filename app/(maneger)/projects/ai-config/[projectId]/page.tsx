@@ -15,7 +15,7 @@ import { toast } from "sonner"
 
 interface Judge {
   _id: string
-  name: string
+  model: string
   provider: string
   enabled: boolean
   apiKey: string
@@ -124,7 +124,7 @@ export default function Component() {
                     <div className="flex items-center gap-3">
                       <Bot className="w-5 h-5" />
                       <div>
-                        <div className="font-medium">{judge.name}</div>
+                        <div className="font-medium">{judge.model}</div>
                         <div className="text-xs text-muted-foreground mt-1 truncate max-w-[210px] sm:max-w-[350px] md:max-w-[500px] lg:max-w-[600px]  " >
                           {judge.systemPrompt}
                         </div>
@@ -142,7 +142,7 @@ export default function Component() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Configure {judge.name}</DialogTitle>
+                    <DialogTitle>Configure {judge.model}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
                     <div className="space-y-2">
