@@ -45,8 +45,7 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
         fetchJudges()
     }, [])
 
-    function aiSolve(e: React.MouseEvent, task: task) {
-        e.stopPropagation()
+    function aiSolve(task: task) {
         const content = JSON.parse(task.content)
         const extractedPlaceholders: string[] = []
         let hasInputText = false;
@@ -113,6 +112,7 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                                     onValueChange={(value) =>{ 
                                         const exist = judges.find((judge) => judge._id === value)
                                         if(exist){
+                                            aiSolve( task)
                                             handleAssignUser(value, task._id,true)
                                         }else{
                                             handleAssignUser(value, task._id,false)
@@ -123,8 +123,6 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                                         <SelectValue placeholder="Assign user" />
                                     </SelectTrigger>
                                     <SelectContent>
-
-                                        {/* <SelectItem key="ai" disabled={task.submitted || task.ai} value="ai" onClick={(e) => aiSolve(e, task)}>AI</SelectItem> */}
                                         {judges.length > 0 && judges.map((judge) => (
                                             <SelectItem key={judge._id} value={judge._id}>
                                                 {judge.provider}

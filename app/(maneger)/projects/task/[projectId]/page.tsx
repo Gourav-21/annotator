@@ -110,7 +110,7 @@ export default function Component() {
       const annotatorIndex = i % annotators.length;
       const annotatorId = annotators[annotatorIndex]._id;
 
-      await changeAnnotator(task._id, annotatorId);
+      await changeAnnotator(task._id, annotatorId, false);
       const taskIndex = updatedTasks.findIndex(t => t._id === task._id);
       updatedTasks[taskIndex] = { ...task, annotator: annotatorId };
     }
