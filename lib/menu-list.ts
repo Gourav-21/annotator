@@ -1,12 +1,4 @@
-import {
-  BookUser,
-  ClipboardList,
-  Folder,
-  LayoutGrid,
-  LucideIcon,
-  MessageCircle,
-  SquarePen
-} from "lucide-react";
+import { BookUser, Bot, ClipboardList, Folder, LayoutGrid, LucideIcon, MessageCircle, SquarePen } from "lucide-react";
 
 type Submenu = {
   href: string;
@@ -146,7 +138,7 @@ export function getMenuList(pathname: string): Group[] {
         {
           href: `/projects/${projectId}`,
           label: "Templates",
-          active: pathname.includes("/projects") && !pathname.includes("/task"),
+          active: pathname.includes("/projects") && !pathname.includes("/task")  && !pathname.includes("/ai-config"),
           icon: SquarePen
         },
         {
@@ -156,6 +148,16 @@ export function getMenuList(pathname: string): Group[] {
           icon: ClipboardList
         }
       ]
-    },
+    },{
+      groupLabel: "Project settings",
+      menus: [
+        {
+          href: `/projects/ai-config/${projectId}`,
+          label: "AI Judge",
+          active: pathname.includes('/ai-config'),
+          icon: Bot
+        },
+      ]
+    }
   ];
 }
