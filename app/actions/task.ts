@@ -40,7 +40,7 @@ export async function createTasks(tasks: {
 
 export async function getAllTasks(projectid: string) {
   await connectToDatabase();
-  const res = await Task.find({ project: projectid });
+  const res = await Task.find({ project: projectid }).populate('ai');
   return JSON.stringify(res)
 }
 
@@ -56,12 +56,12 @@ export async function deleteTask(_id: string) {
   return JSON.stringify(res)
 }
 
-export async function changeAnnotator(_id: string, annotator: string) {
+export async function changeAnnotator(_id: string, annotator: string, ai?: boolean) {
   await connectToDatabase();
-  if(annotator == 'ai') {
+  if(ai) {
     const res = await Task.findOneAndUpdate({ _id }, {
       annotator: null,
-      ai: true
+      ai: annotator
     },{
       new: true
     });
@@ -70,7 +70,7 @@ export async function changeAnnotator(_id: string, annotator: string) {
 
   const res = await Task.findOneAndUpdate({ _id }, {
     annotator,
-    ai: false
+    ai: null
   },{
     new: true
   });

@@ -63,8 +63,8 @@ export default function Component() {
 
   if (session?.user?.role === 'annotator') router.push('/tasks');
 
-  async function handleAssignUser(annotatorId: string, taskId: string) {
-    const res = JSON.parse(await changeAnnotator(taskId, annotatorId))
+  async function handleAssignUser(annotatorId: string, taskId: string,ai:boolean) {
+    const res = JSON.parse(await changeAnnotator(taskId, annotatorId,ai))
     setTasks(tasks.map(task => task._id === taskId ? res : task))
   }
 

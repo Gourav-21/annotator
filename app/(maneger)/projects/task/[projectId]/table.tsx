@@ -19,7 +19,7 @@ interface TaskTableProps {
     tasks: Task[]
     setTasks: React.Dispatch<React.SetStateAction<Task[]>>
     annotators: Annotator[]
-    handleAssignUser: (annotatorId: string, taskId: string) => void
+    handleAssignUser: (annotatorId: string, taskId: string,ai:boolean) => void
     handleDeleteTemplate: (e: React.MouseEvent, _id: string) => void
     router: any
 }
@@ -110,14 +110,21 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                             <TableCell>
                                 <Select
                                     value={task.ai ? "ai" : (task.annotator || "")}
-                                    onValueChange={(value) => handleAssignUser(value, task._id)}
+                                    onValueChange={(value) =>{ 
+                                        const exist = judges.find((judge) => judge._id === value)
+                                        if(exist){
+                                            handleAssignUser(value, task._id,true)
+                                        }else{
+                                            handleAssignUser(value, task._id,false)
+                                        }
+                                    }}
                                 >
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Assign user" />
                                     </SelectTrigger>
                                     <SelectContent>
 
-                                        <SelectItem key="ai" disabled={task.submitted || task.ai} value="ai" onClick={(e) => aiSolve(e, task)}>AI</SelectItem>
+                                        {/* <SelectItem key="ai" disabled={task.submitted || task.ai} value="ai" onClick={(e) => aiSolve(e, task)}>AI</SelectItem> */}
                                         {judges.length > 0 && judges.map((judge) => (
                                             <SelectItem key={judge._id} value={judge._id}>
                                                 {judge.provider}
