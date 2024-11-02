@@ -1,6 +1,6 @@
 "use client"
 
-import { addModel, deleteModel } from "@/app/actions/aiModel"
+import { addModel, deleteModel, toggleModel } from "@/app/actions/aiModel"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Bot, Cpu, Settings, Trash2 } from "lucide-react"
-import { useState } from "react"
+import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 interface Judge {
@@ -24,10 +25,20 @@ interface Judge {
 export default function Component() {
   const [judges, setJudges] = useState<Judge[]>([])
   const [editingJudge, setEditingJudge] = useState<Judge | null>(null)
-
+  const pathName = usePathname();
+  const projectId = pathName.split("/")[3];
   const [selectedModel, setSelectedModel] = useState<string>("")
   const [apiKey, setApiKey] = useState("")
   const [systemPrompt, setSystemPrompt] = useState("")
+
+  useEffect(() => {
+    const fetchJudges = async () => {
+      const res = await fetch(`/api/aiModel?projectId=${projectId}`)
+      const judges = await res.json()
+      setJudges(judges)
+    }
+    fetchJudges()
+  }, [])
 
   const handleSubmit = async (provider: string) => {
     if (!selectedModel || !apiKey || !systemPrompt){
@@ -45,7 +56,12 @@ export default function Component() {
     setSelectedModel("")
   }
 
-  const toggleJudge = (id: string) => {
+  const toggleJudge = async (id: string,enabled: boolean) => {
+    const res = await toggleModel(id,enabled)
+    if (res.error) {
+      toast.error(res.error)
+      return
+    }
     setJudges(
       judges.map((judge) => (judge._id === id ? { ...judge, enabled: !judge.enabled } : judge))
     )
@@ -166,7 +182,7 @@ export default function Component() {
                       <Button
                         variant="outline"
                         onClick={() => {
-                          toggleJudge(judge._id)
+                          toggleJudge(judge._id,!judge.enabled)
                           setEditingJudge(prev => prev ? { ...prev, enabled: !prev.enabled } : null)
                         }}
                       >

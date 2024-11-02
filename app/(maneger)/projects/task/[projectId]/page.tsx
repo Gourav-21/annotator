@@ -42,7 +42,6 @@ export default function Component() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTemplateName, setNewTemplateName] = useState('')
   const [annotators, setAnnotators] = useState<Annotator[]>([])
-  const [disable,setDisable] = useState([])
   const [activeTab, setActiveTab] = useState("all")
   const pathName = usePathname();
   const projectId = pathName.split("/")[3];
