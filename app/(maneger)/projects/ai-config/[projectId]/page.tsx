@@ -1,6 +1,6 @@
 "use client"
 
-import { addModel, deleteModel, toggleModel } from "@/app/actions/aiModel"
+import { addModel, deleteModel, toggleModel, updateModel } from "@/app/actions/aiModel"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -41,11 +41,11 @@ export default function Component() {
   }, [])
 
   const handleSubmit = async (provider: string) => {
-    if (!selectedModel || !apiKey || !systemPrompt){
+    if (!selectedModel || !apiKey || !systemPrompt) {
       toast.error("Please fill in all fields")
       return
     }
-    const res =await addModel(provider, selectedModel, apiKey, systemPrompt)
+    const res = await addModel(provider, selectedModel, apiKey, systemPrompt)
     if (res.error) {
       toast.error(res.error)
       return
@@ -56,8 +56,8 @@ export default function Component() {
     setSelectedModel("")
   }
 
-  const toggleJudge = async (id: string,enabled: boolean) => {
-    const res = await toggleModel(id,enabled)
+  const toggleJudge = async (id: string, enabled: boolean) => {
+    const res = await toggleModel(id, enabled)
     if (res.error) {
       toast.error(res.error)
       return
@@ -68,8 +68,8 @@ export default function Component() {
   }
 
   const removeJudge = async (id: string) => {
-    const res=await deleteModel(id)
-    if(res.error){
+    const res = await deleteModel(id)
+    if (res.error) {
       toast.error(res.error)
       return
     }
@@ -82,9 +82,20 @@ export default function Component() {
     )
   }
 
-  const saveJudgeEdits = () => {
+  const saveJudgeEdits = async () => {
     if (editingJudge) {
-      updateJudge(editingJudge._id, editingJudge)
+      const model = await updateModel({
+        id: editingJudge._id,
+        provider: editingJudge.provider,
+        apiKey: editingJudge.apiKey,
+        systemPrompt: editingJudge.systemPrompt,
+      })
+
+      if (model.error) {
+        toast.error(model.error)
+        return
+      }
+      updateJudge(editingJudge._id, model.model)
       setEditingJudge(null)
     }
   }
@@ -132,8 +143,8 @@ export default function Component() {
                     </div>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${judge.enabled
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-700"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-100 text-gray-700"
                         }`}
                     >
                       {judge.enabled ? "Enabled" : "Disabled"}
@@ -173,16 +184,16 @@ export default function Component() {
                         <Trash2 className="w-4 h-4 mr-2" />
                         Remove
                       </Button>
-                    <Button
-                      className="w-full"
-                      onClick={saveJudgeEdits}
-                    >
-                      Save Changes
-                    </Button>
+                      <Button
+                        className="w-full"
+                        onClick={saveJudgeEdits}
+                      >
+                        Save Changes
+                      </Button>
                       <Button
                         variant="outline"
                         onClick={() => {
-                          toggleJudge(judge._id,!judge.enabled)
+                          toggleJudge(judge._id, !judge.enabled)
                           setEditingJudge(prev => prev ? { ...prev, enabled: !prev.enabled } : null)
                         }}
                       >

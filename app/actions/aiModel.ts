@@ -2,9 +2,9 @@ import { authOptions } from "@/auth";
 import { AImodel } from "@/models/aiModel";
 import { getServerSession } from "next-auth";
 
-export async function addModel(provider:string,model: string, apiKey: string, systemPrompt: string) {
-  if(!model || !apiKey || !systemPrompt || !provider) {
-    return {error: 'Please fill in all fields'}
+export async function addModel(provider: string, model: string, apiKey: string, systemPrompt: string) {
+  if (!model || !apiKey || !systemPrompt || !provider) {
+    return { error: 'Please fill in all fields' }
   }
   try {
     const session = await getServerSession(authOptions)
@@ -26,10 +26,10 @@ export async function deleteModel(modelId: string) {
   }
 }
 
-export async function updateModel(modelId: string, apiKey: string, systemPrompt: string) {
+export async function updateModel(model: { id:string ; provider: string; apiKey: string; systemPrompt: string }) {
   try {
-    await AImodel.findByIdAndUpdate(modelId, { apiKey, systemPrompt });
-    return { message: 'Model updated successfully' };
+    const updatedModel = await AImodel.findByIdAndUpdate(model.id, { provider: model.provider, apiKey: model.apiKey, systemPrompt: model.systemPrompt }, { new: true });
+    return { message: 'Model updated successfully', model: updatedModel };
   } catch (error) {
     console.error('Error updating model:', error);
     return { error: 'An error occurred while updating the model' };
