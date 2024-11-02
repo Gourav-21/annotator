@@ -1,6 +1,6 @@
 "use client"
 
-import { addModel } from "@/app/actions/aiModel"
+import { addModel, deleteModel } from "@/app/actions/aiModel"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -51,7 +51,12 @@ export default function Component() {
     )
   }
 
-  const removeJudge = (id: string) => {
+  const removeJudge = async (id: string) => {
+    const res=await deleteModel(id)
+    if(res.error){
+      toast.error(res.error)
+      return
+    }
     setJudges(judges.filter((judge) => judge._id !== id))
   }
 

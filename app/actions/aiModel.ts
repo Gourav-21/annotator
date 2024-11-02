@@ -15,3 +15,13 @@ export async function addModel(provider:string,model: string, apiKey: string, sy
     return { error: 'An error occurred while adding the model' };
   }
 }
+
+export async function deleteModel(modelId: string) {
+  try {
+    await AImodel.findByIdAndDelete(modelId);
+    return { message: 'Model deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting model:', error);
+    return { error: 'An error occurred while deleting the model' };
+  }
+}
