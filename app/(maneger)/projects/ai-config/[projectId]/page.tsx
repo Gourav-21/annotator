@@ -1,5 +1,6 @@
 "use client"
 
+import { addModel } from "@/app/actions/aiModel"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -9,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "
 import { Textarea } from "@/components/ui/textarea"
 import { Bot, Cpu, Settings, Trash2 } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 
 interface Judge {
   id: string
@@ -27,16 +29,17 @@ export default function Component() {
   const [apiKey, setApiKey] = useState("")
   const [systemPrompt, setSystemPrompt] = useState("")
 
-  const handleSubmit = (provider: string) => {
-    const newJudge: Judge = {
-      id: `${provider}-${Date.now()}`,
-      name: selectedModel || `${provider} Judge`,
-      provider,
-      enabled: true,
-      apiKey,
-      systemPrompt,
+  const handleSubmit = async (provider: string) => {
+    if (!selectedModel || !apiKey || !systemPrompt){
+      toast.error("Please fill in all fields")
+      return
     }
-    setJudges([...judges, newJudge])
+    const res =await addModel(provider, selectedModel, apiKey, systemPrompt)
+    if (res.error) {
+      toast.error(res.error)
+      return
+    }
+    setJudges([...judges, res?.model])
     setApiKey("")
     setSystemPrompt("")
     setSelectedModel("")
