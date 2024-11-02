@@ -1,5 +1,5 @@
 import { authOptions } from "@/auth";
-import { AImodel } from "@/models/ai";
+import { AImodel } from "@/models/aiModel";
 import { getServerSession } from "next-auth";
 
 export async function addModel(provider:string,model: string, apiKey: string, systemPrompt: string) {
@@ -23,5 +23,25 @@ export async function deleteModel(modelId: string) {
   } catch (error) {
     console.error('Error deleting model:', error);
     return { error: 'An error occurred while deleting the model' };
+  }
+}
+
+export async function updateModel(modelId: string, apiKey: string, systemPrompt: string) {
+  try {
+    await AImodel.findByIdAndUpdate(modelId, { apiKey, systemPrompt });
+    return { message: 'Model updated successfully' };
+  } catch (error) {
+    console.error('Error updating model:', error);
+    return { error: 'An error occurred while updating the model' };
+  }
+}
+
+export async function toggleModel(modelId: string, enabled: boolean) {
+  try {
+    await AImodel.findByIdAndUpdate(modelId, { enabled });
+    return { message: 'Model toggled successfully' };
+  } catch (error) {
+    console.error('Error getting model:', error);
+    return { error: 'An error occurred while toggling the model' };
   }
 }
