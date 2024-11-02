@@ -13,7 +13,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 
 interface Judge {
-  id: string
+  _id: string
   name: string
   provider: string
   enabled: boolean
@@ -47,23 +47,23 @@ export default function Component() {
 
   const toggleJudge = (id: string) => {
     setJudges(
-      judges.map((judge) => (judge.id === id ? { ...judge, enabled: !judge.enabled } : judge))
+      judges.map((judge) => (judge._id === id ? { ...judge, enabled: !judge.enabled } : judge))
     )
   }
 
   const removeJudge = (id: string) => {
-    setJudges(judges.filter((judge) => judge.id !== id))
+    setJudges(judges.filter((judge) => judge._id !== id))
   }
 
   const updateJudge = (id: string, updates: Partial<Judge>) => {
     setJudges(
-      judges.map((judge) => (judge.id === id ? { ...judge, ...updates } : judge))
+      judges.map((judge) => (judge._id === id ? { ...judge, ...updates } : judge))
     )
   }
 
   const saveJudgeEdits = () => {
     if (editingJudge) {
-      updateJudge(editingJudge.id, editingJudge)
+      updateJudge(editingJudge._id, editingJudge)
       setEditingJudge(null)
     }
   }
@@ -91,7 +91,7 @@ export default function Component() {
         ) : (
           <div className="space-y-3">
             {judges.map((judge) => (
-              <Dialog key={judge.id} onOpenChange={(open) => {
+              <Dialog key={judge._id} onOpenChange={(open) => {
                 if (open) {
                   setEditingJudge({ ...judge })
                 } else {
@@ -147,7 +147,7 @@ export default function Component() {
                     <div className="flex gap-2">
                       <Button
                         variant="destructive"
-                        onClick={() => removeJudge(judge.id)}
+                        onClick={() => removeJudge(judge._id)}
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
                         Remove
@@ -161,7 +161,7 @@ export default function Component() {
                       <Button
                         variant="outline"
                         onClick={() => {
-                          toggleJudge(judge.id)
+                          toggleJudge(judge._id)
                           setEditingJudge(prev => prev ? { ...prev, enabled: !prev.enabled } : null)
                         }}
                       >
