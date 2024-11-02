@@ -3,6 +3,7 @@ const { Schema, model, models } = mongoose;
 
 const AImodelSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    projectid: { type: Schema.Types.ObjectId, ref: 'Project', required: true },
     model: { type: String, required: true },
     provider: { type: String, required: true },
     enabled: { type: Boolean, default: true },
