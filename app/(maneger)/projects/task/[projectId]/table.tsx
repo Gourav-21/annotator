@@ -1,3 +1,4 @@
+import { task } from "@/app/(annotator)/tasks/all/page"
 import { generateAndSaveAIResponse } from "@/app/actions/ai"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -7,11 +8,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { getStatusBadgeVariant } from "@/lib/constants"
 import { formatTime } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
-import { Bot, CalendarIcon, NotebookPen, Trash2Icon } from "lucide-react"
-import { useState } from 'react'
+import { CalendarIcon, NotebookPen, Trash2Icon } from "lucide-react"
+import { useEffect, useState } from 'react'
 import { toast } from "sonner"
 import { Annotator, Task } from "./page"
-import { task } from "@/app/(annotator)/tasks/all/page"
+import { Judge } from "../../ai-config/[projectId]/page"
+import { usePathname } from "next/navigation"
 
 interface TaskTableProps {
     tasks: Task[]
@@ -24,12 +26,25 @@ interface TaskTableProps {
 
 export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handleDeleteTemplate, router }: TaskTableProps) {
     const [dialog, setDialog] = useState(false)
+    const [judges, setJudges] = useState<Judge[]>([])
     const [feedback, setFeedback] = useState('')
+    const pathName = usePathname();
+    const projectId = pathName.split("/")[3];
     function handleclick(e: React.MouseEvent, feedback: string) {
         e.stopPropagation()
         setFeedback(feedback)
         setDialog(true)
     }
+
+    useEffect(() => {
+        const fetchJudges = async () => {
+            const res = await fetch(`/api/aiModel?projectId=${projectId}`)
+            const judges = await res.json()
+            setJudges(judges)
+        }
+        fetchJudges()
+    }, [])
+
     function aiSolve(e: React.MouseEvent, task: task) {
         e.stopPropagation()
         const content = JSON.parse(task.content)
@@ -94,14 +109,20 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                             </TableCell>
                             <TableCell>
                                 <Select
-                                    value={task.ai? "ai" : (task.annotator || "")}
+                                    value={task.ai ? "ai" : (task.annotator || "")}
                                     onValueChange={(value) => handleAssignUser(value, task._id)}
                                 >
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Assign user" />
                                     </SelectTrigger>
                                     <SelectContent>
+
                                         <SelectItem key="ai" disabled={task.submitted || task.ai} value="ai" onClick={(e) => aiSolve(e, task)}>AI</SelectItem>
+                                        {judges.length > 0 && judges.map((judge) => (
+                                            <SelectItem key={judge._id} value={judge._id}>
+                                                {judge.provider}
+                                            </SelectItem>
+                                        ))}
                                         {annotators.map((user) => (
                                             <SelectItem key={user._id} value={user._id}>
                                                 {user.name}

@@ -13,7 +13,7 @@ import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-interface Judge {
+export interface Judge {
   _id: string
   model: string
   provider: string
