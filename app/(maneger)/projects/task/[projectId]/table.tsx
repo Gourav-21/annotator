@@ -19,7 +19,7 @@ interface TaskTableProps {
     tasks: Task[]
     setTasks: React.Dispatch<React.SetStateAction<Task[]>>
     annotators: Annotator[]
-    handleAssignUser: (annotatorId: string, taskId: string,ai:boolean) => void
+    handleAssignUser: (annotatorId: string, taskId: string, ai: boolean) => void
     handleDeleteTemplate: (e: React.MouseEvent, _id: string) => void
     router: any
 }
@@ -40,7 +40,11 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
         const fetchJudges = async () => {
             const res = await fetch(`/api/aiModel?projectId=${projectId}`)
             const judges = await res.json()
-            setJudges(judges)
+            if (judges.error) {
+                toast.error(judges.error)
+                return
+            }
+            setJudges(judges.models)
         }
         fetchJudges()
     }, [])
@@ -109,13 +113,13 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                             <TableCell>
                                 <Select
                                     value={task.ai ? "ai" : (task.annotator || "")}
-                                    onValueChange={(value) =>{ 
+                                    onValueChange={(value) => {
                                         const exist = judges.find((judge) => judge._id === value)
-                                        if(exist){
-                                            aiSolve( task)
-                                            handleAssignUser(value, task._id,true)
-                                        }else{
-                                            handleAssignUser(value, task._id,false)
+                                        if (exist) {
+                                            aiSolve(task)
+                                            handleAssignUser(value, task._id, true)
+                                        } else {
+                                            handleAssignUser(value, task._id, false)
                                         }
                                     }}
                                 >
@@ -125,7 +129,7 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                                     <SelectContent>
                                         {judges.length > 0 && judges.map((judge) => (
                                             <SelectItem key={judge._id} value={judge._id}>
-                                                {judge.provider}
+                                                {judge.model}
                                             </SelectItem>
                                         ))}
                                         {annotators.map((user) => (
