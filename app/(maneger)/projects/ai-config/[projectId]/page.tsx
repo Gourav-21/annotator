@@ -31,6 +31,8 @@ export default function Component() {
   const [selectedModel, setSelectedModel] = useState<string>("")
   const [apiKey, setApiKey] = useState("")
   const [systemPrompt, setSystemPrompt] = useState("")
+  const [dialog, setDialog] = useState(false)
+  const [dialog1, setDialog1] = useState(false)
 
   useEffect(() => {
     const fetchJudges = async () => {
@@ -55,7 +57,8 @@ export default function Component() {
       toast.error(res.error)
       return
     }
-    setJudges([...judges, res?.model])
+    setDialog1(false)
+    setJudges([...judges, JSON.parse(res?.model as string)])
     setApiKey("")
     setSystemPrompt("")
     setSelectedModel("")
@@ -131,11 +134,13 @@ export default function Component() {
         ) : (
           <div className="space-y-3">
             {judges.length > 0 && judges.map((judge) => (
-              <Dialog key={judge._id} onOpenChange={(open) => {
+              <Dialog key={judge._id} open={dialog} onOpenChange={(open) => {
                 if (open) {
                   setEditingJudge({ ...judge })
+                  setDialog(open)
                 } else {
                   setEditingJudge(null)
+                  setDialog(open)
                 }
               }}>
                 <DialogTrigger asChild>
@@ -238,7 +243,7 @@ export default function Component() {
             bgClass: "bg-gradient-to-br from-teal-500 to-blue-600",
           },
         ].map((provider) => (
-          <Dialog key={provider.name}>
+          <Dialog key={provider.name} open={dialog1} onOpenChange={setDialog1}>
             <DialogTrigger asChild>
               <Card className="cursor-pointer hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
