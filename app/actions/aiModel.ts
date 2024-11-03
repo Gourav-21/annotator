@@ -34,7 +34,7 @@ export async function updateModel(model: { id: string; provider: string; apiKey:
   await connectToDatabase();
   try {
     const updatedModel = await AImodel.findByIdAndUpdate(model.id, { provider: model.provider, apiKey: model.apiKey, systemPrompt: model.systemPrompt }, { new: true });
-    return { message: 'Model updated successfully', model: updatedModel };
+    return { message: 'Model updated successfully', model: JSON.stringify(updatedModel) };
   } catch (error) {
     console.error('Error updating model:', error);
     return { error: 'An error occurred while updating the model' };

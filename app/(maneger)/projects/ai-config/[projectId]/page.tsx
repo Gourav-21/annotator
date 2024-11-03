@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Bot, Cpu, Settings, Trash2 } from "lucide-react"
 import { usePathname } from "next/navigation"
@@ -26,13 +26,13 @@ export interface Judge {
 export default function Component() {
   const [judges, setJudges] = useState<Judge[]>([])
   const [editingJudge, setEditingJudge] = useState<Judge | null>(null)
-  const pathName = usePathname();
-  const projectId = pathName.split("/")[3];
+  const pathName = usePathname()
+  const projectId = pathName.split("/")[3]
   const [selectedModel, setSelectedModel] = useState<string>("")
   const [apiKey, setApiKey] = useState("")
   const [systemPrompt, setSystemPrompt] = useState("")
-  const [dialog, setDialog] = useState(false)
-  const [dialog1, setDialog1] = useState(false)
+  const [addDialogOpen, setAddDialogOpen] = useState(false)
+  const [DialogOpen, setDialogOpen] = useState(false)
 
   useEffect(() => {
     const fetchJudges = async () => {
@@ -45,19 +45,19 @@ export default function Component() {
       setJudges(judges.models)
     }
     fetchJudges()
-  }, [])
+  }, [projectId])
 
   const handleSubmit = async (provider: string) => {
     if (!selectedModel || !apiKey || !systemPrompt) {
       toast.error("Please fill in all fields")
       return
     }
-    const res = await addModel(provider,projectId, selectedModel, apiKey, systemPrompt)
+    const res = await addModel(provider, projectId, selectedModel, apiKey, systemPrompt)
     if (res.error) {
       toast.error(res.error)
       return
     }
-    setDialog1(false)
+    setAddDialogOpen(false)
     setJudges([...judges, JSON.parse(res?.model as string)])
     setApiKey("")
     setSystemPrompt("")
@@ -73,6 +73,7 @@ export default function Component() {
     setJudges(
       judges.map((judge) => (judge._id === id ? { ...judge, enabled: !judge.enabled } : judge))
     )
+    setEditingJudge(prev => prev ? { ...prev, enabled: !prev.enabled } : null)
   }
 
   const removeJudge = async (id: string) => {
@@ -82,6 +83,7 @@ export default function Component() {
       return
     }
     setJudges(judges.filter((judge) => judge._id !== id))
+    setEditingJudge(null)
   }
 
   const updateJudge = (id: string, updates: Partial<Judge>) => {
@@ -103,7 +105,7 @@ export default function Component() {
         toast.error(model.error)
         return
       }
-      updateJudge(editingJudge._id, model.model)
+      updateJudge(editingJudge._id, JSON.parse(model.model as string))
       setEditingJudge(null)
     }
   }
@@ -133,14 +135,12 @@ export default function Component() {
           </Card>
         ) : (
           <div className="space-y-3">
-            {judges.length > 0 && judges.map((judge) => (
-              <Dialog key={judge._id} open={dialog} onOpenChange={(open) => {
+            {judges.map((judge) => (
+              <Dialog key={judge._id} open={editingJudge?._id === judge._id} onOpenChange={(open) => {
                 if (open) {
                   setEditingJudge({ ...judge })
-                  setDialog(open)
                 } else {
                   setEditingJudge(null)
-                  setDialog(open)
                 }
               }}>
                 <DialogTrigger asChild>
@@ -149,7 +149,7 @@ export default function Component() {
                       <Bot className="w-5 h-5" />
                       <div>
                         <div className="font-medium">{judge.model}</div>
-                        <div className="text-xs text-muted-foreground mt-1 truncate max-w-[210px] sm:max-w-[350px] md:max-w-[500px] lg:max-w-[600px]  " >
+                        <div className="text-xs text-muted-foreground mt-1 truncate max-w-[210px] sm:max-w-[350px] md:max-w-[500px] lg:max-w-[600px]">
                           {judge.systemPrompt}
                         </div>
                       </div>
@@ -207,7 +207,6 @@ export default function Component() {
                         variant="outline"
                         onClick={() => {
                           toggleJudge(judge._id, !judge.enabled)
-                          setEditingJudge(prev => prev ? { ...prev, enabled: !prev.enabled } : null)
                         }}
                       >
                         {editingJudge?.enabled ? "Disable" : "Enable"}
@@ -243,7 +242,7 @@ export default function Component() {
             bgClass: "bg-gradient-to-br from-teal-500 to-blue-600",
           },
         ].map((provider) => (
-          <Dialog key={provider.name} open={dialog1} onOpenChange={setDialog1}>
+          <Dialog key={provider.name} open={addDialogOpen} onOpenChange={setAddDialogOpen}>
             <DialogTrigger asChild>
               <Card className="cursor-pointer hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
