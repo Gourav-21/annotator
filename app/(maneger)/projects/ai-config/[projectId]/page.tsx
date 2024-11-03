@@ -32,7 +32,6 @@ export default function Component() {
   const [apiKey, setApiKey] = useState("")
   const [systemPrompt, setSystemPrompt] = useState("")
   const [addDialogOpen, setAddDialogOpen] = useState(false)
-  const [DialogOpen, setDialogOpen] = useState(false)
 
   useEffect(() => {
     const fetchJudges = async () => {
