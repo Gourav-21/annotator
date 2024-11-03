@@ -50,7 +50,7 @@ export default function Component() {
       toast.error("Please fill in all fields")
       return
     }
-    const res = await addModel(provider, selectedModel, apiKey, systemPrompt)
+    const res = await addModel(provider,projectId, selectedModel, apiKey, systemPrompt)
     if (res.error) {
       toast.error(res.error)
       return
