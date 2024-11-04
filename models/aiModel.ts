@@ -13,3 +13,13 @@ const AImodelSchema = new Schema({
 });
 
 export const AImodel = models?.AImodel || model('AImodel', AImodelSchema);
+
+const AIJobSchema = new Schema({
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    projectid: { type: Schema.Types.ObjectId, ref: 'Project', required: true },
+    taskid: { type: Schema.Types.ObjectId, ref: 'Task', required: true },
+    modelid: { type: Schema.Types.ObjectId, ref: 'AImodel', required: true },
+    completed: { type: Boolean, default: false },
+});
+
+export const AIJob = models?.AIJob || model('AIJob', AIJobSchema);
