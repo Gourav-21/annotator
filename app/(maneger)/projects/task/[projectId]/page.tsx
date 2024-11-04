@@ -16,6 +16,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { TaskTable } from "./table"
 import { AssignAi } from "@/app/actions/ai"
+import TaskProgress from "./TaskProgress"
 
 export interface Task {
   _id: string
@@ -28,7 +29,7 @@ export interface Task {
   annotator?: string
   timeTaken: number
   feedback: string
-  ai: boolean
+  ai: string
 }
 
 export interface Annotator {
@@ -63,8 +64,8 @@ export default function Component() {
 
   if (session?.user?.role === 'annotator') router.push('/tasks');
 
-  async function handleAssignUser(annotatorId: string, taskId: string,ai:boolean) {
-    const res = JSON.parse(await changeAnnotator(taskId, annotatorId,ai))
+  async function handleAssignUser(annotatorId: string, taskId: string, ai: boolean) {
+    const res = JSON.parse(await changeAnnotator(taskId, annotatorId, ai))
     setTasks(tasks.map(task => task._id === taskId ? res : task))
   }
 
@@ -122,7 +123,7 @@ export default function Component() {
     });
   }
 
-  async function handleAssignAI(){
+  async function handleAssignAI() {
     const unassignedTasks = tasks.filter(task => !task.annotator && !task.ai);
 
     if (unassignedTasks.length === 0) {
@@ -186,15 +187,18 @@ export default function Component() {
                   <TabsTrigger value="submitted">Submitted Tasks</TabsTrigger>
                   <TabsTrigger value="unassigned">Unassigned Tasks</TabsTrigger>
                 </TabsList>
-                <Button onClick={ handleAssignAI} variant="outline" className="ml-auto mr-2">
+                <div className="ml-auto mr-2">
+                    <TaskProgress />
+                </div>
+                <Button onClick={handleAssignAI} variant="outline" >
                   <Bot className="mr-2 h-4 w-4" /> Assign Tasks To AI
                 </Button>
-                <Button onClick={handleAutoAssign} variant="outline">
+                <Button onClick={handleAutoAssign} variant="outline" className="ml-2">
                   <Shuffle className="mr-2 h-4 w-4" /> Auto-assign Tasks
                 </Button>
               </div>
               <TabsContent value="all">
-                <TaskTable setTasks={setTasks}  tasks={filteredTasks.all} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+                <TaskTable setTasks={setTasks} tasks={filteredTasks.all} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
               </TabsContent>
               <TabsContent value="submitted">
                 <TaskTable setTasks={setTasks} tasks={filteredTasks.submitted} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
