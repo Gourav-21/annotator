@@ -1,7 +1,7 @@
 'use server'
 import { authOptions } from "@/auth";
 import { connectToDatabase } from "@/lib/db";
-import { AImodel } from "@/models/aiModel";
+import { AIJob, AImodel } from "@/models/aiModel";
 import { getServerSession } from "next-auth";
 
 export async function addModel(provider: string, projectId: string, model: string, apiKey: string, systemPrompt: string) {
@@ -11,7 +11,7 @@ export async function addModel(provider: string, projectId: string, model: strin
   }
   const session = await getServerSession(authOptions)
   try {
-    const newModel = await AImodel.create({ user: session?.user.id, projectid:projectId, provider, model, apiKey, systemPrompt });
+    const newModel = await AImodel.create({ user: session?.user.id, projectid: projectId, provider, model, apiKey, systemPrompt });
     return { message: 'Model added successfully', model: JSON.stringify(newModel) };
   } catch (error) {
     console.error('Error adding model:', error);
@@ -49,5 +49,17 @@ export async function toggleModel(modelId: string, enabled: boolean) {
   } catch (error) {
     console.error('Error getting model:', error);
     return { error: 'An error occurred while toggling the model' };
+  }
+}
+
+export async function addJob(modelid: string, taskid: string, projectid: string) {
+  await connectToDatabase();
+  try {
+    const session = await getServerSession(authOptions)
+    const newJob = await AIJob.create({ user: session?.user.id, projectid, taskid, modelid });
+    return { message: 'Job added successfully', model: JSON.stringify(newJob) };
+  } catch (error) {
+    console.error('Error adding job:', error);
+    return { error: 'An error occurred while adding the job' };
   }
 }
