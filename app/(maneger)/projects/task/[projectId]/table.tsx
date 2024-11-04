@@ -14,6 +14,8 @@ import { toast } from "sonner"
 import { Annotator, Task } from "./page"
 import { Judge } from "../../ai-config/[projectId]/page"
 import { usePathname } from "next/navigation"
+import { addJob } from "@/app/actions/aiModel"
+import useJobList from "@/hooks/use-jobList"
 
 interface TaskTableProps {
     tasks: Task[]
@@ -28,6 +30,7 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
     const [dialog, setDialog] = useState(false)
     const [judges, setJudges] = useState<Judge[]>([])
     const [feedback, setFeedback] = useState('')
+    const { setJob } = useJobList()
     const pathName = usePathname();
     const projectId = pathName.split("/")[3];
     function handleclick(e: React.MouseEvent, feedback: string) {
@@ -112,11 +115,16 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                             </TableCell>
                             <TableCell>
                                 <Select
-                                    value={task.ai ? "ai" : (task.annotator || "")}
-                                    onValueChange={(value) => {
+                                    value={task.ai ? task.ai: task.annotator }
+                                    onValueChange={async (value) => {
                                         const exist = judges.find((judge) => judge._id === value)
                                         if (exist) {
-                                            aiSolve(task)
+                                            const res = await addJob(value, task._id, projectId)
+                                            if (res.error) {
+                                                toast.error(res.error)
+                                                return
+                                            }
+                                            setJob(JSON.parse(res.model as string))
                                             handleAssignUser(value, task._id, true)
                                         } else {
                                             handleAssignUser(value, task._id, false)
