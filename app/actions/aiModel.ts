@@ -2,6 +2,7 @@
 import { authOptions } from "@/auth";
 import { connectToDatabase } from "@/lib/db";
 import { AIJob, AImodel } from "@/models/aiModel";
+import { m } from "framer-motion";
 import { getServerSession } from "next-auth";
 
 export async function addModel(provider: string, projectId: string, model: string, apiKey: string, systemPrompt: string) {
@@ -27,6 +28,18 @@ export async function deleteModel(modelId: string) {
   } catch (error) {
     console.error('Error deleting model:', error);
     return { error: 'An error occurred while deleting the model' };
+  }
+}
+
+export async function deleteCompletedJobs(projectid: string) {
+  await connectToDatabase();
+  const session = await getServerSession(authOptions)
+  try {
+    await AImodel.find({ user: session?.user.id,projectid, completed: true });
+    return { message: 'Jobs deleted successfully' };
+  } catch (error) {
+    console.error('Error getting models:', error);
+    return { error: 'An error occurred while deleting' };
   }
 }
 
