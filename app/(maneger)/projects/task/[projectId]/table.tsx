@@ -1,22 +1,21 @@
 import { task } from "@/app/(annotator)/tasks/all/page"
 import { generateAndSaveAIResponse } from "@/app/actions/ai"
+import { addJob } from "@/app/actions/aiModel"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import useJobList, { Job } from "@/hooks/use-jobList"
 import { getStatusBadgeVariant } from "@/lib/constants"
 import { formatTime } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
 import { CalendarIcon, NotebookPen, Trash2Icon } from "lucide-react"
+import { usePathname } from "next/navigation"
 import { useEffect, useState } from 'react'
 import { toast } from "sonner"
-import { Annotator, Task } from "./page"
 import { Judge } from "../../ai-config/[projectId]/page"
-import { usePathname } from "next/navigation"
-import { addJob } from "@/app/actions/aiModel"
-import useJobList from "@/hooks/use-jobList"
-
+import { Annotator, Task } from "./page"
 interface TaskTableProps {
     tasks: Task[]
     setTasks: React.Dispatch<React.SetStateAction<Task[]>>
@@ -30,7 +29,7 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
     const [dialog, setDialog] = useState(false)
     const [judges, setJudges] = useState<Judge[]>([])
     const [feedback, setFeedback] = useState('')
-    const { setJob } = useJobList()
+    const { setJob, getJobs } = useJobList()
     const pathName = usePathname();
     const projectId = pathName.split("/")[3];
     function handleclick(e: React.MouseEvent, feedback: string) {
@@ -38,6 +37,20 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
         setFeedback(feedback)
         setDialog(true)
     }
+
+    function updateTasks(): Task[] { // Create a set of task IDs from jobs where completed is true 
+        const completedTaskIds = new Set(getJobs().filter(job => job.completed).map(job => job.taskid)); // Loop through the tasks and update the submitted status 
+        return tasks.map(task => {
+            if (completedTaskIds.has(task._id)) {
+                return { ...task, submitted: true };
+            }
+            return task;
+        });
+    }
+
+    useEffect(() => {
+        setTasks(updateTasks());
+    }, [getJobs()])
 
     useEffect(() => {
         const fetchJudges = async () => {
@@ -115,7 +128,7 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                             </TableCell>
                             <TableCell>
                                 <Select
-                                    value={task.ai ? task.ai: task.annotator }
+                                    value={task.ai ? task.ai : task.annotator}
                                     onValueChange={async (value) => {
                                         const exist = judges.find((judge) => judge._id === value)
                                         if (exist) {
