@@ -46,7 +46,7 @@ function updateInputTextContent(contentArray: any[], responseText: string) {
 
 async function saveToDatabase(content: string, response: string, taskId: string) {
   const newContent = updateInputTextContent(JSON.parse(content), response);
-  await Task.updateOne({ _id: taskId }, { ai: true, content: JSON.stringify(newContent), submitted: true });
+  await Task.updateOne({ _id: taskId }, { content: JSON.stringify(newContent), submitted: true });
   await AIJob.updateOne({ taskid: taskId }, { completed: true });
   console.log('Saving to database:', { content, response })
 }
@@ -134,7 +134,7 @@ export async function aiSolve(id: string) {
 
   const JobPromises = Jobs.map(async (job) => {
     if (!job.taskid.annotator) {
-      const content = extractPlaceholdersFromResponse(job.taskid);
+      // const content = extractPlaceholdersFromResponse(job.taskid);
       const element = await extractElementDetails(JSON.parse(job.taskid.content));
       const systemPrompt = replacePlaceholders(job.modelid.systemPrompt, element);
       const response = await generateAndSaveAIResponse(job.taskid.content, job.taskid._id, job.modelid.apiKey, job.modelid.provider, job.modelid.model, systemPrompt);
