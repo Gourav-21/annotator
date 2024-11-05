@@ -1,5 +1,6 @@
 'use client'
 
+import { addJob } from "@/app/actions/aiModel"
 import { getAllAnnotators } from "@/app/actions/annotator"
 import { changeAnnotator, deleteTask, getAllTasks } from "@/app/actions/task"
 import { upsertTemplate } from "@/app/actions/template"
@@ -9,16 +10,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Loader from '@/components/ui/Loader/Loader'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import useJobList from "@/hooks/use-jobList"
 import { useToast } from "@/hooks/use-toast"
 import { Bot, PlusCircle, Shuffle } from "lucide-react"
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Judge } from "../../ai-config/[projectId]/page"
 import { TaskTable } from "./table"
 import TaskProgress from "./TaskProgress"
-import { Judge } from "../../ai-config/[projectId]/page"
-import useJobList from "@/hooks/use-jobList"
-import { addJob } from "@/app/actions/aiModel"
 
 export interface Task {
   _id: string

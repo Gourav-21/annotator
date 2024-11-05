@@ -12,7 +12,7 @@ import Loader from '@/components/ui/Loader/Loader'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/hooks/use-toast"
 import { format, parseISO } from "date-fns"
-import { CalendarIcon, ChevronDown, ChevronUp, Copy, Edit2Icon, Eye, EyeOff, PlusCircle, Trash2Icon } from "lucide-react"
+import { CalendarIcon, ChevronDown, Copy, Edit2Icon, Eye, EyeOff, PlusCircle, Trash2Icon } from "lucide-react"
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'

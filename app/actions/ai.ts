@@ -1,6 +1,6 @@
 'use server'
 
-import { AIJob, AImodel } from '@/models/aiModel';
+import { AIJob } from '@/models/aiModel';
 import Task from '@/models/Task';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';

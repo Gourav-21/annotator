@@ -1,22 +1,22 @@
 'use client'
 
+import { deleteGroup } from "@/app/actions/chat"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { MessageCircle, MoreVertical, Trash2, UserMinus, UserPlus, Users, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { deleteGroup } from "@/app/actions/chat"
 import { toast } from "@/hooks/use-toast"
 import useUserGroups from "@/hooks/use-userGroups"
+import { sortUserGroupsByLastMessage } from "@/lib/utils"
+import { MessageCircle, MoreVertical, Trash2, UserMinus, UserPlus, Users, X } from 'lucide-react'
 import { useSession } from "next-auth/react"
+import { useEffect, useState } from 'react'
 import { Annotator } from "../projects/task/[projectId]/page"
 import { ChatArea } from "./_components/chatArea"
 import { GroupList } from './_components/groupList'
 import MemberCombobox from "./_components/MemberCombobox"
-import { sortUserGroupsByLastMessage } from "@/lib/utils"
 
 type Message = {
   _id: string
