@@ -75,3 +75,14 @@ export async function addJob(modelid: string, taskid: string, projectid: string)
     return { error: 'An error occurred while adding the job' };
   }
 }
+
+export async function deleteJobByTaskid(Taskid: string) {
+  await connectToDatabase();
+  try {
+    await AIJob.deleteMany({taskid:Taskid});
+    return { message: 'Job deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting job:', error);
+    return { error: 'An error occurred while deleting the job' };
+  }
+}
