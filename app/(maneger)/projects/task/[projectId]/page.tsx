@@ -15,7 +15,6 @@ import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { TaskTable } from "./table"
-import { AssignAi } from "@/app/actions/ai"
 import TaskProgress from "./TaskProgress"
 
 export interface Task {
@@ -134,8 +133,8 @@ export default function Component() {
       })
       return
     }
-    AssignAi(unassignedTasks.map(task => task._id))
-    setTasks(tasks.map(task => unassignedTasks.includes(task) ? { ...task, ai: true } : task))
+    // AssignAi(unassignedTasks.map(task => task._id))
+    // setTasks(tasks.map(task => unassignedTasks.includes(task) ? { ...task, ai: true } : task))
     toast({
       title: "AI assigned",
       description: `${unassignedTasks.length} tasks have been assigned to AI.

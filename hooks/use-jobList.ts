@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-interface Job {
+export interface Job {
   _id: string
   user: string
   projectid: string
