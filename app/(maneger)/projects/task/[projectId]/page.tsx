@@ -66,7 +66,7 @@ export default function Component() {
         })
         return
       }
-      setJudges(judges.models)
+      setJudges(judges.models.filter((judge: Judge) => judge.enabled == true))
     }
     async function init() {
       setTasks(JSON.parse(await getAllTasks(projectId)))
