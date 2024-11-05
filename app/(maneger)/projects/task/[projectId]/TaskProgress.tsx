@@ -1,47 +1,66 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { aiSolve } from '@/app/actions/ai'
+import { deleteCompletedJobs } from '@/app/actions/aiModel'
 import { Button } from "@/components/ui/button"
+import useJobList from '@/hooks/use-jobList'
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 export default function TaskProgress() {
   const [isRunning, setIsRunning] = useState(false)
-  const [completedTasks, setCompletedTasks] = useState(0)
-  const totalTasks = 10
+  const { getJobs, getcompletedJobCount, setJobs, getUncompletedJobCount, deleteCompleted } = useJobList()
+  const totalTasks = getJobs().length
+  const pathName = usePathname();
+  const projectId = pathName.split("/")[3];
+  
+  async function init() {
+    const res = await fetch('/api/job?projectId=' + projectId).then(res => res.json())
+    if (!res.success) {
+      console.log(res.error)
+      return
+    }
+    setJobs(res.models)
+  }
+
+  useEffect(() => {
+    init()
+  }, [projectId])
 
   useEffect(() => {
     let interval: NodeJS.Timeout
-
-    if (isRunning && completedTasks < totalTasks) {
+    if (isRunning && getcompletedJobCount() < totalTasks) {
       interval = setInterval(() => {
-        setCompletedTasks(prev => {
-          const next = prev + 1
-          if (next >= totalTasks) {
-            setIsRunning(false)
-          }
-          return next
-        })
-      }, 1000) // Simulating task completion every second
+        init()
+      }, 3000)
     }
-
     return () => clearInterval(interval)
-  }, [isRunning, completedTasks])
+  }, [isRunning, getcompletedJobCount()])
 
-  const handleRun = () => {
+  const handleRun = async () => {
+    aiSolve(projectId)
     setIsRunning(true)
-    setCompletedTasks(0)
   }
 
   const getButtonText = () => {
-    if (completedTasks === totalTasks) return "Completed!"
-    if (isRunning) return `Processing... ${completedTasks}/${totalTasks}`
-    return "Start AI Solving"
+    if (totalTasks !== 0 && getcompletedJobCount() === totalTasks) {
+      toast.success("Completed!")
+      deleteCompletedJobs(projectId)
+      deleteCompleted()
+      setIsRunning(false)
+      // return "Start AI Solving"
+    }
+    if (isRunning) return `Processing... ${getcompletedJobCount()}/${totalTasks}`
+    return `Start AI Solving ${getUncompletedJobCount()} Tasks`
   }
 
   return (
-      <Button 
-        onClick={handleRun} 
+    <>
+     { getUncompletedJobCount() > 0  && <Button
+        onClick={handleRun}
         variant="outline"
-        disabled={isRunning && completedTasks < totalTasks}
+        disabled={isRunning && getcompletedJobCount() < totalTasks}
         className={`transition-all duration-300 `}
         aria-live="polite"
         aria-busy={isRunning}
@@ -55,6 +74,7 @@ export default function TaskProgress() {
           )}
           {getButtonText()}
         </span>
-      </Button>
+      </Button>}
+    </>
   )
 }
