@@ -40,7 +40,7 @@ export async function createTasks(tasks: {
 
 export async function getAllTasks(projectid: string) {
   await connectToDatabase();
-  const res = await Task.find({ project: projectid }).populate('ai');
+  const res = await Task.find({ project: projectid });
   return JSON.stringify(res)
 }
 

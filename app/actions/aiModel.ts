@@ -2,7 +2,6 @@
 import { authOptions } from "@/auth";
 import { connectToDatabase } from "@/lib/db";
 import { AIJob, AImodel } from "@/models/aiModel";
-import { m } from "framer-motion";
 import { getServerSession } from "next-auth";
 
 export async function addModel(provider: string, projectId: string, model: string, apiKey: string, systemPrompt: string) {
