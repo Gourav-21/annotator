@@ -1,6 +1,6 @@
 'use server'
 
-import { AIJob } from '@/models/aiModel';
+import { AIJob, AImodel } from '@/models/aiModel';
 import Task from '@/models/Task';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
@@ -10,19 +10,23 @@ import { task } from '../preview/page';
 
 function updateSelectedCheckbox(item: any, responseText: string) {
   if (!item.content.selectedCheckbox) {
-      item.content.selectedCheckbox = [];
+    item.content.selectedCheckbox = [];
   }
 
-  const responseWords = responseText.split(/\s+/).map(word => word.trim());
-  const validOptions = responseWords.filter(word => 
-      item.content.checkboxes.includes(word)
+  const normalizedResponseText = responseText.toLowerCase();
+
+  const validOptions = item.content.checkboxes.filter(option =>
+    normalizedResponseText.includes(option.toLowerCase())
   );
 
+  console.log('validOptions:', validOptions);
+
   validOptions.forEach(option => {
-      if (!item.content.selectedCheckbox.includes(option)) {
-          item.content.selectedCheckbox.push(option);
-      }
+    if (!item.content.selectedCheckbox.includes(option)) {
+      item.content.selectedCheckbox.push(option);
+    }
   });
+  console.log('selectedCheckbox:', item.content.selectedCheckbox);
 }
 
 function updateInputTextContent(contentArray: any[], responseText: string) {
@@ -51,7 +55,7 @@ async function saveToDatabase(content: string, response: string, taskId: string)
   console.log('Saving to database:', { content, response })
 }
 
-export async function generateAndSaveAIResponse(content: string, taskId: string, apiKey:string, provider:string, model: string,systemPrompt: string) {
+export async function generateAndSaveAIResponse(content: string, taskId: string, apiKey: string, provider: string, model: string, systemPrompt: string) {
   if (!taskId || !content) {
     return { error: 'Missing required fields' }
   }
@@ -135,30 +139,35 @@ export async function aiSolve(id: string) {
   const JobPromises = Jobs.map(async (job) => {
     if (!job.taskid.annotator) {
       // const content = extractPlaceholdersFromResponse(job.taskid);
-      const element = await extractElementDetails(JSON.parse(job.taskid.content));
-      const systemPrompt = replacePlaceholders(job.modelid.systemPrompt, element);
-      const response = await generateAndSaveAIResponse(job.taskid.content, job.taskid._id, job.modelid.apiKey, job.modelid.provider, job.modelid.model, systemPrompt);
-      if (response.error) {
-        console.error('Error:', response.error);
+      try {
+        const element = await extractElementDetails(JSON.parse(job.taskid.content));
+        const systemPrompt = replacePlaceholders(job.modelid.systemPrompt, element);
+        const response = await generateAndSaveAIResponse(job.taskid.content, job.taskid._id, job.modelid.apiKey, job.modelid.provider, job.modelid.model, systemPrompt);
+        if (response.error) {
+          throw new Error(`Error: ${response.error}`);
+        }
+      } catch (error) {
+        await AIJob.deleteMany({ _id: job._id });
       }
     }
   });
   await Promise.all(JobPromises);
+  // await AIJob.deleteMany({ projectid: id });
 }
 
-function replacePlaceholders(systemPrompt : string, elements: any[]) {
+function replacePlaceholders(systemPrompt: string, elements: any[]) {
   elements.forEach(element => {
-      const placeholder = `{${element.name}}`;
-      if (systemPrompt.includes(placeholder)) {
-          let replacementContent;
-          if (element.type === 'checkbox' && typeof element.content === 'object') {
-              const { checkboxTitle, checkboxes } = element.content;
-              replacementContent = `${checkboxTitle}: ${checkboxes.join(', ')}`;
-          } else {
-              replacementContent = element.content;
-          }
-          systemPrompt = systemPrompt.replace(placeholder, replacementContent);
+    const placeholder = `{${element.name}}`;
+    if (systemPrompt.includes(placeholder)) {
+      let replacementContent;
+      if (element.type === 'checkbox' && typeof element.content === 'object') {
+        const { checkboxTitle, checkboxes } = element.content;
+        replacementContent = `${checkboxTitle}: ${checkboxes.join(', ')}`;
+      } else {
+        replacementContent = element.content;
       }
+      systemPrompt = systemPrompt.replace(placeholder, replacementContent);
+    }
   });
   return systemPrompt;
 }
