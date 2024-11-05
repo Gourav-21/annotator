@@ -110,9 +110,9 @@ export default function Component() {
   }
 
   const providerModels = {
-    OpenAI: ["GPT-4", "GPT-3.5-turbo"],
-    Anthropic: ["Claude 3 Opus", "Claude 3 Sonnet", "Claude 3 Haiku"],
-    Gemini: ["Gemini Pro", "Gemini Ultra"],
+    OpenAI: ["gpt-4","gpt-4-turbo","gpt-4o","gpt-4o-mini", "gpt-3.5-turbo"],
+    Anthropic: ["claude-3-5-sonnet-latest", "claude-3-5-sonnet-20240620", "claude-3-haiku-20240307","claude-3-opus-latest","claude-3-opus-20240229"],
+    Gemini: ["gemini-1.0-pro", "gemini-1.5-flash","gemini-1.5-pro","gemini-pro"],
   }
 
   return (
