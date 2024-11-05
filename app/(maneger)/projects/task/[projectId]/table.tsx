@@ -1,6 +1,6 @@
 import { task } from "@/app/(annotator)/tasks/all/page"
 import { generateAndSaveAIResponse } from "@/app/actions/ai"
-import { addJob } from "@/app/actions/aiModel"
+import { addJob, deleteJobByTaskid } from "@/app/actions/aiModel"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -29,7 +29,7 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
     const [dialog, setDialog] = useState(false)
     const [judges, setJudges] = useState<Judge[]>([])
     const [feedback, setFeedback] = useState('')
-    const { setJob, getJobs } = useJobList()
+    const { setJob, getJobs, removeJobByTaskid } = useJobList()
     const pathName = usePathname();
     const projectId = pathName.split("/")[3];
     function handleclick(e: React.MouseEvent, feedback: string) {
@@ -140,6 +140,14 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                                             setJob(JSON.parse(res.model as string))
                                             handleAssignUser(value, task._id, true)
                                         } else {
+                                            if(getJobs().some((job) => job.taskid == task._id) ){
+                                                const res = await deleteJobByTaskid(task._id)
+                                                if (res.error) {
+                                                    toast.error(res.error)
+                                                    return
+                                                }
+                                                removeJobByTaskid(task._id)
+                                            }
                                             handleAssignUser(value, task._id, false)
                                         }
                                     }}

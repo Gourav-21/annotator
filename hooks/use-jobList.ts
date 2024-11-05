@@ -15,6 +15,7 @@ type Status = {
   getJobs: () => Job[]
   setJob: (data: Job) => void
   removeJob: (id: string) => void
+  removeJobByTaskid: (id: string) => void
   getcompletedJobCount: () => number
   getUncompletedJobCount: () => number
   deleteCompleted: () => void
@@ -26,6 +27,7 @@ const useJobList = create<Status>()((set, get) => ({
   getJobs: () => get().Jobs,
   setJob: (data: Job) => set({ Jobs: [...get().Jobs, data] }),
   removeJob: (id: string) => set({ Jobs: get().Jobs.filter((Job) => Job._id !== id) }),
+  removeJobByTaskid: (id: string) => set({ Jobs: get().Jobs.filter((Job) => Job.taskid !== id) }),
   getcompletedJobCount: () => get().Jobs.filter((Job) => Job.completed == true).length,
   getUncompletedJobCount: () => get().Jobs.filter((Job) => Job.completed == false).length,
   deleteCompleted: () => set({ Jobs: get().Jobs.filter((Job) => Job.completed == false) }),
