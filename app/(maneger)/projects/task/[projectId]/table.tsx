@@ -20,14 +20,14 @@ interface TaskTableProps {
     tasks: Task[]
     setTasks: React.Dispatch<React.SetStateAction<Task[]>>
     annotators: Annotator[]
+    judges: Judge[]
     handleAssignUser: (annotatorId: string, taskId: string, ai: boolean) => void
     handleDeleteTemplate: (e: React.MouseEvent, _id: string) => void
     router: any
 }
 
-export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handleDeleteTemplate, router }: TaskTableProps) {
+export function TaskTable({ tasks, setTasks, annotators,judges, handleAssignUser, handleDeleteTemplate, router }: TaskTableProps) {
     const [dialog, setDialog] = useState(false)
-    const [judges, setJudges] = useState<Judge[]>([])
     const [feedback, setFeedback] = useState('')
     const { setJob, getJobs, removeJobByTaskid } = useJobList()
     const pathName = usePathname();
@@ -52,18 +52,6 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
         setTasks(updateTasks());
     }, [getJobs()])
 
-    useEffect(() => {
-        const fetchJudges = async () => {
-            const res = await fetch(`/api/aiModel?projectId=${projectId}`)
-            const judges = await res.json()
-            if (judges.error) {
-                toast.error(judges.error)
-                return
-            }
-            setJudges(judges.models)
-        }
-        fetchJudges()
-    }, [])
 
     return (
         <div className="bg-white shadow-sm rounded-lg overflow-hidden">
@@ -95,7 +83,7 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
                             </TableCell>
                             <TableCell>
                                 <Select
-                                    value={task.ai ? task.ai : task.annotator}
+                                    value={task.ai ? task.ai : task.annotator == null? "" : task.annotator}
                                     onValueChange={async (value) => {
                                         const exist = judges.find((judge) => judge._id === value)
                                         if (exist) {

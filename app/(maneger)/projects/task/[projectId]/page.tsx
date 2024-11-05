@@ -242,13 +242,13 @@ export default function Component() {
                 </Button>
               </div>
               <TabsContent value="all">
-                <TaskTable setTasks={setTasks} tasks={filteredTasks.all} annotators={annotators} judges={judges} setJudges={setJudges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+                <TaskTable setTasks={setTasks} tasks={filteredTasks.all} annotators={annotators} judges={judges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
               </TabsContent>
               <TabsContent value="submitted">
-                <TaskTable setTasks={setTasks} tasks={filteredTasks.submitted} annotators={annotators} judges={judges} setJudges={setJudges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+                <TaskTable setTasks={setTasks} tasks={filteredTasks.submitted} annotators={annotators} judges={judges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
               </TabsContent>
               <TabsContent value="unassigned">
-                <TaskTable setTasks={setTasks} tasks={filteredTasks.unassigned} annotators={annotators} judges={judges} setJudges={setJudges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+                <TaskTable setTasks={setTasks} tasks={filteredTasks.unassigned} annotators={annotators} judges={judges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
               </TabsContent>
             </Tabs>
           </>
