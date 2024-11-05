@@ -65,39 +65,6 @@ export function TaskTable({ tasks, setTasks, annotators, handleAssignUser, handl
         fetchJudges()
     }, [])
 
-    function aiSolve(task: task) {
-        const content = JSON.parse(task.content)
-        const extractedPlaceholders: string[] = []
-        let hasInputText = false;
-        const extractPlaceholders = (item: any) => {
-            if (Array.isArray(item.content)) {
-                item.content.forEach(extractPlaceholders)
-            } else if (item.type) {
-                if (item.type === "inputText") {
-                    hasInputText = true;
-                }
-                if ((item.type === "dynamicText" || item.type === "text") && item.content?.innerText) {
-                    extractedPlaceholders.push(item.content.innerText);
-                }
-            }
-        }
-
-        try {
-            content.forEach(extractPlaceholders)
-            if (!hasInputText) {
-                throw new Error("Error: Missing 'inputText' type.");
-            }
-            if (extractedPlaceholders.length === 0) {
-                throw new Error("Error: Missing 'dynamicText' or 'text' types.");
-            }
-            generateAndSaveAIResponse(extractedPlaceholders.join("\n"), task.content, task._id)
-            setTasks((prevTasks) => prevTasks.map((t) => t._id === task._id ? { ...t, pause: true } : t))
-            toast.success("Task has been assigned to ai.");
-        } catch (error: any) {
-            toast.error(error.message);
-        }
-    }
-
     return (
         <div className="bg-white shadow-sm rounded-lg overflow-hidden">
             <Table>
