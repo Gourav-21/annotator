@@ -6,6 +6,7 @@ import Task from "@/models/Task";
 import { getServerSession } from "next-auth";
 import { template } from "../template/page";
 import Rework from '@/models/Rework';
+import { AIJob } from '@/models/aiModel';
 
 export async function updateTask(template: template, _id: string, projectid: string,time:number) {
   await connectToDatabase();
@@ -52,6 +53,7 @@ export async function getAllAcceptedTasks(projectid: string) {
 
 export async function deleteTask(_id: string) {
   await connectToDatabase();
+  await AIJob.deleteMany({ taskid: _id });
   const res = await Task.deleteOne({ _id });
   return JSON.stringify(res)
 }
