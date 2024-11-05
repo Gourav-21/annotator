@@ -16,6 +16,9 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { TaskTable } from "./table"
 import TaskProgress from "./TaskProgress"
+import { Judge } from "../../ai-config/[projectId]/page"
+import useJobList from "@/hooks/use-jobList"
+import { addJob } from "@/app/actions/aiModel"
 
 export interface Task {
   _id: string
@@ -42,7 +45,9 @@ export default function Component() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTemplateName, setNewTemplateName] = useState('')
   const [annotators, setAnnotators] = useState<Annotator[]>([])
+  const [judges, setJudges] = useState<Judge[]>([])
   const [activeTab, setActiveTab] = useState("all")
+  const { removeJobByTaskid, setJob } = useJobList()
   const pathName = usePathname();
   const projectId = pathName.split("/")[3];
   const router = useRouter();
@@ -50,9 +55,23 @@ export default function Component() {
   const { toast } = useToast()
 
   useEffect(() => {
+    const fetchJudges = async () => {
+      const res = await fetch(`/api/aiModel?projectId=${projectId}`)
+      const judges = await res.json()
+      if (judges.error) {
+        toast({
+          variant: 'destructive',
+          title: 'Fetching judges failed',
+          description: judges.error,
+        })
+        return
+      }
+      setJudges(judges.models)
+    }
     async function init() {
       setTasks(JSON.parse(await getAllTasks(projectId)))
       setAnnotators(JSON.parse(await getAllAnnotators()))
+      fetchJudges()
     }
     init();
   }, [projectId]);
@@ -82,6 +101,7 @@ export default function Component() {
     e.stopPropagation()
     try {
       await deleteTask(_id)
+      removeJobByTaskid(_id)
       setTasks(tasks.filter(project => project._id !== _id))
     } catch (error: any) {
       toast({
@@ -123,7 +143,7 @@ export default function Component() {
   }
 
   async function handleAssignAI() {
-    const unassignedTasks = tasks.filter(task => !task.annotator && !task.ai);
+    const unassignedTasks = tasks.filter(task => !task.annotator && !task.ai && !task.submitted);
 
     if (unassignedTasks.length === 0) {
       toast({
@@ -133,8 +153,33 @@ export default function Component() {
       })
       return
     }
-    // AssignAi(unassignedTasks.map(task => task._id))
-    // setTasks(tasks.map(task => unassignedTasks.includes(task) ? { ...task, ai: true } : task))
+    var judgeIndex = 0;
+    const updatedTasks: Task[] = [...tasks];
+    for (const task of unassignedTasks) {
+      if (!judges[judgeIndex]._id) {
+        toast({
+          variant: "destructive",
+          title: "Fetching judges",
+          description: "Please wait...",
+        })
+        return
+      }
+      const res = await addJob(judges[judgeIndex]._id, task._id, projectId)
+      if (res.error) {
+        toast({
+          variant: "destructive",
+          title: "AI assignment failed",
+          description: res.error,
+        })
+        return
+      }
+      setJob(JSON.parse(res.model as string))
+      await handleAssignUser(judges[judgeIndex]._id, task._id, true)
+      const taskIndex = updatedTasks.findIndex(t => t._id === task._id);
+      updatedTasks[taskIndex] = { ...task, ai: judges[judgeIndex]._id };
+      judgeIndex = (judgeIndex + 1) % judges.length;
+    }
+    setTasks(updatedTasks);
     toast({
       title: "AI assigned",
       description: `${unassignedTasks.length} tasks have been assigned to AI.
@@ -187,23 +232,23 @@ export default function Component() {
                   <TabsTrigger value="unassigned">Unassigned Tasks</TabsTrigger>
                 </TabsList>
                 <div className="ml-auto mr-2">
-                    <TaskProgress />
+                  <TaskProgress />
                 </div>
-                <Button onClick={handleAssignAI} variant="outline" >
+                {judges.length > 0 && <Button onClick={handleAssignAI} variant="outline" >
                   <Bot className="mr-2 h-4 w-4" /> Assign Tasks To AI
-                </Button>
+                </Button>}
                 <Button onClick={handleAutoAssign} variant="outline" className="ml-2">
                   <Shuffle className="mr-2 h-4 w-4" /> Auto-assign Tasks
                 </Button>
               </div>
               <TabsContent value="all">
-                <TaskTable setTasks={setTasks} tasks={filteredTasks.all} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+                <TaskTable setTasks={setTasks} tasks={filteredTasks.all} annotators={annotators} judges={judges} setJudges={setJudges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
               </TabsContent>
               <TabsContent value="submitted">
-                <TaskTable setTasks={setTasks} tasks={filteredTasks.submitted} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+                <TaskTable setTasks={setTasks} tasks={filteredTasks.submitted} annotators={annotators} judges={judges} setJudges={setJudges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
               </TabsContent>
               <TabsContent value="unassigned">
-                <TaskTable setTasks={setTasks} tasks={filteredTasks.unassigned} annotators={annotators} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+                <TaskTable setTasks={setTasks} tasks={filteredTasks.unassigned} annotators={annotators} judges={judges} setJudges={setJudges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
               </TabsContent>
             </Tabs>
           </>
