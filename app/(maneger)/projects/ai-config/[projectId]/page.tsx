@@ -126,9 +126,9 @@ export default function Component() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center p-6 text-center">
               <Bot className="w-12 h-12 mb-4 text-muted-foreground" />
-              <CardTitle className="mb-2">No Judges Configured</CardTitle>
+              <CardTitle className="mb-2">No AI Experts Configured</CardTitle>
               <CardDescription className="mb-4">
-                Add your first judge to start evaluating AI models.
+                Add your first AI Expert to start evaluating AI models.
               </CardDescription>
             </CardContent>
           </Card>
@@ -219,7 +219,7 @@ export default function Component() {
         )}
       </div>
 
-      <h2 id="add-judge-section" className="text-xl font-semibold mb-4">Configure Automated Judge</h2>
+      <h2 id="add-judge-section" className="text-xl font-semibold mb-4">Configure Automated AI Expert</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           {
@@ -257,7 +257,7 @@ export default function Component() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Configure {provider.name} Judge</DialogTitle>
+                <DialogTitle>Configure {provider.name} AI Expert</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
@@ -303,7 +303,7 @@ export default function Component() {
                   onClick={() => handleSubmit(provider.name)}
                   disabled={!apiKey || !selectedModel}
                 >
-                  Add Judge
+                  Add AI Expert
                 </Button>
               </div>
             </DialogContent>

@@ -152,7 +152,7 @@ export async function aiSolve(id: string) {
     }
   });
   await Promise.all(JobPromises);
-  // await AIJob.deleteMany({ projectid: id });
+  await AIJob.deleteMany({ projectid: id });
 }
 
 function replacePlaceholders(systemPrompt: string, elements: any[]) {

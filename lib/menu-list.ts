@@ -153,7 +153,7 @@ export function getMenuList(pathname: string): Group[] {
       menus: [
         {
           href: `/projects/ai-config/${projectId}`,
-          label: "AI Judge",
+          label: "AI Expert",
           active: pathname.includes('/ai-config'),
           icon: Bot
         },
