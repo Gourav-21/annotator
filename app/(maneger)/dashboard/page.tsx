@@ -29,7 +29,7 @@ interface DashboardData {
   annotators: number;
 }
 
-export const dynamic = 'force-dynamic'
+// export const dynamic = 'force-dynamic'
 
 export default function ProjectDashboard() {
   const [data, setData] = useState<DashboardData>({
