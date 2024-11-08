@@ -111,7 +111,7 @@ export function TaskTable({ tasks, setTasks, annotators,judges, handleAssignUser
                                     <SelectContent>
                                         {judges.length > 0 && judges.map((judge) => (
                                             <SelectItem key={judge._id} value={judge._id}>
-                                                {judge.model}
+                                                {judge.name}
                                             </SelectItem>
                                         ))}
                                         {annotators.map((user) => (
