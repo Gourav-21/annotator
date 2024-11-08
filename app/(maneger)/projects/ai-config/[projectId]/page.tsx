@@ -119,7 +119,7 @@ export default function Component() {
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="mb-8">
         <div className="flex justify-between">
-          <h2 className="text-xl font-semibold mb-4">Configured Judges</h2>
+          <h2 className="text-xl font-semibold mb-4">Configured Expert</h2>
           <SheetMenu />
         </div>
         {judges.length === 0 ? (
