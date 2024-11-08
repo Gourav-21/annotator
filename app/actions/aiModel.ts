@@ -2,16 +2,17 @@
 import { authOptions } from "@/auth";
 import { connectToDatabase } from "@/lib/db";
 import { AIJob, AImodel } from "@/models/aiModel";
+import { model } from "mongoose";
 import { getServerSession } from "next-auth";
 
-export async function addModel(provider: string, projectId: string, model: string, apiKey: string, systemPrompt: string) {
+export async function addModel(provider: string, projectId: string, model: string, apiKey: string, systemPrompt: string,name:string) {
   await connectToDatabase();
   if (!model || !apiKey || !systemPrompt || !provider) {
     return { error: 'Please fill in all fields' }
   }
   const session = await getServerSession(authOptions)
   try {
-    const newModel = await AImodel.create({ user: session?.user.id, projectid: projectId, provider, model, apiKey, systemPrompt });
+    const newModel = await AImodel.create({ user: session?.user.id,name, projectid: projectId, provider, model, apiKey, systemPrompt });
     return { message: 'Model added successfully', model: JSON.stringify(newModel) };
   } catch (error) {
     console.error('Error adding model:', error);
@@ -42,10 +43,10 @@ export async function deleteCompletedJobs(projectid: string) {
   }
 }
 
-export async function updateModel(model: { id: string; provider: string; apiKey: string; systemPrompt: string }) {
+export async function updateModel(model: { id: string;model: string, provider: string; apiKey: string; systemPrompt: string }) {
   await connectToDatabase();
   try {
-    const updatedModel = await AImodel.findByIdAndUpdate(model.id, { provider: model.provider, apiKey: model.apiKey, systemPrompt: model.systemPrompt }, { new: true });
+    const updatedModel = await AImodel.findByIdAndUpdate(model.id, { provider: model.provider,  model: model.model, apiKey: model.apiKey, systemPrompt: model.systemPrompt }, { new: true });
     return { message: 'Model updated successfully', model: JSON.stringify(updatedModel) };
   } catch (error) {
     console.error('Error updating model:', error);

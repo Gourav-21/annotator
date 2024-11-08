@@ -18,6 +18,7 @@ export interface Judge {
   _id: string
   model: string
   provider: string
+  name:string
   enabled: boolean
   apiKey: string
   systemPrompt: string
@@ -29,6 +30,7 @@ export default function Component() {
   const pathName = usePathname()
   const projectId = pathName.split("/")[3]
   const [selectedModel, setSelectedModel] = useState<string>("")
+  const [name, setName] = useState("")
   const [apiKey, setApiKey] = useState("")
   const [systemPrompt, setSystemPrompt] = useState("")
   const [addDialogOpen, setAddDialogOpen] = useState<string | null>(null)
@@ -51,7 +53,7 @@ export default function Component() {
       toast.error("Please fill in all fields")
       return
     }
-    const res = await addModel(provider, projectId, selectedModel, apiKey, systemPrompt)
+    const res = await addModel(provider, projectId, selectedModel, apiKey, systemPrompt, name)
     if (res.error) {
       toast.error(res.error)
       return
@@ -59,6 +61,7 @@ export default function Component() {
     setAddDialogOpen(null)
     setJudges([...judges, JSON.parse(res?.model as string)])
     setApiKey("")
+    setName("")
     setSystemPrompt("")
     setSelectedModel("")
   }
@@ -96,6 +99,7 @@ export default function Component() {
       const model = await updateModel({
         id: editingJudge._id,
         provider: editingJudge.provider,
+        model: editingJudge.model,
         apiKey: editingJudge.apiKey,
         systemPrompt: editingJudge.systemPrompt,
       })
@@ -110,9 +114,9 @@ export default function Component() {
   }
 
   const providerModels = {
-    OpenAI: ["gpt-4","gpt-4-turbo","gpt-4o","gpt-4o-mini", "gpt-3.5-turbo"],
-    Anthropic: ["claude-3-5-sonnet-latest", "claude-3-5-sonnet-20240620", "claude-3-haiku-20240307","claude-3-opus-latest","claude-3-opus-20240229"],
-    Gemini: ["gemini-1.0-pro", "gemini-1.5-flash","gemini-1.5-pro","gemini-pro"],
+    OpenAI: ["gpt-4", "gpt-4-turbo", "gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"],
+    Anthropic: ["claude-3-5-sonnet-latest", "claude-3-5-sonnet-20240620", "claude-3-haiku-20240307", "claude-3-opus-latest", "claude-3-opus-20240229"],
+    Gemini: ["gemini-1.0-pro", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"],
   }
 
   return (
@@ -147,7 +151,7 @@ export default function Component() {
                     <div className="flex items-center gap-3">
                       <Bot className="w-5 h-5" />
                       <div>
-                        <div className="font-medium">{judge.model}</div>
+                        <div className="font-medium">{judge.name}</div>
                         <div className="text-xs text-muted-foreground mt-1 truncate max-w-[210px] sm:max-w-[350px] md:max-w-[500px] lg:max-w-[600px]">
                           {judge.systemPrompt}
                         </div>
@@ -168,6 +172,24 @@ export default function Component() {
                     <DialogTitle>Configure {judge.model}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="model">Model</Label>
+                      <Select
+                        value={editingJudge?.model || ""}
+                        onValueChange={(e) => setEditingJudge(prev => prev ? { ...prev, model: e } : null)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a model" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {providerModels[judge.provider as keyof typeof providerModels].map((model) => (
+                            <SelectItem key={model} value={model}>
+                              {model}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="space-y-2">
                       <Label htmlFor="apiKey">API Key</Label>
                       <Input
@@ -260,6 +282,16 @@ export default function Component() {
                 <DialogTitle>Configure {provider.name} AI Expert</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={`Enter a name for your AI Expert`}
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="model">Model</Label>
                   <Select
