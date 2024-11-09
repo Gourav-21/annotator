@@ -45,6 +45,12 @@ export async function getAllTasks(projectid: string) {
   return JSON.stringify(res)
 }
 
+export async function getATask(projectid: string) {
+  await connectToDatabase();
+  const res = await Task.findOne({ project: projectid });
+  return JSON.stringify(res)
+}
+
 export async function getAllAcceptedTasks(projectid: string) {
   await connectToDatabase();
   const res = await Task.find({ project: projectid, status: 'accepted' });
