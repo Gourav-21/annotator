@@ -41,6 +41,36 @@ export const defaultContent = JSON.stringify([
   },
 ]);
 
+export function extractElementNames(content: any[]) {
+  const elements: any[] = [];
+
+  function extractContent(node: any) {
+    if (node.content && Array.isArray(node.content)) {
+      node.content.forEach(extractContent);
+    } else if (node.name && node.content) {
+      switch (node.type) {
+        case 'inputText':
+        case 'text':
+        case 'dynamicText':
+        // case 'dynamicVideo':
+        // case 'dynamicImage':
+        // case 'dynamicAudio':
+        // case 'recordAudio':
+        // case 'recordVideo':
+        // case 'inputRecordAudio':
+        // case 'inputRecordVideo':
+        case 'checkbox':
+          elements.push({ name: node.name, type: node.type });
+          break;
+        default:
+          return
+      }
+    }
+  }
+  extractContent(content[0]);
+  return elements;
+}
+
 export const getStatusBadgeVariant = (status: string) => {
   switch (status) {
     case 'pending':
