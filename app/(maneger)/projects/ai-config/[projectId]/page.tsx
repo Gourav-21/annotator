@@ -1,6 +1,7 @@
 "use client"
 
 import { addModel, deleteModel, toggleModel, updateModel } from "@/app/actions/aiModel"
+import { getATask } from "@/app/actions/task"
 import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
@@ -9,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { extractElementNames } from "@/lib/constants"
 import { Bot, Cpu, Settings, Trash2 } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -34,6 +36,12 @@ export default function Component() {
   const [apiKey, setApiKey] = useState("")
   const [systemPrompt, setSystemPrompt] = useState("")
   const [addDialogOpen, setAddDialogOpen] = useState<string | null>(null)
+  const [elements,setElements] = useState<string[]>([])
+
+  async function extract(){
+    const task = await getATask(projectId)
+    setElements(extractElementNames(JSON.parse(JSON.parse(task).content)))
+  }
 
   useEffect(() => {
     const fetchJudges = async () => {
@@ -44,6 +52,7 @@ export default function Component() {
         return
       }
       setJudges(judges.models)
+      extract()
     }
     fetchJudges()
   }, [projectId])
@@ -322,6 +331,7 @@ export default function Component() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="systemPrompt">System Prompt</Label>
+
                   <Textarea
                     id="systemPrompt"
                     value={systemPrompt}
