@@ -54,20 +54,21 @@ export default function Component() {
   const { data: session } = useSession();
   const { toast } = useToast()
 
-  useEffect(() => {
-    const fetchJudges = async () => {
-      const res = await fetch(`/api/aiModel?projectId=${projectId}`)
-      const judges = await res.json()
-      if (judges.error) {
-        toast({
-          variant: 'destructive',
-          title: 'Fetching judges failed',
-          description: judges.error,
-        })
-        return
-      }
-      setJudges(judges.models.filter((judge: Judge) => judge.enabled == true))
+  const fetchJudges = async () => {
+    const res = await fetch(`/api/aiModel?projectId=${projectId}`)
+    const judges = await res.json()
+    if (judges.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Fetching judges failed',
+        description: judges.error,
+      })
+      return
     }
+    setJudges(judges.models.filter((judge: Judge) => judge.enabled == true))
+  }
+  
+  useEffect(() => {
     async function init() {
       setTasks(JSON.parse(await getAllTasks(projectId)))
       setAnnotators(JSON.parse(await getAllAnnotators()))
@@ -232,7 +233,7 @@ export default function Component() {
                   <TabsTrigger value="unassigned">Unassigned Tasks</TabsTrigger>
                 </TabsList>
                 <div className="ml-auto mr-2">
-                  <TaskProgress />
+                  <TaskProgress setTasks={setTasks} />
                 </div>
                 {judges.length > 0 && <Button onClick={handleAssignAI} variant="outline" >
                   <Bot className="mr-2 h-4 w-4" /> Assign Tasks To AI
@@ -242,7 +243,7 @@ export default function Component() {
                 </Button>
               </div>
               <TabsContent value="all">
-                <TaskTable setTasks={setTasks} tasks={filteredTasks.all} annotators={annotators} judges={judges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
+                <TaskTable setTasks={setTasks}  tasks={filteredTasks.all} annotators={annotators} judges={judges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />
               </TabsContent>
               <TabsContent value="submitted">
                 <TaskTable setTasks={setTasks} tasks={filteredTasks.submitted} annotators={annotators} judges={judges} handleAssignUser={handleAssignUser} handleDeleteTemplate={handleDeleteTemplate} router={router} />

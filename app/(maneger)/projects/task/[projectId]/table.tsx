@@ -85,6 +85,14 @@ export function TaskTable({ tasks, setTasks, annotators,judges, handleAssignUser
                                     onValueChange={async (value) => {
                                         const exist = judges.find((judge) => judge._id === value)
                                         if (exist) {
+                                            if(getJobs().some((job) => job.taskid == task._id) ){
+                                                const res = await deleteJobByTaskid(task._id)
+                                                if (res.error) {
+                                                    toast.error(res.error)
+                                                    return
+                                                }
+                                                removeJobByTaskid(task._id)
+                                            }
                                             const res = await addJob(value, task._id, projectId)
                                             if (res.error) {
                                                 toast.error(res.error)
