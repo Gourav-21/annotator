@@ -57,7 +57,7 @@ export default function ProjectDashboard() {
             description: error.message,
           }));
     }
-  }, [session, router]);
+  }, [session, router, toast]);
 
   if (!session) {
     return <Loader />;
