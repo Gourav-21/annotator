@@ -345,6 +345,11 @@ export default function Component() {
                     placeholder="Enter the system prompt for the judge"
                     rows={4}
                   />
+                  <div>
+                    {elements.map((element, index) => (
+                      <Badge key={index} variant="outline" onClick={() => setSystemPrompt(prev =>  prev + ` {${element}}` )} className="mr-2 hover:cursor-pointer">{element}</Badge>
+                    ))}
+                  </div>
                 </div>
                 <Button
                   className="w-full"
