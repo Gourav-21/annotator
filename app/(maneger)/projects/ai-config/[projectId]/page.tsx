@@ -246,19 +246,19 @@ export default function Component() {
         {[
           {
             name: "OpenAI",
-            description: "Configure a ChatGPT model as a judge",
+            description: "Configure a ChatGPT model as an AI Expert",
             icon: <Bot className="w-6 h-6" />,
             bgClass: "bg-gradient-to-br from-blue-500 to-purple-600",
           },
           {
             name: "Anthropic",
-            description: "Configure Claude model as a judge",
+            description: "Configure Claude model as an AI Expert",
             icon: <Cpu className="w-6 h-6" />,
             bgClass: "bg-gradient-to-br from-orange-500 to-pink-600",
           },
           {
             name: "Gemini",
-            description: "Configure a Google Gemini model as a judge",
+            description: "Configure a Google Gemini model as an AI Expert",
             icon: <Settings className="w-6 h-6" />,
             bgClass: "bg-gradient-to-br from-teal-500 to-blue-600",
           },
