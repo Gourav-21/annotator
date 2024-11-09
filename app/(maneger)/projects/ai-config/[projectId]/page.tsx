@@ -3,6 +3,7 @@
 import { addModel, deleteModel, toggleModel, updateModel } from "@/app/actions/aiModel"
 import { getATask } from "@/app/actions/task"
 import { SheetMenu } from "@/components/admin-panel/sheet-menu"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -20,7 +21,7 @@ export interface Judge {
   _id: string
   model: string
   provider: string
-  name:string
+  name: string
   enabled: boolean
   apiKey: string
   systemPrompt: string
@@ -36,9 +37,9 @@ export default function Component() {
   const [apiKey, setApiKey] = useState("")
   const [systemPrompt, setSystemPrompt] = useState("")
   const [addDialogOpen, setAddDialogOpen] = useState<string | null>(null)
-  const [elements,setElements] = useState<string[]>([])
+  const [elements, setElements] = useState<string[]>([])
 
-  async function extract(){
+  async function extract() {
     const task = await getATask(projectId)
     setElements(extractElementNames(JSON.parse(JSON.parse(task).content)))
   }
@@ -218,6 +219,11 @@ export default function Component() {
                         placeholder="Enter the system prompt for the judge"
                         rows={4}
                       />
+                      <div>
+                        {elements.map((element, index) => (
+                          <Badge key={index} variant="outline" onClick={() => setEditingJudge(prev => prev ? { ...prev, systemPrompt: prev.systemPrompt + ` {${element}}` } : null)} className="mr-2 hover:cursor-pointer">{element}</Badge>
+                        ))}
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       <Button

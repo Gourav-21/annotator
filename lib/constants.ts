@@ -60,7 +60,7 @@ export function extractElementNames(content: any[]) {
         // case 'inputRecordAudio':
         // case 'inputRecordVideo':
         case 'checkbox':
-          elements.push({ name: node.name, type: node.type });
+          elements.push(node.name);
           break;
         default:
           return
