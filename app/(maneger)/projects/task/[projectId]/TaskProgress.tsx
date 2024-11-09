@@ -2,13 +2,15 @@
 
 import { aiSolve } from '@/app/actions/ai'
 import { deleteCompletedJobs } from '@/app/actions/aiModel'
+import { getAllTasks } from '@/app/actions/task'
 import { Button } from "@/components/ui/button"
 import useJobList from '@/hooks/use-jobList'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { Task } from './page'
 
-export default function TaskProgress() {
+export default function TaskProgress({setTasks}:{setTasks: React.Dispatch<React.SetStateAction<Task[]>>}) {
   const [isRunning, setIsRunning] = useState(false)
   const { getJobs, getcompletedJobCount, setJobs, getUncompletedJobCount, deleteCompleted } = useJobList()
   const totalTasks = getJobs().length
@@ -23,6 +25,20 @@ export default function TaskProgress() {
     }
     setJobs(res.models)
   }
+  async function init2() {
+    const res = await fetch('/api/job?projectId=' + projectId).then(res => res.json())
+    if (!res.success) {
+      console.log(res.error)
+      return
+    }
+    setJobs(res.models)
+    if(res.models.length == 0){
+      setTasks(JSON.parse(await getAllTasks(projectId)))
+      toast.success("Completed!")
+      setIsRunning(false)
+      return
+    }
+  }
 
   useEffect(() => {
     init()
@@ -32,7 +48,7 @@ export default function TaskProgress() {
     let interval: NodeJS.Timeout
     if (isRunning && getcompletedJobCount() < totalTasks) {
       interval = setInterval(() => {
-        init()
+        init2()
       }, 3000)
     }
     return () => clearInterval(interval)
@@ -44,13 +60,13 @@ export default function TaskProgress() {
   }
 
   const getButtonText = () => {
-    if (totalTasks !== 0 && getcompletedJobCount() === totalTasks) {
-      toast.success("Completed!")
-      deleteCompletedJobs(projectId)
-      deleteCompleted()
-      setIsRunning(false)
-      // return "Start AI Solving"
-    }
+    // if (totalTasks !== 0 && getcompletedJobCount() === totalTasks) {
+    //   toast.success("Completed!")
+    //   deleteCompletedJobs(projectId)
+    //   deleteCompleted()
+    //   setIsRunning(false)
+    //   // return "Start AI Solving"
+    // }
     if (isRunning) return `Processing... ${getcompletedJobCount()}/${totalTasks}`
     return `Start AI Solving ${getUncompletedJobCount()} Tasks`
   }
