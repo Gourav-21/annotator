@@ -177,6 +177,7 @@ return (
                   placeholder="Enter checkbox label"
                 />
                 <Button type="submit">Add</Button>
+                <Button type="button" onClick={() => setCheckboxes([])}>Reset</Button>
               </div>
             </form>
           </div>
