@@ -1,7 +1,7 @@
 "use client"
 
 import { addModel, deleteModel, toggleModel, updateModel } from "@/app/actions/aiModel"
-import { getATask } from "@/app/actions/task"
+import { getATemplate } from "@/app/actions/template"
 import { SheetMenu } from "@/components/admin-panel/sheet-menu"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -40,7 +40,7 @@ export default function Component() {
   const [elements, setElements] = useState<string[]>([])
 
   async function extract() {
-    const task = await getATask(projectId)
+    const task = await getATemplate(projectId)
     setElements(extractElementNames(JSON.parse(JSON.parse(task).content)))
   }
 

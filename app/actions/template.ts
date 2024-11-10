@@ -41,6 +41,12 @@ export async function getTemplate(pageId: string) {
     return JSON.stringify(res)
 }
 
+export async function getATemplate(projectid: string) {
+    await connectToDatabase();
+    const res = await Template.findOne({ project: projectid });
+    return JSON.stringify(res)
+}
+
 export async function CopyTemplate(pname: string, tname: string, content: string) {
     await connectToDatabase();
     try {
@@ -78,7 +84,7 @@ export async function DeleteTemplate(_id: string) {
     }
 }
 
-export async function UpdateVisibilityTemplate(_id: string,visibility:boolean) {
+export async function UpdateVisibilityTemplate(_id: string, visibility: boolean) {
     await connectToDatabase();
     try {
         await Template.findByIdAndUpdate(_id, {
